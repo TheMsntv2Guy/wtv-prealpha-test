@@ -1,0 +1,119 @@
+Set progressFlag 0
+Set changeLog "{{WTV:}}"ChangeLog
+Set projectName WebTV
+
+MountWebTVIfNeeded
+Directory "{{WTV:}}"
+
+if {progressFlag}; Echo "# finding modified files"; end
+CheckedOutFiles -project {projectName}º > MergeIn.Log
+
+if "``Exists "{{WTV:}}NewProjectorFiles"``" != ""
+	if {progressFlag}; Echo "# checking in new files"; end
+	set NewFilesFile "{{WTV:}}NewProjectorFiles"
+	Target "{{NewFilesFile}}"; Find ¥ "{{NewFilesFile}}"
+	loop
+		Find /¥Å¶n/ "{{NewFilesFile}}" || Break
+		set newFile "``Catenate "{{NewFilesFile}}".¤``"
+		Echo "# checking in {newFile}..."
+		if `ProjectInfo -s "{{newFile}}"` == ""
+			if "{{newFile}}" =~ /{{WTV:}}(Å:)¨1([Â¶:]+)¨2/
+				set SubProject "`(echo {¨1} | translate ":" "º")`"
+				set Filename "{¨2}"
+			Else if "{{newFile}}" =~ /{{WTV:}}(Å)¨2/
+				set SubProject ""
+				set Filename "{¨2}"
+			Else
+				Echo "¶n### {0} error: canÕt figure out what project Ò{{newFile}}Ó belongs to."
+				Exit 1
+			end
+
+			loop
+				if {progressFlag}; Echo -n "# "; end
+				if {changeLog} && "{{newFile}}" !~ /ÅChangeLogÅ/
+					if {progressFlag}
+						(CheckIn -y -new -project {projectName}º{SubProject} "{{newFile}}" -p ³ "{{WTV.o:}}"CheckinStatus || Set Status 0) | Tee {WTV:}ChangeLogEntry
+					else
+						(CheckIn -y -new -project {projectName}º{SubProject} "{{newFile}}" -p ³ "{{WTV.o:}}"CheckinStatus || Set Status 0) >> {WTV:}ChangeLogEntry
+					end
+					if "{{newFile}}" =~ /Å.c,1/
+						echo ¶t¶t¶t¶t'(DonÕt forget to change the CodeWarrior project)' >> {WTV:}ChangeLogEntry
+					end
+				else
+					if {progressFlag}
+						CheckIn -y -new -project {projectName}º{SubProject} "{{newFile}}" -p ³ "{{WTV.o:}}"CheckinStatus || Set Status 0
+					else
+						CheckIn -y -new -project {projectName}º{SubProject} "{{newFile}}" ³ "{{WTV.o:}}"CheckinStatus || Set Status 0
+					end
+				end
+				if "{{newFile}}" =~ /Å.c,1/
+					echo '(DonÕt forget to change the CodeWarrior project)'
+				end
+				Set statusReport "`Catenate "{{WTV.o:}}"CheckinStatus`"
+				If "{statusReport}" != ""
+					Catenate "{{WTV.o:}}"CheckinStatus > Dev:StdErr
+				End
+
+				# we are done unless we got the dreaded -61 error
+				Break If "{statusReport}" !~ /Å¶-61Å/
+			end
+		end
+	end
+	Close -n "{{NewFilesFile}}"
+	Delete -i -y "{{NewFilesFile}}"
+end
+
+if {progressFlag}; Echo "# checking in modified files"; end
+For file in `Catenate MergeIn.Log`
+	if "{{file}}" !~ /(:*([Â:]+:*)*)¨1([Â:]+)¨2/
+		Echo "# error parsing ¶"{{file}}¶""
+		Continue
+	end
+	set dir "{{¨1}}"
+	set short "{{¨2}}"
+	if "{short}" == "ChangeLog"
+		Continue
+	end
+	if {progressFlag}; Echo -n "# "; end
+	if {changeLog}
+		if {progressFlag}
+			(CheckIn -y "{{file}}" -p ³ dev:stdout && (RemoveFromCheckedOutList "{{file}}"; delete -i "{{dir}}\\{{short}}") || Set Status 0 ) | Tee {WTV:}ChangeLogEntry
+		else
+			(CheckIn -y "{{file}}" -p ³ dev:stdout && (RemoveFromCheckedOutList "{{file}}"; delete -i "{{dir}}\\{{short}}") || Set Status 0 ) ·· {WTV:}ChangeLogEntry
+		end
+	else
+		if {progressFlag}
+			CheckIn -y "{{file}}" -p && (RemoveFromCheckedOutList "{{file}}"; delete -i "{{dir}}\\{{short}}") || Set Status 0
+		else
+			CheckIn -y "{{file}}" && (RemoveFromCheckedOutList "{{file}}"; delete -i "{{dir}}\\{{short}}") || Set Status 0
+		end
+	end
+end
+Delete MergeIn.Log
+
+if {changeLog}
+	if {progressFlag}; Echo "# making an entry in change log"; end
+	Target {WTV:}ChangeLogEntry
+	Find ¥ {WTV:}ChangeLogEntry
+	Replace -c ° /¥Checked in ¶"{{WTV:}}(Å)¨1¶" into Å°/ "¶t¶t¶t¶t:¨1" {WTV:}ChangeLogEntry || Set Status 0
+	Find ¥ {WTV:}ChangeLogEntry
+	Replace -c ° /{{WTV:}}(Å)¨1/ "¶t¶t¶t¶t:¨1" {WTV:}ChangeLogEntry  || Set Status 0
+
+	# take any mention of ChangeLog out
+	Find ¥ "{{WTV:}}ChangeLogEntry"
+	Clear -c ° /Å¶:ChangeLog[ ¶t]*¶,[0-9]+¶n/ "{{WTV:}}ChangeLogEntry" || Set Status 0
+
+	Close -y "{{WTV:}}ChangeLogEntry"
+	set ChangeLog "{{WTV:}}ChangeLog"
+	CheckOut -y -project {projectName} ChangeLog ³ Dev:Null || Set Status 0
+	ExtraModifyReadOnly "{{ChangeLog}}" || Set Status 0
+	Target "{{ChangeLog}}"
+	Replace Æ7 "______________________________________________________________________________________¶n{User}							`date`¶n¶n- Description goes here¶n¶n" "{{ChangeLog}}"
+	Find Æ12 "{{ChangeLog}}"
+	Catenate "{{WTV:}}ChangeLogEntry" > "{{ChangeLog}}.¤"
+	Delete "{{WTV:}}ChangeLogEntry"
+	Find Æ10 "{{ChangeLog}}"
+	Find /Description goes here/ "{{ChangeLog}}"
+	Save "{{ChangeLog}}"
+	Open "{{ChangeLog}}"
+end

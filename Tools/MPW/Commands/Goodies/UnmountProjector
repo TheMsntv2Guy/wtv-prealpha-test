@@ -1,0 +1,38 @@
+#
+# UnmountProjector		Andrew Shebanow				1/30/89
+#
+# Modification History:
+#
+#
+# Script to unmount a project
+#
+#
+
+# save exit status, since we are executing at global scope
+Set OldExit {Exit}
+Set Exit 0
+
+# Get list of mounted projects
+Set ProjectNameList "`MountProject -pp -s -r | Sort -l`"
+
+# Set up project specific items
+Set ProjName NIL
+
+# Make sure we have at least one project mounted
+If "{ProjectNameList}" == ""
+	Alert "Cannot set project: no projects are mounted."
+	# restore previous state of {Exit}
+	Set Exit {OldExit}
+	Exit 0
+End
+
+Set ProjName `GetListItem -r 16 -s -d {ProjectNameList} -m "Choose a project"` > Dev:Null ³ Dev:Null
+if "{ProjName}" != NIL
+	UnmountProject "{ProjName}"
+End
+
+# Update our menu
+ProjListMenu
+	
+# restore previous state of {Exit}
+Set Exit {OldExit}

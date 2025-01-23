@@ -1,0 +1,18 @@
+# script to continue the execution of MakeCommands from where it left off
+
+Set options "-again"
+If "{1}" == "-over"; Unset options; End
+
+Set window "{{WTV.o:}}MakeCommands"
+If "`Windows`" =~ /Å ([Â ]+:MakeCommands)¨1Å/ || "`Windows`" =~ /([Â ]+:MakeCommands)¨1Å/
+	Set window {¨1}
+End
+
+Directory "{{WTV:}}"
+FastDoIt "{{window}}" {options} || set WTVBuildStatus 1
+
+If {WTVBuildStatus}
+	{WTVBuildFailed}
+End
+
+Exit {WTVBuildStatus}

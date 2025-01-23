@@ -1,0 +1,40 @@
+Set echo 0
+
+# get short name of the window
+Set silent "{{2}}"
+Set windowName "{{1}}"
+
+If "{{windowName}}" =~ /[¬:]+/; Set windowName ":{windowName}"; End
+
+If "{{windowName}}" =~ /:(≈)®1/; Set windowName "`Directory`{{®1}}"; End
+if "{{windowName}}" !~ /(([¬:]+:*)*)®2([¬:]+)®1/; alert "NewModifyReadOnly can’t parse window parameter."; exit 1; end
+set dir "{{®2}}";
+set short "{{®1}}"; set cant "“{{Short}}” can’t be made MRO"
+
+Set info "``ProjectInfo -s "{{windowName}}"``"
+
+# handle case where this is a new file
+if "{{info}}" == ""
+	echo "{{windowName}}" >> "{{WTV:}}"NewProjectorFiles
+	sort "{{WTV:}}"NewProjectorFiles -unique -l -o "{{WTV:}}"NewProjectorFiles
+	if x"{silent}" == x
+		alert "{{windowName}} will be added to the project the next time you do a MergeIn."
+	end
+	exit 0
+end
+
+# handle case where this is already MRO or checked out
+if "{{info}}" =~ /≈[∂*∂+]∂'«0,1»/
+	Echo "# already checked out"
+	exit 0
+end
+
+if {usingVerifySources} != 1
+duplicate -y "{{dir}}{{short}}" "{{dir}}\\{{short}}" || begin
+	Alert "“\\{{short}}” couldn’t be created."; exit 1
+end
+
+ModifyReadOnly "{{windowName}}" && (AddToCheckedOutList "{{windowName}}" || Set Status 0 ≥ dev:null)
+else
+ModifyReadOnly "{{windowName}}"
+end

@@ -1,0 +1,63 @@
+- Use AllocateMemory (eventually)
+- Use NewSimulatormemory (for now)
+- Use Headers.h
+- What is JVBL?
+- Need better error checking (Message/Complain)
+- instrument 164 is deadly (32768 keysplit count)
+- templates do not work in my ResEdit
+- stopping does not work correctly (crashes)
+- Multiples of PV_ routines
+
+for file in :sound:midi:[¬∂\]≈
+	File {file}
+	Format -f monaco -s 9 {file}
+	Close -y {file}
+end
+
+grep /∂/∂#pra/ :sound:midi:≈.c
+
+For file in :Sound:MIDI:≈.[ch]
+	Cat {file}.new > {file} || continue
+End
+
+For file in :Sound:MIDI:≈.[ch]
+	If "{file}" !~ /≈:(≈)®1/
+		Echo "cannot parse {file}"
+		Continue
+	End
+	Set leaf "{®1}"
+	Duplicate -y All:Carry:Changes≈SMS≈:≈:{leaf} :Sound:MIDI:{leaf}.new || continue
+End
+
+for file in All:Carry:Changes≈SMS≈:≈:≈.[ch]
+	If "{file}" !~ /≈:(≈)®1/
+		Echo "cannot parse {file}"
+		Continue
+	End
+	Set leaf "{®1}"
+	files :Sound:MIDI:{leaf} ∑ Dev:Null || Echo {leaf}
+end
+
+GenSong.c
+MIDI Support.c
+cat All:Carry:Changes≈SMS≈:≈:MIDI≈Support.c > :Sound:MIDI:MIDISupport.c
+
+
+compare all:carry:webtv:sound:midi:SampleTools.c :sound:midi:SampleTools.c
+grep GM_create All:Carry:Changes≈SMS≈:≈:≈
+File "All:Carry:Changes SMS & Web 1/25 fold.1:(Rev 3 SoundMusicSys.π C):GenPatch.c"; Line •!24880:§!9	# 
+OPErr GM_CreateLoadInstrument(INT16 instrument, InstrumentResource **theX, Handle *hSnds, INT16 *sndID, INT16 sndCount)
+File "All:Carry:Changes SMS & Web 1/25 fold.1:(Rev 3 SoundMusicSys.π C):GENSND.H"; Line •!11613:§!9	# 
+GM_Song * GM_CreateLiveSong(short int songID);
+File "All:Carry:Changes SMS & Web 1/25 fold.1:(Rev 3 SoundMusicSys.π C):GenSong.c"; Line •!3555:§!9	# 
+GM_Song * GM_CreateLiveSong(short int songID)
+File "All:Carry:Changes SMS & Web 1/25 fold.1:(Rev 3 SoundMusicSys.π C):JX_Interface.c"; Line •!13322:§!9	# 
+			songPlaying = GM_CreateLiveSong(-32768);
+### search - Unable to open file All:Carry:Changes SMS & Web 1/25 fold.1:WebTV:Interfaces.
+# Is a directory
+### search - Unable to open file All:Carry:Changes SMS & Web 1/25 fold.1:WebTV:Simulator.
+# Is a directory
+### search - Unable to open file All:Carry:Changes SMS & Web 1/25 fold.1:WebTV:Sound.
+# Is a directory
+
+cp "All:Carry:Changes SMS & Web 1/25 fold.1:(Rev 3 SoundMusicSys.π C):GenSong.c" :Sound:MIDI:

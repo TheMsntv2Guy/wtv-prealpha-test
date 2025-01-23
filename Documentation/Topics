@@ -1,0 +1,188 @@
+Meetings:
+
+Schedule:
+	Tuesday, 11/7 @ 3pm: 1,2
+	Wednesday @ 3pm: 3,4,5
+	Thursday @ 3pm: 6
+	Friday @ 3pm: 7
+	Monday @ 3pm: 8,9
+	Tuesday @ 3pm: 10,11
+	Wednesday @ 3pm: 12
+	
+1. Initial Meeting
+	- Discuss landscape for next several months
+	- Determine goals for these meetings
+	- Agree on topics for the rest of the meetings,
+	  	and one of us signs up to run each meeting
+	- Discuss broad topics
+		- Browser vs. PIG
+		- C vs. C++
+		- Memory constraints
+		- Fido vs. Frame Buffer
+		- Quality
+		- Schedule
+		- Separate apps vs. comprehensive browser
+
+2. 	Storage
+	- Persistent storage
+	- Memory layout
+		- Standard layout
+		- Extending memory
+		- RAM vs. ROM
+	- Caching
+		- Clients: What do they put in cache and when?
+			- HTML vs. parsed
+		- Optimal size
+		- Replacement policy
+		- Flushing to server
+	- Flexible use of ROM
+	- Use of the relocatable storage
+	- Object creation and overhead
+	- Stack usage
+	- Limits
+		- Querying
+		- Preflighting
+		- Running out of memory
+	- Budget
+	- Compression opportunities
+	
+3.  View System
+	- Layers
+		- Drawing bounds
+		- Alpha
+	- Displayables
+	- Process of invalidation and drawing
+	- Input dispatching
+	- Coordinate system
+	- Selection
+	- Extensions for PIG
+	- Special effects
+		- Transitions
+	- Pagination
+	- Scrolling
+		- Vertical horizontal
+
+4.  Protocols
+	- Flow of data
+		- Push vs. pull
+		- Threading
+		- Handling long operations
+		- Idle and scheduling
+	- Types
+	- Error handling
+		- Bad address
+		- Connection lost
+	- Multiple protocols
+	- How to measure status
+	- Long-lived connections
+		- Server push
+		- Data streams
+		
+5.  HTML
+	- Parsing
+		- Process
+		- Format
+		- Peak usage
+		- Use of cache
+	- Layout
+		- Process
+		- Wide graphics
+	- Progression
+		- Dependencies
+		- Tradeoffs (e.g. when to bring in background)
+	- Generation
+		- Recent page
+		- Favorites
+	- Evolution
+		- Our extensions
+		- Tracking others
+
+6.  Graphics
+	- Fido Overview
+		- Memory Management
+			- Layout
+			- Overhead
+		- Text drawing
+			- Process
+			- Format
+		- Image drawing
+		- Effects
+			- Desired
+			- Easily supported
+	- Consensus on interface
+	- Consensus on formats
+		
+7.	Network
+	- Registration
+	- Login
+	- Storage
+	- Security
+
+8.	UI
+	- Notification
+		- Email
+		- Errors
+		- Configuration
+		- Extensibility
+	- Navigation
+		- Transitions
+		- Sense of place
+	- Status
+	- Imagemaps
+	- Text Display
+		- Font design
+		- Background contrast
+		- Titling tricks
+	- Logo
+	- Sound
+	- Configuration
+		- User Profiling
+		- Preferences
+		- Expansion Bus
+	
+9.  Content
+	- Boot page
+	- Launch page
+	- Preferences
+	- Personalization
+	- Kid safe
+		- Smart card
+	- Tours
+	
+10. Platform
+		- Audio
+			- MIDI
+			- Sampled
+			- Mixing
+		- Smart card
+			- Process
+			- Formats
+		- Timing
+			- Use
+			- Rollover
+		- Expansion bus
+			- Dynamic drivers
+			- Memory extension
+		- Phone
+			- Dropping connections
+				- Incoming calls
+				- Putgoing calls
+			- Connect speed	
+	
+11. Patching
+	- Code patching
+		- vtable
+		- explicit vectors
+		- ROM overlay
+	- Data patching
+		- RAM override
+		- Network overrride
+	- Download process
+		- Versioning
+		- UI
+	- Installation process
+		- When can we install?
+		- Where is storage?
+	
+12. PIG (Protocol for Interactive Graphics)
+

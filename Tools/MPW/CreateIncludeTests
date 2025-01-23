@@ -1,0 +1,20 @@
+delete -i -y "{wtv:}temporary:webtest"
+newfolder "{wtv:}temporary:webtest" ³ Dev:Null 
+duplicate "{wtv:}tools:WebIncludesTest¹" "{wtv:}temporary:webtest:WebIncludesTest¹"
+echo "tell application ¶"CodeWarrior IDE 1.3¶"" > "{wtv:}temporary:script"
+echo "activate" >> "{wtv:}temporary:script"
+echo "with timeout of 90000 seconds" >> "{wtv:}temporary:script"
+echo "open ¶"{wtv:}temporary:webtest:webincludestest¹¶"" >> "{wtv:}temporary:script"
+for i in "{wtv:}Interfaces:"Å.h "{wtv:}Graphics:JPEG:"Å.h  "{wtv:}Simulator:"Å.h
+	if "{i}" =~ /Å:(Å)¨1.h/
+		if  "{¨1}" == "Simulator" || "{¨1}" == "System"
+			echo '#define FOR_MAC' > "{wtv:}temporary:webtest:"{¨1}test.c
+		end
+		echo '#include "'{¨1}.h'"' >> "{wtv:}temporary:webtest:"{¨1}test.c
+		echo "Add Files ¶"{wtv:}temporary:{¨1}test.c¶" To Segment 1" >> "{wtv:}temporary:script"
+	end
+end
+echo "Make Project" >> "{wtv:}temporary:script"
+echo "end timeout" >> "{wtv:}temporary:script"
+echo "end tell" >> "{wtv:}temporary:script"
+execute "{wtv:}tools:script editor" "{wtv:}temporary:script"

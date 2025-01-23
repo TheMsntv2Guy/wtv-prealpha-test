@@ -1,0 +1,28 @@
+<table cellspacing=5>
+	<tr>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+	<tr>
+		<td colspan=3 align=center>
+			<AUDIOSCOPE width=250 height=100 bgcolor=#ffffff leftcolor=#00ff00 rightcolor=#ff001f>
+</table>
+
+<br><br><br>
+<table cellspacing=5>
+	<tr>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+		<td>
+			<AUDIOSCOPE width=100 height=100>
+	<tr>
+		<td colspan=3 align=center>
+			<AUDIOSCOPE width=250 height=100 bgcolor=#ff201f leftcolor=#00ff00 rightcolor=#ff001f>
+</table>
+
+<AUDIOSCOPE width=440 height=100 bgcolor=#5f201f leftcolor=#7fff00 rightcolor=#0000ff leftoffset=2 rightoffset=-2>

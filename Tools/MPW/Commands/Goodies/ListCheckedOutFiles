@@ -1,0 +1,69 @@
+#
+#	File:		ListCheckedOutFiles
+#
+#	Contains:	List the files checked out in the project.
+#
+#	Written by:	Chas Spillar and Ted Cohn
+#
+#	Copyright:	© 1994 by RasterOps, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <1>	  7/9/94	HEC		first checked in
+#
+#
+
+	Echo "# `Date -a` ----- Listing Checked out Files. -----"
+	
+	# Collect project info information
+	projectinfo `files -f -s -r` -latest > "{Boot}__COprojectinfo"
+
+	# Edit out the checked out files
+	catenate "{Boot}__COprojectinfo" | ¶
+	streamedit -s "{Goodies}ListCheckedOutScript" -d | ¶
+	streamedit -e "/¶º°/delete"	| ¶
+	streamedit -e "¥,° replace -c ° /WebTV¶º/" | ¶
+	streamedit -e '¥,°  replace -c ° /¶º/":"' > "{Boot}__COCheckoutList"
+
+	# Edit out the modify read only files.
+	catenate "{Boot}__COprojectinfo" | ¶
+	streamedit -s "{Goodies}ListModifyReadOnlyScript" -d | ¶
+	streamedit -e "/¶º°/delete"	| ¶
+	streamedit -e "¥,° replace -c ° /WebTV¶º/" | ¶
+	streamedit -e '¥,°  replace -c ° /¶º/":"' > "{Boot}__COModifyReadOnlyList"
+
+	# get rid of final output if it exists
+	If "`Exists -f "{Boot}__FinalList"`" != ""
+		delete -i "{Boot}__FinalList"
+	end
+	
+	# Put checkout list to the final list
+	for file in `catenate "{Boot}__COCheckoutList"`
+		echo File ¶"{WebTVDir}{file}¶"¶;Line ¥¶!0 "# checked out."  >> "{Boot}__FinalList"
+	end
+
+	# Put modify read only list to the final list
+	for file in `catenate "{Boot}__COModifyReadOnlyList"`
+		echo File ¶"{WebTVDir}{file}¶"¶;Line ¥¶!0 "# modify read only." >> "{Boot}__FinalList"
+	end
+
+	# Finally output the list after we sort it
+	If "`Exists -f "{Boot}__FinalList"`" != ""
+		sort "{Boot}__FinalList"
+	end
+	
+	# cleanup mess we made.
+	If "`Exists -f "{Boot}__COprojectinfo"`" != ""
+		delete "{Boot}__COprojectinfo"
+	end
+	If "`Exists -f "{Boot}__COCheckoutList"`" != ""
+		delete "{Boot}__COCheckoutList"
+	end
+	If "`Exists -f "{Boot}__COModifyReadOnlyList"`" != ""
+		delete "{Boot}__COModifyReadOnlyList"
+	end
+	If "`Exists -f "{Boot}__FinalList"`" != ""
+		delete "{Boot}__FinalList"
+	end
+
+	Echo "# `Date -a` --------------------------------------"

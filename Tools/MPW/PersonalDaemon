@@ -1,0 +1,12 @@
+# move myself out of the way, in case there’s a new one.
+# this will allow the new one to run the next time the
+# user starts up the Daemon.
+Set fileName "``Which {{0}}``"
+
+Rename -y "{{fileName}}" "{{fileName}}".Running
+Duplicate "{{fileName}}".Running "{{fileName}}"
+TransferCKID "{{fileName}}".Running "{{fileName}}"
+
+# run the replaceable Daemon
+MySecondDaemon {{Parameters}}
+

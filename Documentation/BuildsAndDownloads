@@ -1,0 +1,30 @@
+here's the inside poop on building and downloading ROMs 
+
+there are three main targets for building ROM _code_ in UNIX:
+
+gmake bootrom - builds the boot code used to initialize the hardware and crank up the browser. 
+gmake approm - builds the browser and associated box code
+gmake all - builds bootrom and approm code
+
+the result of these builds are linked executables - bootrom.o and approm.o.  
+
+once these have been built, the next step is to make an actual ROM image than can be downloaded to flash.
+
+there are three main targets for building ROM _images_ in MPW
+
+build approm - creates a ROM image consisting of the approm code and symbol file. it is about 1.2 MB in size.  the browser is about 900k (but is padded to 1k), and the symbols take up the rest.
+build bootrom - creates a ROM image consisting of the bootcode and ROM filesystem.
+build unirom - creates an approm and bootrom and concatenates them together into a single downloadable image.
+
+once you have the images, they can then be downloaded.  approm and bootrom can be downloaded independently.  you only need to download bootrom if the bootcode or ROM filesystem have changed.  you only need to download approm if the browser and associated hardware support have changed.
+
+typically  what you would do is verifysources, backup to unix, build all, build a unirom, and download that.  then during the course of your development, only build the approm (or bootrom) and then download that piece by itself.  you don't have to download and build a unirom everytime.
+
+BUG ALERT - there is a bug in the current goober ROMs that incorrectly rounds the amount of flash needed to be erased.  if your checksums fail during download, you'll need to erase the flash from the debugger and then download again.  the bug has been fixed, but you need new goober roms to get the fix.  if you erase the entire flash, you'll need to download a new unirom.  you can erase part of the flash by doing 'eraseflash <startaddr> <size>'  for bootrom <startaddr> is 0xbfc00000 and <size> is 0x200000 (2 MB).  for approm, <startaddr> is 0xbfe00000 and <size> is 0x160000.
+
+NOTE - when you download a new approm, you'll toast what's been saved in the persistent store.
+
+questions about the build talk to ed.
+questions about downloading talk ed or me.
+
+-tim

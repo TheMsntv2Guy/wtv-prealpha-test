@@ -1,0 +1,8 @@
+DeleteMenu Lynx ³ Dev:Null || Set status 0
+AddMenu Lynx Build¶/B	BuildLynx
+AddMenu Lynx Rebuild	RebuildLynx
+AddMenu Lynx Download	DownloadLynx
+AddMenu Lynx -			' '
+AddMenu Lynx Goto		"Directory {WTV:}Lynx:"
+AddMenu Lynx "Goto Src"	"Directory {WTV:}Lynx:Src:"
+AddMenu Lynx "Open Map"	"Open {WTV:}Lynx:Src:lynx.map"

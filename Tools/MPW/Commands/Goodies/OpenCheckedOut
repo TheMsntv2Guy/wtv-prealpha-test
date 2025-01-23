@@ -1,0 +1,63 @@
+#
+#	File:		OpenCheckedOut
+#
+#	Contains:	script to open all checked-out files from all projects
+#
+#	Usage:		OpenCheckedOut
+#
+#				OpenCheckedOut opens all the files in each CheckOutDir that
+#				are currently checked out for modification.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988, 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History:
+#
+#		12/6/89		sad		use CheckedOutFiles
+#		11/9/89		dba		twiddle relentlessly
+#		11/8/89		dba		change != to ­
+#		5/26/89		sad		change ProjectInfo output parsing
+#		2/17/89		sad		use ProjectInfo -s; redirect to {somewhere}
+#		11/17/88	sad		replace · Dev:Null at end
+#		11/17/88	sad		finish CanÕt parse logic, was accidentally checked in
+#		11/17/88	sad		fix for Ò:Ó as checkout dir
+#
+#	To Do:
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+
+Set FirstNotOpened ""
+Set OthersNotOpened ""
+
+Begin
+	For File In `CheckedOutFiles -m`
+		Open "{File}" ·· "{Worksheet}"
+		If {Status}
+			If "{FirstNotOpened}" == ""
+				Set FirstNotOpened "Ò{File}Ó"
+			Else
+				Set OthersNotOpened "{OthersNotOpened}, Ò{File}Ó"
+			End
+		End
+	End
+
+	If "{FirstNotOpened}" ­ ""
+		If "{OthersNotOpened}" == ""
+			Alert "{FirstNotOpened} is checked out from Ò{Project}Ó but is not in the check out directory."
+		Else
+			Alert "The following files are checked out from Ò{Project}Ó but are not in the check out directory: {FirstNotOpened}{OthersNotOpened}."
+		End
+	End
+
+End {somewhere}

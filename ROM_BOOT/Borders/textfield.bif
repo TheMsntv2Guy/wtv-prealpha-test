@@ -1,0 +1,4 @@
+IMAGE file://ROM/Images/textfield.gif
+INNERBOUNDS  4, 4, 20, 20
+PADBOUNDS  4, 4, 4, 4
+NOFILTER

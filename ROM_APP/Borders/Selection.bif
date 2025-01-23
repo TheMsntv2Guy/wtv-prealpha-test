@@ -1,0 +1,13 @@
+IMAGE file://ROM/Images/selection.gif
+IMAGE file://ROM/Images/selection_frame1.gif
+IMAGE file://ROM/Images/selection_frame2.gif
+IMAGE file://ROM/Images/selection_frame3.gif
+IMAGE file://ROM/Images/activeselection.gif
+IMAGE file://ROM/Images/selection_frame1.gif
+IMAGE file://ROM/Images/selection_frame2.gif
+IMAGE file://ROM/Images/selection_frame3.gif
+INNERBOUNDS 7,7,23,23
+NOFILTER
+# ANIMATE
+DELAY=10
+FIRSTFRAMEONCE

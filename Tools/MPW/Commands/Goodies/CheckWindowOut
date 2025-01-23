@@ -1,0 +1,177 @@
+#	File:		CheckWindowOut
+#
+#	Contains:	script to check a window out for modification
+#
+#	Usage:		CheckWindowOut window
+#
+#	Status:		CheckWindowOut may return the following status values:
+#
+#					0		the window was checked out
+#					1		error
+#					2		the user canceled
+#
+#				CheckWindowOut uses the ProjectInfo command to determine the
+#				parent project for a file open as a window. Once this project
+#				has been determined, the file can be properly checked out.
+#				A dialog allows the user to type in a short comment that
+#				indicates what the reason for checking the file out was.
+#				This will be logged into the project, and into the file.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988, 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History: (maintain by hand, CheckWindowOut confuses itself by editing itself)
+#
+#				11/21/89	dba		made it work with the new headers
+#				11/8/89		dba		stopped using LastChange marker; invented mark character
+#
+#	To Do:
+#		a way to start a new branch
+#		a way to specify a ÒtaskÓ
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+Begin
+
+	Set Comment "{SystemFolder}Comment"	# file to compose comment in
+	Set Window "{1}"
+
+	# get short name of window
+
+	If "{Window}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+		Alert "CanÕt parse window parameter."
+		Exit 1
+	End
+	Set Short "{¨1}"					# get short name for dialogs
+	Set Cant "Ò{Short}Ó canÕt be checked out "
+
+	# check what project the window belongs to
+
+	Set Info "`ProjectInfo "{Window}"`"
+	If "{Info}" !~ /ÅProject: ([Â:]+º)¨1     Checked out:Å/
+		Alert "{Cant}because it doesnÕt belong to a project."
+		Exit 1
+	End
+	Set Project "{¨1}"
+
+	# check if the window is already checked out
+
+	If "{Info}" =~ /[Â,]+,[Â ¶t]+¶+Å/
+		Alert "{Cant}again because itÕs already checked out for modification."
+		Exit 1
+	End
+
+	# check if the window is ModifyReadOnly'd
+
+	If "{Info}" =~ /[Â,]+,[Â ¶t]+¶*Å/
+		Alert "{Cant}because itÕs a modified read-only copy."
+		Exit 1
+	End
+
+	# get the version that is checked out
+
+	If "{Info}" !~ /[Â,]+,([0-9]+)¨1Å/
+		Alert "CanÕt parse ProjectInfo."
+		Exit 1
+	End
+	Set OldVersion {¨1}
+
+	# check if the project is mounted
+
+	ProjectInfo -project "{Project}" -only · Dev:Null
+	If {Status}
+		Alert "{Cant}because the project Ò{Project}Ó is not mounted."
+		Exit 1
+	End
+
+	# see if the file is already checked out
+
+	Set Info "`ProjectInfo -latest -comments -project "{Project}" "{Short}"`"
+	If "{Info}" == ""
+		Alert "{Cant}because it isnÕt really in the project Ò{Project}Ó."
+		Exit 1
+	Else If "{Info}" =~ /ÅOwner: ([Â:]+)¨1     Checked out:ÅComment: +(Å)¨2/
+		Set Owner "{¨1}"
+		Set Comment "{¨2}"
+		If "{Owner}" == "{User}"
+			Alert "{Cant}because you have already checked it out elsewhere.  Comment: Ò{Comment}Ó"
+			Exit 1
+		Else
+			Alert "{Cant}because it has already been checked out by {Owner}.  Comment: Ò{Comment}Ó"
+			Exit 1
+		End
+	End
+
+	# get position within window so we can return to it later
+
+	If `Position -c "{Window}"` !~ /([0-9]+)¨1,([0-9]+)¨2/
+		Alert "CanÕt parse Position output."
+		Exit 1
+	End
+	Set SelectionStart {¨1}
+	Set SelectionSize `Evaluate {¨2}-{¨1}`
+
+	# get a comment about the change
+
+	Set IgnoreCmdPeriod 1
+	Echo -n "{DefaultComment}" | CoolRequest -d -q "What are you are going to change in Ò{Short}Ó?" >"{Comment}"
+	Set CommentStatus {Status}
+	Set IgnoreCmdPeriod 0
+	If {CommentStatus}
+		Delete -i "{Comment}"
+		Exit 2
+	End
+
+	# check the file out
+
+	CheckOut -cf "{Comment}" -m -project "{Project}" "{Window}" || Set CheckOutStatus {Status}
+	If {CheckOutStatus}
+		Delete -i "{Comment}"
+		# *** need to check this more closely (Cancel from dialog gets here)
+		Alert "CheckOut failed!"
+		Exit 1
+	End
+
+	Find ¥!{SelectionStart}:¤!{SelectionSize} "{Window}"
+
+	# get the version number
+
+	Set Info "`ProjectInfo -s "{Window}"`"
+	If "{Info}" !~ /[Â,]+,([0-9]+)¨1Å/
+		Alert "CanÕt parse ProjectInfo."
+		Exit 1
+	End
+	Set Version "{¨1}"
+
+	# add the comment to the change history
+
+	If {ProjectHeaders}
+		Mark -y ¤ OldSelection "{Window}"
+			AddChange "{Window}" "{Version}+" "{Comment}"
+		Find OldSelection "{Window}"
+		Unmark OldSelection "{Window}"
+		Save "{Window}"
+	End
+
+	Delete -i "{Comment}"
+
+	Set Increment `Evaluate {Version} - {OldVersion}`
+	If {Increment} > 0
+		If {Increment} == 1
+			Alert "The Ò{Short}Ó that you just checked out is a version newer than your old copy."
+		Else
+			Alert "The Ò{Short}Ó that you just checked out is {Increment} versions newer than your old copy."
+		End
+	End
+
+End {somewhere}

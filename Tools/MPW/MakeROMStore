@@ -1,0 +1,4 @@
+Directory "{WTV:}"ROM:
+Romify -p=1 -romtop=BFE00000 : > 'HitchHiker:WebTV:ROM Store'.New || Directory "{WTV:}"
+Directory "{WTV:}"
+	Rename -y 'HitchHiker:WebTV:ROM Store'.New 'HitchHiker:WebTV:ROM Store'

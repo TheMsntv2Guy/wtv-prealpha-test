@@ -1,0 +1,33 @@
+#
+#	File:		CvtCComments
+#
+#	Contains:	Simple script to convert 1 line C comments
+#				to C++ '//' form. Will do very bad things
+#				to your code if you have normal C comments
+#				before real code on a line.
+#
+#	Written by:	Andrew Shebanow
+#
+#	Copyright:	© 1990 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#				  2/7/90	AGS		Created
+#
+#	To Do:
+#
+
+
+# Make sure user passed a filename
+If {#} != 1
+	Echo "Usage: CvtComments fileName" > Dev:StdErr
+	Exit 1
+End
+# Open The File
+Target "{1}"
+# Find The Top
+Find ¥
+# Convert one line comments from C form to C++ form
+replace -c ° /¶/¶*[ ¶t]+(Å)¨1[ ¶t]+¶*¶// "// ¨1"
+# Save & Close the file
+Close -y "{1}"

@@ -1,0 +1,192 @@
+#
+#	File:		FindLurkers
+#
+#	Contains:	script which reports all files that are not what it expects
+#
+#	Usage:		FindLurkers
+#
+#	Status:		FindLurkers may return the following status values:
+#
+#					0		success
+#					1		error
+#
+#				FindLurkers compares each CheckOutDir with its corresponding project
+#
+#	Written by:	scott douglass and Darin Adler
+#
+#	Copyright:	© 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History:
+#
+#		12/6/89		sad		fix option-space character
+#		12/6/89		sad		fix rename case
+#		11/9/89		dba		twiddle relentlessly
+#		9/29/89		sad		check for files in wrong project and files with wrong name
+#		9/22/89		sad		fix case of fewer files on disk than in project; put out both version numbers
+#		8/4/89		sad		more useful output, notice canceled checkout modifys
+#		7/31/89		sad		finished writing
+#
+#	To Do:
+#		canÕt handle file name with spaces
+#		settings of CaseSensitive and =~ can probably be used instead of RelString
+#		If MPW had > and < and for strings we wouldnÕt need RelString and would be a lot faster.
+#
+
+Set Exit 0
+Set CaseSensitive 0
+
+Begin
+
+	# first get all the check-out directories
+
+	Set CheckOutDirs "`CheckOutDir -m -r; Set CheckOutDirStatus {Status}; Echo`"
+	Exit If {CheckOutDirStatus}
+
+	Loop
+		Break If "{CheckOutDirs}" !~ / *CheckOutDir +-project ¶'Ç0,1È([Â:]+º)¨1¶'Ç0,1È ¶'Ç0,1È([Âº]*:)¨2¶'Ç0,1È (Å)¨3/
+		Set Project "{¨1}"
+		Set CheckOutDir "{¨2}"
+		Set CheckOutDirs "{¨3}"
+
+		# now for each directory, get all modified files in the project
+
+		Set Info "`ProjectInfo -s -latest -project "{Project}"; Set ProjectInfoStatus {Status}`"
+		If {ProjectInfoStatus} ­ 0
+			Echo "### {0} - ProjectInfo of Ò{Project}Ó failed."
+			Exit {ProjectInfoStatus}
+		End
+
+		For File in `Files -s "{CheckOutDir}"`
+			Loop
+				Set BreakOut 1
+				Break If "{Info}" !~ /[Â,]*     ¶'Ç0,1È([Â,]+)¨1,([0-9]+)¨2([0-9.a-z]*)¨3([+*]Ç0,1È)¨4¶'Ç0,1È(Å)¨5/
+				Set BreakOut 0
+				Set ProjectFileName "{¨1}"
+				Set ProjectVersNum "{¨2}"
+				Set ProjectBranch "{¨3}"
+				Set ProjectModFlag "{¨4}"
+				Set ProjectVersInfo "{¨2}{¨3}{¨4}"
+				Set ProjectNextInfo "{¨5}"
+
+				Set DirFile "{CheckOutDir}{File}"
+
+#				If `RelString "{File}" "{ProjectFileName}"` == 0
+				If "{File}" == "{ProjectFileName}"
+					If `Exists "{DirFile}"`"" ­ ""
+						Set FileInfo "`ProjectInfo "{DirFile}"`"
+						If "{FileInfo}" =~ /¶'Ç0,1È([Â,]+)¨1,([0-9]+)¨2([0-9.a-z]*)¨3([+*]Ç0,1È)¨4¶'Ç0,1È(     WARNING: this file has been renamed!)Ç0,1ÈÅProject: ([Â:]+º)¨5     Checked out: Å/
+							Set FileFileName "{¨1}"
+							Set FileVersNum "{¨2}"
+							Set FileBranch "{¨3}"
+							Set FileModFlag "{¨4}"
+							Set VersInfo "({¨2}{¨3}{¨4} vs {ProjectVersInfo})"
+							Set FileProject "{¨5}"
+
+#							If `RelString "{FileProject}" "{Project}"` ­ 0
+							If "{FileProject}" ­ "{Project}"
+								Quote -n File "{DirFile}"
+								Echo " ### is in the wrong project (Ò{FileProject}Ó vs Ò{Project}Ó)"
+#							Else	# if I use ÒElse IfÓ here RelString is always run (i.e. ÒIf expr1 É Else If expr2 É EndÓ is strict w.r.t. expr2)
+#								If `RelString "{FileFileName}" "{ProjectFileName}"` ­ 0
+							Else If "{FileFileName}" ­ "{ProjectFileName}"
+									Quote -n File "{DirFile}"
+									Echo " ### has been renamed (from Ò{ProjectFileName}Ó to Ò{File}Ó)"
+#								End
+							Else If {FileVersNum} < {ProjectVersNum}
+								Quote -n CheckOut -project "{Project}" "{File}"
+								Echo -n " ### is old"
+								If "x{FileModFlag}" == "x*"
+									Echo -n " and modifyreadonly"
+								Else If "x{FileModFlag}" == "x+"
+									Echo -n " and no longer checked out modify"
+								End
+								Echo " {VersInfo}"
+							Else If {FileVersNum} > {ProjectVersNum}
+								Quote -n File "{DirFile}"
+								Echo " ### is too new {VersInfo}"
+							Else
+								If "x{FileModFlag}" == "x*"
+									Quote -n File "{DirFile}"
+									Echo " ### is modifyreadonly {VersInfo}"
+								Else If "x{ProjectModFlag}" == "x" && "x{FileModFlag}" == "x+"
+									Quote -n File "{DirFile}"
+									Echo " ### check out modify has been canceled {VersInfo}"
+								End
+							End
+						Else
+							If "{FileInfo}" == ""
+								Quote -n File "{DirFile}"
+								Echo " ### is an orphan (vs {ProjectVersInfo})"
+							Else
+								Echo "### {0} - CouldnÕt parse FileInfo (#1): Ò{FileInfo}Ó" > Dev:StdErr
+								Exit 1
+							End
+						End
+					Else
+						Confirm "Oops, file Ò{DirFile}Ó exists but doesnÕt. (#1)"
+						Exit 1 If {Status}
+					End
+					Set Info "{ProjectNextInfo}"
+					Break
+				Else	# if I use ÒElse IfÓ here RelString is always run (i.e. ÒIf expr1 É Else If expr2 É EndÓ is strict w.r.t. expr2)
+					If `RelString "{File}" "{ProjectFileName}"` > 0
+						Quote -n CheckOut -project "{Project}" "{ProjectFileName}"
+						Echo " ### is not in Ò{CheckOutDir}Ó"
+						Set Info "{ProjectNextInfo}"
+					Else
+						If `Exists "{DirFile}"`"" ­ ""
+							Set FileInfo "`ProjectInfo "{DirFile}"`"
+							If "{FileInfo}" =~ /¶'Ç0,1È([Â,]+)¨1,([0-9]+)¨2([0-9.a-z]*)¨3([+*]Ç0,1È)¨4¶'Ç0,1È(     WARNING: this file has been renamed!)Ç0,1ÈÅProject: ([Â:]+º)¨5     Checked out: Å/
+								Set FileFileName "{¨1}"
+								Set FileVersNum "{¨2}"
+								Set FileBranch "{¨3}"
+								Set FileModFlag "{¨4}"
+								Set VersInfo "({¨2}{¨3}{¨4} vs {ProjectVersInfo})"
+								Set FileProject "{¨5}"
+
+#								If `RelString "{FileProject}" "{Project}"` ­ 0
+								If "{FileProject}" ­ "{Project}"
+									Quote -n File "{DirFile}"
+									Echo " ### is in the wrong project (Ò{FileProject}Ó vs Ò{Project}Ó)"
+								Else
+									Quote -n File "{DirFile}"
+									Echo " ### is no longer in the project Ò{Project}Ó"
+								End
+							Else
+								If "{FileInfo}" == ""
+									Quote -n File "{DirFile}"
+									Echo " ### is not in the project Ò{Project}Ó"
+								Else
+									Echo "### {0} - CouldnÕt parse FileInfo (#2): Ò{FileInfo}Ó" > Dev:StdErr
+									Exit 1
+								End
+							End
+						Else
+							Confirm "Oops, file Ò{DirFile}Ó exists but doesnÕt. (#2)"
+							Exit 1 If {Status}
+						End
+						Break
+					End
+				End
+			End
+			Break If {BreakOut}
+		End
+		Loop
+			Break If "{Info}" !~ /[Â,]*     ¶'Ç0,1È([Â,]+)¨1,[0-9]+[0-9.a-z]*[+*]Ç0,1È¶'Ç0,1È(Å)¨5/
+			Set ProjectFileName "{¨1}"
+			Set ProjectNextInfo "{¨5}"
+			Quote -n CheckOut -project "{Project}" "{ProjectFileName}"
+			Echo " ### is not in Ò{CheckOutDir}Ó"
+			Set Info "{ProjectNextInfo}"
+		End
+		If "{Info}" ­ ""
+			Echo "### {0} - CouldnÕt parse Info: Ò{Info}Ó" > Dev:StdErr
+			Exit 1
+		End
+	End
+	If "{CheckOutDirs}" ­ ""
+		Echo "### {0} - CouldnÕt parse CheckOutDirs: Ò{CheckOutDirs}Ó" > Dev:StdErr
+		Exit 1
+	End
+
+End

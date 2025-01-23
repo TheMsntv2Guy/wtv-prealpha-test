@@ -1,0 +1,154 @@
+##*****************************************************************************
+##
+##  Project Name:	UserScripts
+##     File Name:	SetMFSize
+##
+##   Description:	This script will set the current Multifinder partition
+##					size to the size specified, or to the default (by
+##					removing the SIZE 0 resource).
+##
+##*****************************************************************************
+##                       A U T H O R   I D E N T I T Y
+##*****************************************************************************
+##
+##	Initials	Name
+##	--------	-----------------------------------------------
+##	GLA			Glenn L. Austin
+##
+##*****************************************************************************
+##                      R E V I S I O N   H I S T O R Y
+##*****************************************************************************
+##
+##	  Date		Time	Author	Description
+##	--------	-----	------	---------------------------------------------
+##	08/19/89	10:21	GLA		Original version
+##
+##*****************************************************************************
+
+set exit 0
+set echo 0
+
+set setDefault false
+set confirmSize ask
+set newSize -1
+
+loop
+	if "{1}" =~ /-?+/			# Is this an option?
+	else
+		break
+	end
+	if "{1}" =~ /-[DMSYNHdmsynh]/		# is this one of my options?
+		if "{1}" =~ /-[Dd]/			# Set to default size
+			set setDefault true
+		end
+		if "{1}" =~ /-[Mm]/			# Set to minimum size
+			set newSize 0
+			set confirmSize true	# if the minimum size happens not to be an even K,
+									# set it anyway!
+		end
+		if "{1}" =~ /-[Ss]/			# set to size...
+			shift 1					# shift once right (to get to the size parameter)
+			set newSize {1}			# get the new size (in K)
+		end
+		if "{1}" =~ /-[Yy]/			# the new size is pre-confirmed
+			set confirmSize true	# if the new size < min size, set it anyway!
+		end
+		if "{1}" =~ /-[Nn]/			# the new size is not pre-confirmed
+			set confirmSize false	# if the new size < min size, don't change anything!
+		end
+		if "{1}" =~ /-[Hh]/		# Help!
+			echo 'Syntax:  SetMFSize [-D] [-S size[M|K]] [-Y] [-N] [-H] appname'
+			exit
+		end
+	else
+		echo "### Error:  Undefined option ¶"{1}¶"" >Dev:Console
+		exit 1
+	end
+	shift 1
+end
+
+if "{1} " == " "
+	echo "### Error:  No file specified!" >Dev:Console
+	exit 1
+end
+
+if ({setDefault == false) && ({newSize} == -1)
+	echo "### Error:  No size specified!" >Dev:Console
+	exit 1
+end
+
+set file "{1}"
+
+files -t 'APPL' "{file}" ·Dev:Null
+if {status} != 0
+	echo "### Error:  {file} is not an application!" >Dev:Console
+	exit 2
+end
+
+if {newSize} == 0		# set to minimum size!
+	set newSize `GetMFSize -m "{file}"`
+	( evaluate "{newSize}" =~ /?*=([0-9]+)¨1K?*/ ) ·Dev:Null
+	set newSize {¨1}
+	unset ¨1
+end
+
+if {setDefault} == true
+	echo "delete ¶'SIZE¶' (0);" | rez -a -o "{file}"
+else
+	set minSize `GetMFSize -m "{file}"`
+	( evaluate "{minSize}" =~ /?*=([0-9]+)¨1K?*/ ) ·Dev:Null
+	set minSize {¨1}
+	unset ¨1
+	
+	( evaluate "{newSize}" =~ /([0-9]+)¨1(?Ç0,1È)¨2?*/ ) ·Dev:Null
+	set newSize {¨1}
+	set sizeMult "{¨2}"
+	unset ¨1 ¨2
+	if "{sizeMult} " == " "
+		set sizeMult "K"
+	end
+	if {sizeMult} =~ /[Mm]/		# Megabytes
+		( evaluate newSize = {newSize} * 1024 ) ·Dev:Null
+		set sizeMult "K"
+	end
+
+	if {minSize} > {newSize}
+		if {confirmSize} == ask
+			confirm "Are you sure you want to set the partition size to less than the minimum?"
+			if {status} == 0
+				set confirmSize true
+			else
+				set confirmSize false
+			end
+		end
+		if {confirmSize} == false	# Oops!  too small!
+			echo "### Error:  Requested Multifinder partition size less than minimum size!" >Dev:Console
+			exit 3
+		end
+	end
+	
+	( evaluate newSize = {newSize} * 1024 ) · Dev:Null
+		
+	derez -only 'SIZE' "{file}" "{RIncludes}"Types.r >"{MPW}"Tempfile ³Dev:Null
+	open "{MPW}"Tempfile
+	find ¥ "{MPW}"Tempfile
+	echo "¶#include ¶"Types.r¶"¶n" >"{MPW}"Tempfile.¤
+	find /resource ¶'SIZE¶' ¶(-1/ "{MPW}"Tempfile
+	if {status} == 0
+		find ¥ "{MPW}"Tempfile
+		find /resource ¶'SIZE¶' ¶(0/:/¶};/ "{MPW}"Tempfile
+		echo -n "" >"{MPW}"Tempfile.¤
+		find ¥ "{MPW}"Tempfile
+		find /resource ¶'SIZE¶' ¶(-1/ "{MPW}"Tempfile
+		echo -n "resource ¶'SIZE¶' ¶(0" >"{MPW}"Tempfile.¤
+	end
+	find /[0-9]+,/ "{MPW}"Tempfile
+	echo -n "{newSize}," >"{MPW}"Tempfile.¤
+	close -y "{MPW}"Tempfile
+	
+	rez -a -o "{file}" "{MPW}"Tempfile
+	
+	delete -y "{MPW}"Tempfile
+end
+
+exit

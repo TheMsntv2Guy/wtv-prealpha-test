@@ -1,0 +1,31 @@
+#
+# OpenMultFiles:  A script to open several files from the same directory.
+#
+#		Preserves current directory
+#		Optional Parameter specifies starting directory
+#
+Set Exit 0
+Set FileList ""
+Set DirPath ""
+Set CurDirPath ""`Directory`""
+If "{1}" == "-c"
+	Set DirPath "CURRENT"
+Else If "{1}" == ""					
+	Set DirPath `GetFileName -d "{Boot}"` > Dev:Null
+Else
+	Set DirPath `GetFileName -d "{1}"` > Dev:Null
+End								
+If "{DirPath}" == "CURRENT"
+    Set FileList "`Files -t TEXT | GetListItem -r 15 -m "Select files to open:"`" > Dev:Null
+    If "{FileList}" != ""
+        open {FileList}
+    End
+Else If "{DirPath}" != ""
+    Set FileList "`Files -t TEXT "{DirPath}" | GetListItem -r 15 -m "Select files to open:"`" > Dev:Null
+    If "{FileList}" != ""
+		Directory "{DirPath}"
+        open {FileList}
+		Directory "{CurDirPath}"
+    End
+End
+Set Exit 1

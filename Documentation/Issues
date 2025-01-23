@@ -1,0 +1,11 @@
+Open Issues
+-----------------
+Client pull is specified by
+<META HTTP-EQUIV="Refresh" CONTENT="5; URL=index.html">
+which seems to imply that 'MIME header like' info can be specified in the
+HTML content.  Is this generally true?  Do we need to support the refresh
+command at the HTTP level as well as its META incarnation?  Can other HTTP
+info appear in the HTML body?  What about EXPIRES, can it be in the body?
+
+bruce
+-----------------

@@ -1,0 +1,1 @@
+#define TRY_OUT_FIDO_SIMULATOR 1

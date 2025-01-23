@@ -1,0 +1,1 @@
+mail_send_to=%s&mail_send_from=%s&mail_send_cc=TestCC&mail_send_body=TestBody&mail_send_subject=TestSubject&mail_user=MAIL_USER&mail_new=Deliver

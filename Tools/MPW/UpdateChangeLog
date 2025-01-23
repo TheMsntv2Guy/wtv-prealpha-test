@@ -1,0 +1,101 @@
+Set tempFolder "{WTV:}Temporary:"
+Set projectName WebTVº
+For name in {"parameters"}
+	If {nextParamIsFolder}
+		Set tempFolder "{name}"
+		Set nextParamIsFolder 0
+	Else If "{name}" == "-m"  || "{name}" == "-noMount"
+		Set autoMountOK 0
+	Else If "{name}" == "-t"  || "{name}" == "-temp"
+		Set nextParamIsFolder 1
+	Else If "{name}" == "-v" || "{name}" == "-verbose"
+		Set verbose 1
+	Else If "{name}" =~ /-Å/ || "{name}" == -
+		Echo "{0} updates the change log from the VerifySources command databases."
+		Echo "{0} [-m] [-t dir] [-v]"
+		Echo "	-m or -noMount 	# Don't automatically mount the WebTV project."
+		Echo "	-t or -temp 		# Place work files in this directory (default: ¶"{tempFolder}¶")."
+		Echo "	-v or -verbose		# Echo progress."
+		Exit 1
+	Else 
+		Break
+	End
+	Shift
+End
+If `Exists "{tempFolder}diffFilesUpdate"` == "" &&  `Exists "{tempFolder}commandListUpdate"` == ""
+	Echo "### Sorry, you have to run VerifySources first."
+	Exit 1
+End
+If "{verbose}" == "1" 
+	Echo "# `date -t`  Starting {0}"
+End
+If {autoMountOK}
+	MountWebTVIfNeeded
+End
+
+# generate list of files to put in change log
+If `Exists "{tempFolder}diffFilesUpdate"` != ""
+	If "{verbose}" == "1" 
+		Echo "# `date -t`  Create newFiles"
+	End
+	StreamEdit -o "{tempFolder}newFiles" -d -e '					¶
+		/CheckWindowIn Å}(Å)¨1¶"/									¶
+				Print	"¶t¶t¶t¶t:" ¨1 " # 1"						¶
+				' "{tempFolder}diffFilesUpdate"
+	Sort -unique -o "{tempFolder}newFiles" "{tempFolder}newFiles"
+End
+If "{verbose}" == "1" 
+	Echo "# `date -t`  Create oldFiles"
+End
+If `Exists "{tempFolder}commandListUpdate"` != ""
+	StreamEdit -o "{tempFolder}oldFiles" -d -e '					¶
+		/¶}ChangeLog¶"/					Delete		;				¶
+		/¶}StateOfTheProject¶"/		Delete		;					¶
+		/CheckWindowIn Å}(Å)¨1¶"Å,([0-9]+)¨2/						¶
+			Print		"¶t¶t¶t¶t:" ¨1 " # "	¨2	"+1"	;		¶
+		/CheckWindowIn Å}(Å)¨1¶"Å ([0-9]+)¨2/						¶
+			Print		"¶t¶t¶t¶t:" ¨1 " # "	¨2	"+1"			¶
+				' "{tempFolder}commandListUpdate"
+	Sort -unique -o "{tempFolder}oldFiles" "{tempFolder}oldFiles"
+	Target "{tempFolder}oldFiles"
+	Find ¥ "{tempFolder}oldFiles"
+	Loop
+		Find /[0-9]+¶+[0-9]+/ "{tempFolder}oldFiles" || Break
+		If "`Catenate ¤`" =~ /([0-9]+)¨1¶+([0-9]+)¨2/
+			Echo -n `Evaluate {¨1} + {¨2}` > "{tempFolder}oldFiles".¤
+		End
+	End
+	Close -y "{tempFolder}oldFiles"
+End
+# modify change log
+
+If "{verbose}" == "1" 
+	Echo "# `date -t`  Modify ChangeLog"
+End
+set ChangeLog "{{WTV:}}ChangeLog"
+CheckOut -y -project {projectName} ChangeLog ³ Dev:Null || Set Status 0
+ExtraModifyReadOnly "{{ChangeLog}}" || Set Status 0
+Target "{{ChangeLog}}"
+Replace Æ7 "______________________________________________________________________________________¶n{User}							`date`¶n¶n- Description goes here¶n¶n" "{{ChangeLog}}"
+If `Exists "{tempFolder}oldFiles"` != ""
+	Find Æ12 "{{ChangeLog}}"
+	Catenate "{tempFolder}oldFiles" > "{{ChangeLog}}.¤"
+End
+If `Exists "{tempFolder}newFiles"` != ""
+	Find Æ12 "{{ChangeLog}}"
+	Catenate "{tempFolder}newFiles" > "{{ChangeLog}}.¤"
+End
+If `Exists "{WTV:}ChangeLogEntry"` != ""
+	Find Æ12 "{{ChangeLog}}"
+	Catenate "{WTV:}ChangeLogEntry" > "{{ChangeLog}}.¤"
+	Delete -i "{WTV:}ChangeLogEntry"
+End
+Find Æ10 "{{ChangeLog}}"
+Find /Description goes here/ "{{ChangeLog}}"
+Save "{{ChangeLog}}"
+# # already checked out
+Delete -i "{tempFolder}diffFilesUpdate" "{tempFolder}commandListUpdate"
+Open "{{ChangeLog}}"
+If "{verbose}" == "1" 
+	Echo "# `date -t`  Done"
+End

@@ -1,0 +1,2 @@
+CheckOut -project WebTVºBox "HWDisplay.c"	 #local: 38; remote: 39
+CheckOut -project WebTVºGraphics "GIF.c"	 #local: 123; remote: 124

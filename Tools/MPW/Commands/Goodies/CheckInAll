@@ -1,0 +1,71 @@
+#
+#	File:		CheckInAll
+#
+#	Contains:	script to check in all checked-out files in the current project tree
+#
+#	Usage:		CheckInAll [-noconfirm]
+#
+#	Status:		CheckInAll may return the following status values:
+#
+#					0		success
+#					1		error
+#					2		user canceled
+#
+#				CheckInAll checks in all files from the current project tree.
+#
+#	Written by:	scott douglass and Darin Adler
+#
+#	Copyright:	© 1988, 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History:
+#
+#		12/6/89		sad		use CheckedOutFiles
+#		11/15/89	dba		check status from ProjectInfo
+#		11/9/89		dba		twiddled relentlessly
+#		11/6/89		sad		add -noconfirm option
+#		5/26/89		sad		changed ProjectInfo output parsing
+#		2/17/89		sad		use ProjectInfo -s; redirect to {somewhere}
+#		11/17/88	sad		fix CanÕt parse logic
+#		11/4/88		sad		fix so actually works, current project only
+#		11/4/88		sad		cloned from OpenCheckedOut
+#
+#	To Do:
+#		add [-project project | -m] options
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+Begin
+
+	If {#} == 1
+		If "{1}" =~ /-noconfirm/
+			Set DoConfirm 0
+		Else
+			Echo "### {0} - Ò{"Parameters"}Ó doesnÕt make sense." > Dev:StdErr
+			Exit 1
+		End
+	Else If {#} == 0
+		Set DoConfirm 1
+	Else
+		Echo "### {0} - Ò{"Parameters"}Ó doesnÕt make sense." > Dev:StdErr
+		Exit 1
+	End
+
+	If {DoConfirm}
+		Confirm "Do you want to check in all modifiable files in the project Ò`Project -q`Ó?"
+		Exit 2 If {Status}
+	End
+
+	For File In `CheckedOutFiles`
+		CheckIn "{File}" > Dev:StdErr
+	End
+
+End {somewhere}

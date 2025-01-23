@@ -1,0 +1,10 @@
+Set volumeName :MacServer:MacServer
+Set projectPath MacServer:Source:WebTV
+Set projectName WebTVº
+
+mountserver "{user}" "{volumeName}"
+MountProject {projectPath}
+CheckOutDir -project {projectName} -r {WTV:}
+
+ShowStateOfTheProject
+ExecuteMountCommands

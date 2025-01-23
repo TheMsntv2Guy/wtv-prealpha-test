@@ -1,0 +1,138 @@
+#
+#	File:	CopyROM - copies ROM image built on unix to your mac
+#
+#	Copyright Artemis Research, Inc. 1996  All rights reserved.
+#
+#
+
+set CaseSensitive 0;  # maily for the options
+
+
+	set	gScriptName				'CopyROM'
+	set StartTime `Date -n`
+	set gAppROMOption			0;
+	set gBootROMOption			0;
+	set gUniROMOption			0;
+	set gDebugOption			1;
+	set gExternalOption			0;
+	set gProductionOption		0;
+	
+	set helpMessage "ECHO ¶"## Usage: {gScriptName} [options] ¶n ¶
+				-help                Print this message ¶n ¶
+				-approm              Copy the approm image ¶n ¶
+				-bootrom             Copy the bootrom image ¶n ¶
+				-unirom              Copy the unirom image¶n ¶
+				-nondebug            Copy a non-debug version of the rom (-nodebug works too) ¶n ¶
+				-external            Copy a non-debug, external version of the rom ¶n ¶
+				-production          Copy a non-debug, external, production version of the rom ¶n ¶
+					                 ¶n ¶
+		  Example: ¶n ¶
+				{gScriptName} -unirom                # copies the unirom ¶n ¶
+				{gScriptName} -nondebug  -approm     # copies a non-debug version of the approm ¶n ¶
+				¶" "
+
+loop
+	Break if {#} == 0
+
+	if "{1}" =~ /¶-help/
+		{helpmessage}
+		exit 2;
+	
+	else if "{1}" =~ /Åapprom/  # so -approm and approm should work!
+		set gAppROMOption 1;
+		set romtype 'app';
+		set SourceName 'approm.o';
+		set DestinationName 'approm';
+	
+	else if "{1}" =~ /Åbootrom/  # so -bootrom and bootrom should work
+		set gBootROMOption 1;
+		set romtype 'boot';
+		set SourceName 'bootrom.o';
+		set DestinationName 'bootrom';
+	
+	else if "{1}" =~ /Åunirom/
+		set gUniROMOption 1;
+		set romtype 'unirom';
+		set SourceName 'unirom.o';
+		set DestinationName 'unirom';
+	
+	else if "{1}" =~ /¶-nodebug/ || "{1}" =~ /¶-nondebug/
+		set gDebugOption 0;
+		
+	else if "{1}" =~ /¶-external/
+		set gExternalOption 1;
+		
+	else if "{1}" =~ /¶-prodcution/
+		set gProcutionOption 1;
+		
+	else if "{1}" =~ /¶-Å/
+		ECHO "### {gScriptName}: ERROR: unknown flag: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+
+	else
+		ECHO "### {gScriptName}: ERROR: unexpected argument: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+		
+	end
+	shift
+end
+
+# simple error check
+if ( (!{gAppROMOption}) && (!{gBootROMOption})  && (!{gUniROMOption}) )
+	ECHO "### {gScriptName}: ERROR: you must specify either -approm, -bootrom or -unirom (or both)"
+	exit 2;
+end
+
+if "{UnixVolume:}" == ""
+	set UnixVolume: "{UnixUser}:"
+end
+if "{UnixWTV:}" == ""
+	set UnixWTV: "{UnixVolume:}WebTV:"
+end
+
+if !`exists "{UnixVolume:}"`
+	MountUnix
+end
+
+if (!`exists "{WTV:}.o:"`)
+	NewFolder "{WTV:}.o:"
+end
+
+if ( {gDebugOption} )
+	if ( {gExternalOption} )
+		if ( {gProductionOption} )
+			set Destination:	"{WTV:}.o:debug-external-production:"
+			set Source:			"{UnixWTV:}objects:{romtype}-external-production:result:"
+		else;
+			set Destination:	"{WTV:}.o:debug-external:"
+			set Source:			"{UnixWTV:}objects:{romtype}-external:result:"
+		end;
+	else;
+		set Destination:		"{WTV:}.o:debug:"
+		set Source: 			"{UnixWTV:}objects:{romtype}:result:"
+	end;
+else
+	if ( {gExternalOption} )
+		if ( {gProductionOption} )
+			set Destination:	"{WTV:}.o:nodebug-external-production:"
+			set Source:			"{UnixWTV:}objects:{romtype}-nodebug-external-production:result:"
+		else;
+			set Destination:	"{WTV:}.o:nodebug-external:"
+			set Source:			"{UnixWTV:}objects:{romtype}-nodebug-external:result:"
+		end;
+	else;
+		set Destination:		"{WTV:}.o:nodebug:"
+		set Source: 			"{UnixWTV:}objects:{romtype}-nodebug:result:"
+	end;
+end;
+
+NewFolder "{Destination:}" · dev:null || set Status 0;
+
+#
+# And finally to the copy....
+#
+
+Duplicate -p -y "{{Source:}}{SourceName}" "{{Destination:}}{DestinationName}";
+

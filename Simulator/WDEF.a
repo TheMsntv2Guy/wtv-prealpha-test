@@ -1,0 +1,408 @@
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'QuickEqu.a'
+		INCLUDE 'Traps.a'
+		INCLUDE 'ToolEqu.a'
+
+kTVOutsetV	EQU	16
+kTVOutsetH	EQU	16
+kTVRounding	EQU	$00200020
+
+SimulatorWDEF	MAIN EXPORT
+
+;
+;  FUNCTION SimulatorProc(selector: INTEGER; window: WindowPtr, message: INTEGER; parameter: LongInt): LongInt
+
+SimulatorProc
+		BRA.S	@skipHeader
+
+; standard header
+
+		DC.W	0			; flags word
+		DC.L	('WDEF')		; resource type
+		DC.W	128			; resource ID
+		DC.W	1			; version number
+@skipHeader
+
+		LINK	A6,#-32 		; set up a stack frame for locals
+		MOVEM.L	D3-D7/A2-A4,-(SP)	; save work registers
+
+		MOVE.L	(A5),A0 		; get pointer to quickDraw globals
+		MOVE.L	(A0),-(SP)		; save current port on stack
+
+		MOVE.L	WMgrCPort,-(SP)		; and set port to window manager port
+		_SetPort
+
+; fetch the parameters into registers
+
+		LEA	8(A6),A0		; get ptr to first parameter
+		MOVE.L	(A0)+,D3		; get param in D3
+		MOVE.W	(A0)+,D0		; get message
+		MOVE.L	(A0)+,A3		; get the window pointer
+		MOVE.W	(A0)+,D5		; get the selector integer
+		CLR.L	(A0)			; clear out function result
+
+		CMP.W	#7,D0
+		BHS.S	SkipMessage
+
+; case out on the message number
+
+		ADD.W	D0,D0			; double for word index
+		MOVE.W	GoProc(PC,D0.W),D0	; get jump table offset
+		JSR	GoProc(PC,D0.W)		; compute dispatch address
+
+; we’re done -- restore registers and return to caller
+
+SkipMessage
+		_SetPort			; the old port is on top of stack
+
+		MOVEM.L	(SP)+,D3-D7/A2-A4	; restore work registers
+		UNLK	A6			; unlink stack frame
+		MOVE.L	(SP)+,A0		; get return address
+		LEA	12(SP),SP		; strip parameters
+		JMP	(A0)			; return to caller
+
+; SimulatorProc dispatch table -- entries must be long branches!
+
+GoProc
+		DC.W	DrawDoc-GoProc		; draw is message #0
+		DC.W	HitDoc-GoProc		; hit test is message #1
+		DC.W	CalcDoc-GoProc		; calc test is message #2
+		DC.W	InitDoc-GoProc		; init is message #3
+		DC.W	DisposeDoc-GoProc	; dispose is message #4
+		DC.W	GrowDoc-GoProc		; grow message is #5
+		DC.W	DrawGIcon-GoProc	; draw grow icon is #6
+
+;  DrawDoc -- draw the tv frame.   The windowPtr is in A3
+
+DrawDoc
+		TST.B	wVisible(A3)		; is it visible?
+		BEQ	DoneDoc 		; if not, don’t do anything
+
+; draw the tv surrounding the Simulator
+
+		LEA	-16(A6),A1		; point to the content rect
+		MOVE.L	contRgn(A3),A0		; get region handle
+		MOVE.L	(A0),A0 		; get region ptr
+		LEA	rgnBBox(A0),A0		; point at the bounding box
+		MOVE.L	(A0)+,(A1)+
+		MOVE.L	(A0),(A1)+		; copy the bounding box
+
+		ADDQ.W	#1,-(A1)		; adjust right
+		ADDQ.W	#1,-(A1)		; adjust bottom
+		SUBQ.W	#2,-(A1)		; adjust left
+		SUBQ.W	#2,-(A1)		; adjust top
+
+; allocate a temporary region and set it to the content rect
+
+		SUBQ.L	#4,SP
+		_NewRgn
+		MOVE.L	(SP),A2
+		PEA	-16(A6)
+		_RectRgn
+
+; get the area to fill by subtracting the content from the struct
+
+		MOVE.L	structRgn(A3),A4	; get structure region
+		MOVE.L	A4,-(SP)
+		MOVE.L	A2,-(SP)
+		MOVE.L	A2,-(SP)
+		_DiffRgn
+
+		SUBQ	#4,SP
+		_NewRgn
+		MOVE.L	(SP),D5
+		PEA	-16(A6)
+
+		;ADDQ.W	#kTVOutsetH/2,-14(A6)
+		;ADDQ.W	#kTVOutsetH/2,-10(A6)
+		_RectRgn
+
+		MOVE.L	A2,-(SP)
+		MOVE.L	D5,-(SP)
+		MOVE.L	A2,-(SP)
+		_DiffRgn
+
+		MOVE.L	D5,-(SP)
+		_DisposeRgn
+DoneClip
+		_PenNormal
+
+; check the depth of the screen to decide whether to use B&W or color
+
+		SUBQ.L	#4,SP
+		PEA	-16(A6)
+		_GetMaxDevice
+		MOVE.L	(SP)+,A0
+		MOVE.L	A0,D0
+		BEQ.S	Color
+		MOVE.L	(A0),A0
+		MOVE.L	gdPMap(A0),A0
+		MOVE.L	(A0),A0
+		CMP.W	#1,pmPixelSize(A0)
+		BNE.S	Color
+
+; handle the one bit case by using a dark pattern
+
+		MOVE.L	(A5),A1
+
+		MOVE.L	A3,A0			; convert the pointer if its a pixmap
+		BSR	PortToMap		; convert
+		MOVE.L	bounds(A0),patAlign(A1)
+
+		LEA	dkGray(A1),A0
+		TST.B	wHilited(A3)
+		BNE.S	@0
+		LEA	ltGray(A1),A0
+
+@0		MOVE.L	A0,-(SP)
+		_BackPat
+		BRA.S	DoneSetup
+
+		MOVE.L	A1,-(SP)		; save rect addr
+		SUBQ	#4,SP
+		_NewRgn
+		MOVE.L	(SP)+,D5		; pop the new rgn handle
+		MOVE.L	(SP),A1			; “pop” the rect addr
+		MOVE.L	D5,(SP)			; “push” the region handle
+		MOVE.L	A1,-(SP)		; push the rect addr
+
+		ADDQ.W	#kTVOutsetH/2,2(A1)
+		ADDQ.W	#kTVOutsetH/2,2(A1)
+		_RectRgn
+
+		MOVE.L	A2,-(SP)
+		MOVE.L	D5,-(SP)
+		MOVE.L	A2,-(SP)
+		_DiffRgn
+
+		MOVE.L	D5,-(SP)
+		_DisposeRgn
+		RTS
+
+; handle the color case
+
+Color
+		LEA	myFillingTVColor(PC),A0
+		BTST.B	#0,wDataHandle+3(A3)
+		BNE.S	@0
+
+		LEA	myTVColor(PC),A0
+		TST.B	wHilited(A3)
+		BNE.S	@0
+		LEA	myInactiveTVColor(PC),A0
+
+@0		MOVE.L	A0,-(SP)
+		_RGBBackColor
+DoneSetup
+
+; draw the tv frame
+
+		MOVE.L	A2,-(SP)
+		_EraseRgn
+
+		PEA	myWhiteColor(PC)
+		_RGBBackColor
+
+		MOVE.L	(A5),A0
+		CLR.L	patAlign(A0)
+		PEA	white(A0)
+		_BackPat
+
+; make a copy of the structRgn into the temp region
+
+		MOVE.L	A4,-(SP)
+		MOVE.L	A2,-(SP)
+		_CopyRgn
+
+; offset it by 4 and sect with the original
+
+		MOVE.L	A2,-(SP)
+		MOVE.L	#$FFFCFFFC,-(SP)
+		_OfsetRgn
+
+		MOVE.L	A4,-(SP)
+		MOVE.L	A2,-(SP)
+		MOVE.L	A2,-(SP)
+		_SectRgn
+
+; frame the inner region
+
+		MOVE.L	A2,-(SP)
+		_FrameRgn
+
+; now draw the shadow
+
+		MOVE.L	A4,-(SP)
+		MOVE.L	A2,-(SP)
+		MOVE.L	A2,-(SP)
+		_DiffRgn
+
+		MOVE.L	A2,-(SP)
+		_PaintRgn
+
+; now frame the content
+
+		PEA	-16(A6)			; push bounding box
+		_FrameRect			; frame the body
+		_PenNormal
+
+; draw the top hilite
+
+		MOVE.L	-16(A6),-(SP)		; push top left
+		ADDQ.W	#1,2(SP)
+		ADDQ.W	#1,0(SP)		;inset by 1
+		MOVE.L	(SP),D6			;remember in D6
+		_MoveTo
+
+		MOVE.L	D6,-(SP)
+		MOVE.W	-12(A6),D0		;get bottom
+		SUBQ.W	#1,D0
+		MOVE.W	D0,0(SP)		;replace y
+		_LineTo
+
+		MOVE.L	D6,-(SP)
+		_MoveTo
+		MOVE.L	D6,-(SP)
+		MOVE.W	-10(A6),D0
+		SUBQ.W	#1,D0
+		MOVE.W	D0,2(SP)
+		_LineTo
+
+; discard the temp region
+
+DoneDrawing
+		MOVE.L	A2,-(SP)
+		_DisposRgn
+
+		_PenNormal
+DoneDoc
+		RTS
+
+; HitDoc -- perform a hit test on the document.  On entry, D3 contains the mousePoint
+; in global coordinates while A3 holds the window pointer
+
+HitDoc
+		SUBQ.L	#2,SP			; make room for function result
+		MOVE.L	D3,-(SP)		; push the mouse point
+		MOVE.L	contRgn(A3),-(SP)	; push content region handle
+		_PtInRgn			; is the point in the content region?
+		TST.B	(SP)+			; well, is it?
+		BEQ.S	ItsInDrag		; if not, go check out drag region
+
+; it’s in the content region
+
+		MOVEQ	#wInContent,D0		; return in content
+		BRA.S	DoneHitDoc		; go store function result and return
+
+; its not in the content, so it must be in drag
+
+ItsInDrag
+		MOVEQ	#wInDrag,D0		; flag in drag region
+DoneHitDoc
+		MOVE.L	D0,20(A6)		; update function result
+DoneHit1
+		RTS
+
+; CalcDoc  -- calculate the structure and content regions for the window pointed
+; to by A3.
+
+CalcDoc
+		LEA	-8(A6),A0		; get a pointer to the work rectangle
+		MOVE.L	A0,-(SP)		; push for later offset
+		MOVE.L	portRect+0(A3),(A0)+	; copy topLeft of portRect
+		MOVE.L	portRect+4(A3),(A0)	; copy botLeft of portRect
+
+; offset it to global coordinates
+
+		MOVE.L	A3,A0			; convert the pointer if its a pixmap
+		BSR.S	PortToMap		; convert
+		MOVE.L	bounds(A0),-(SP)	; push topLeft of port.portBits.bounds
+		NEG.W	0(SP)			; negate offset
+		NEG.W	2(SP)			; both words
+		_OffsetRect			; offset tempRect to global coordinates
+
+;  make the rectangular content region
+
+		MOVE.L	contRgn(A3),-(SP)	; content region gets the result
+		PEA	-8(A6)			; tempRect is the rectangle
+		_RectRgn			; go make the region into content region
+
+		SUBQ.L	#4,SP
+		_NewRgn
+		MOVE.L	(SP)+,A2		; allocate a temporary region
+
+; now do the structure region, by outsetting the content region
+
+		PEA	-8(A6)			; push a pointer to the rect
+		MOVE.L	#$FFF0FFF0,-(SP)	; outset by the tv size
+		
+		BTST.B	#0,wDataHandle+3(A3)
+		BEQ.S	@0
+		MOVE.L	#$FFC0FFC0,(SP)		; fill the screen
+@0
+		_InsetRect			; make it bigger
+		ADD.W	#48,-2(A6)		; make room for TV controls
+
+		_HidePen			; dont draw anything
+		_OpenRgn
+
+		PEA	-8(A6)
+		MOVE.L	#kTVRounding,-(SP)	; push rounding factor
+		_FrameRoundRect 		; frame the button
+
+		MOVE.L	structRgn(A3),-(SP)	; push the region
+		_CloseRgn			; make the rounded rectangular region
+
+		_ShowPen
+
+; add the shadow
+
+		MOVE.L	structRgn(A3),-(SP)
+		MOVE.L	A2,-(SP)
+		_CopyRgn			; copy the structRgn into it
+
+		MOVE.L	A2,-(SP)
+		MOVE.L	#$00040004,-(SP)	; shadow amount
+		_OfsetRgn
+
+		MOVE.L	A2,-(SP)
+		MOVE.L	structRgn(A3),-(SP)
+		MOVE.L	(SP),-(SP)
+		_UnionRgn			; add the shadow to the structRgn
+
+; dispose of the temp region
+
+		MOVE.L	A2,-(SP)
+		_DisposRgn
+
+; all done with CalcDocRgns
+
+		RTS
+
+; Given a window pointer in A0, return the bitmap/pixmap pointer in A0
+
+PortToMap
+		ADDQ.L	#portBits,A0		;point to the bitmap or pixMap handle
+		TST.W	rowBytes(A0)		;which one?
+		BPL.S	@0			;branch if its a bitMap
+		MOVE.L	baseAddr(A0),A0		;otherwise, get pixMap handle
+		MOVE.L	(A0),A0			;get pixMap ptr
+@0
+		RTS
+
+; stubs for messages we don’t have to handle
+
+GrowDoc
+InitDoc
+DisposeDoc
+DrawGIcon
+		RTS
+
+; here are some colors and other constants
+
+myWhiteColor		DC.W	$FFFF,$FFFF,$FFFF
+myTVColor		DC.W	$3000,$3232,$4000
+myInactiveTVColor	DC.W	$5000,$5232,$6000
+myFillingTVColor	DC.W	$0000,$0000,$0000
+
+		END

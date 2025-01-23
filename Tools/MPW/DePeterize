@@ -1,0 +1,160 @@
+Set echo 0
+Set caseSensitive 1
+
+Set progressFlag 0
+Set checkMissing 0
+
+If "{1}" =~ /-pÅ/
+	Set progressFlag 1
+End
+
+For file in Å.h :Å:Å.h Å.c :Å:Å.c Å.cp
+	If {progressFlag}; Echo "# Converting {file}..."; End
+	
+	File "{file}"
+	
+	# Get classes after spaces and at the beginning of the line
+	Find ¥ "{File}"; Replace -c ° /¥C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨1/ "¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /([ ¶t])¨1C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨2/ "¨1¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(::)¨1C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨2/ "¨1¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶~)¨1C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨2/ "¨1¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶()¨1C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨2/ "¨1¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶*)¨1C[U]Ç0,1È((GIF)Ç0,1È(JPEG)Ç0,1È[A-TX-Z][a-z][a-zA-Z]+)¨2/ "¨1¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /C(JPEG[a-zA-Z]+)¨1/ "¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /C(HT[a-zA-Z]+)¨1/ "¨1" "{file}" || Set status 0
+	#Find ¥ "{File}"; Replace -c ° /C(PICT[a-zA-Z]+)¨1/ "¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CGIF([Â.])¨1/ "GIF¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CHTMLWindow([Â.])¨1/ "HTMLWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CPICTWindow([Â.])¨1/ "PICTWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CMovieWindow([Â.])¨1/ "MovieWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CCompressedWindow([Â.])¨1/ "CompressedWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CNewsWindow([Â.])¨1/ "NewsWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CTestWindow([Â.])¨1/ "TestWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CFontWindow([Â.])¨1/ "FontWindow¨1" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /CProtocol([Â.])¨1/ "Protocol¨1" "{file}" || Set status 0
+	
+	If {checkMissing}
+		Set missingClasses "`Search /C[A-Z][a-zA-Z0-9/ {file} || Set status 0`"
+		If {progressFlag}
+			If x"{missingClasses}" != x
+				Echo "##	The following classes may have been missed by the conversion:"
+				Echo {missingClasses}
+			End
+		End
+	End
+	
+	# Rename the fields from mXxxx to fXxxxx
+	Find ¥ "{File}"; Replace -c ° /([ ¶t])¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶-¶>)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶.)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶*)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶()¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶))¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶,)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶!)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶+)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶-)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶[)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶&)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶/)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /(¶;)¨1m([A-Z][a-zA-Z]+[a-z])¨2/ "¨1f¨2" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mInPRE/ "fInPRE" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mJPEG/ "fJPEG" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mSRC/ "fSRC" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mALT/ "fALT" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mHREF/ "fHREF" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mTE/ "fTE" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mOn/ "fOn" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mSP/ "fSP" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mHTML/ "fHTML" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mUR/ "fUR" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mID/ "fID" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mOf/ "fOf" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mWDS/ "fWDS" "{file}" || Set status 0
+	Find ¥ "{File}"; Replace -c ° /mGIF/ "fGIF" "{file}" || Set status 0
+
+	If {checkMissing}
+		Set missingFields "`Search /m[A-Z][a-zA-Z0-9/ {file} || Set status 0`"
+		If {progressFlag}
+			If x"{missingFields}" != x
+				Echo "##	The following fields may have been missed by the conversion:"
+				Echo {missingFields}
+			End
+		End
+	End
+	
+	# fix up some overzealous matches
+	Find ¥ "{file}"; Replace -c ° /([ÂC])¨1InfoPBRec/ '¨1CInfoPBRec' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /([ÂC¶(])¨1GrafPtr/ '¨1CGrafPtr' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /fDownMask/ 'mDownMask' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /port ¶= qd/ 'port = (CGrafPtr)qd' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /HTMLWindow.h/ 'CHTMLWindow.h' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /HTTP.h/ 'CHTTP.h' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /SetPort¶(/ 'SetPort((GrafPtr)' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /GetPort¶(/ 'GetPort((GrafPtr*)' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /([ÂC¶(])¨1TabHandle/ '¨1CTabHandle' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /(SetMovieGWorld¶(Å[ÂC])¨1GrafPtr/ '¨1CGrafPtr' "{file}" || Set status 0
+
+	#Find ¥ "{file}"; Replace -c ° /¶#includeÅ/ "" "{file}" || Set status 0
+	#If "{file}" =~ /Å.cp/
+	#	Find ¥ "{file}"; Replace ¤ '#include "Headers.h"' "{file}"
+	#End
+	
+	# Make source code look nicer by adding our conventions
+	# Fix pointer declarations
+	Find ¥ "{file}"; Replace -c ° /¶* ¶)/ '*)' "{file}" || Set status 0
+	Find ¥ "{file}"; Replace -c ° /([Â ¶t¶/])¨1 ¶*([a-zA-Z])¨2/ ¨1'* '¨2 "{file}" || Set status 0
+	# Fix braces
+	Find ¥ "{file}"; Replace -c ° /¶{¶n([ ¶t]+)¨1¶t/ "¶n¨1¶{¨1¶t¶n¨1¶t" "{file}" || Set status 0
+	# Change Img to Image
+	Find ¥ "{file}"; Replace -c ° /Img/ "Image" "{file}" || Set status 0
+	
+	Close -y "{file}"
+End
+
+# fixing header files
+For file in Å.h :Å:Å.h
+	File "{file}"
+	
+	If {progressFlag}; Echo "# Converting header {file}..."; End
+	File "{file}"
+	# Fix braces
+	Find ¥ "{file}"; Replace -c ° /¶{¶n([Â ¶t])¨1/ "¶n¶{¶n¨1" "{file}" || Set status 0
+	
+	# Remove #pragma once
+	Find ¥ "{file}"; Replace -c ° /¶#pragma[ ¶t]+once/ "" "{file}" || Set status 0
+	# handle uniqueness problem w/ ifdefs
+	If "{file}" !~ /(Å)¨1.h/; Echo "## Cannot parse {file}"; Exit 1; End
+	Set baseName "{¨1}"
+	Loop
+		If {baseName} !~ /(Å)¨1:(Å)¨2/; Break; End
+		Set baseName {¨2}
+	End
+	Find ¥ "{file}"; Replace ¤ "#ifndef __{baseName}_H__¶n#define __{baseName}_H__¶n" "{file}"
+	Find ° "{file}"; Replace ¤ "¶n#endif ¶/¶*__{baseName}_H__ ¶*¶/" "{file}"
+	Close -y "{file}"
+End
+	
+If {progressFlag}
+	Echo "# The following classes may have been missed by the conversion:"
+	Search /m[A-Z][a-zA-Z0-9]/ Å.h :Å:Å.h Å.c :Å:Å.c Å.cp || Set status 0
+	Echo "# The following fields may have been missed by the conversion:"
+	Search /C[A-Z][a-zA-Z0-9]/ Å.h :Å:Å.h Å.c :Å:Å.c Å.cp || Set status 0
+End
+
+# Rename the files
+If 0
+For file in Å.c :Å:Å.c Å.cp
+	If "{file}" =~ /C(Å)¨1.cÅ/
+		If {progressFlag}; Echo "# Renaming ¶"{file}¶" to ¶"{¨1}.c¶"..."; End
+		Rename "{file}" "{¨1}".c
+	End
+End
+
+For file in Å.h :Å:Å.h
+	If "{file}" =~ /C([A-Z]Å)¨1.h/
+		If {progressFlag}; Echo "# Renaming ¶"{file}¶" to ¶"{¨1}.h¶"..."; End
+		Rename "{file}" "{¨1}".h
+	End
+End
+End

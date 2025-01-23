@@ -1,0 +1,87 @@
+ 
+ 
+CheckOut -project WebTVº "ChangeLog"	 #local: 16; remote: 19
+CheckOut -project WebTVº "WebTV¹"	 #local: 1; remote: 2
+CheckOut -project WebTVº "WebTV¹PPC"	 #local: 2; remote: 3
+CheckOut -project WebTVº "WebTV¹PPCNoDebug"  # new
+CheckOut -project WebTVºCommunications "HTTP.c"	 #local: 82; remote: 83
+CheckOut -project WebTVºCommunications "Network.c"	 #local: 82; remote: 83
+CheckOut -project WebTVºCommunications "Protocol.c"	 #local: 66; remote: 67
+CheckOut -project WebTVºCommunications "Resource.c"	 #local: 108; remote: 109
+CheckOut -project WebTVºCommunications "Service.c"	 #local: 5; remote: 6
+CheckOut -project WebTVºCommunications "WTVProtocol.c"	 #local: 23; remote: 25
+CheckOut -project WebTVºCommunicationsºTCPºTiny "tinyip.c"	 #local: 1; remote: 2
+CheckOut -project WebTVºCommunicationsºTellyscript "Intrinsic.c"	 #local: 8; remote: 9
+CheckOut -project WebTVºDebug "Debug.c"	 #local: 65; remote: 66
+CheckOut -project WebTVºGoober "GooberHeader.h"	 #local: 2; remote: 3
+CheckOut -project WebTVºGraphics "GIF.c"	 #local: 75; remote: 76
+CheckOut -project WebTVºGraphics "ImageData.c"	 #local: 85; remote: 86
+CheckOut -project WebTVºGraphics "XDraw.c"	 #local: 75; remote: 76
+CheckOut -project WebTVºHTML "ClientFunctions.c"	 #local: 24; remote: 25
+CheckOut -project WebTVºInterfaces "AlertViewer.h"	 #local: 15; remote: 16
+CheckOut -project WebTVºInterfaces "BuildControl.h"  # new
+CheckOut -project WebTVºInterfaces "Classes.h"	 #local: 87; remote: 88
+CheckOut -project WebTVºInterfaces "Debug.h"	 #local: 60; remote: 61
+CheckOut -project WebTVºInterfaces "GIF.h"	 #local: 36; remote: 37
+CheckOut -project WebTVºInterfaces "HTTP.h"	 #local: 32; remote: 33
+CheckOut -project WebTVºInterfaces "Headers.h"	 #local: 109; remote: 110
+CheckOut -project WebTVºInterfaces "MemoryGlance.h"	 #local: 16; remote: 17
+CheckOut -project WebTVºInterfaces "MemoryManager.h"	 #local: 46; remote: 47
+CheckOut -project WebTVºInterfaces "Network.h"	 #local: 37; remote: 38
+CheckOut -project WebTVºInterfaces "Protocol.h"	 #local: 34; remote: 35
+CheckOut -project WebTVºInterfaces "Resource.h"	 #local: 69; remote: 70
+CheckOut -project WebTVºInterfaces "Screen.h"	 #local: 28; remote: 29
+CheckOut -project WebTVºInterfaces "Service.h"	 #local: 4; remote: 5
+CheckOut -project WebTVºInterfaces "Stream.h"	 #local: 42; remote: 43
+CheckOut -project WebTVºInterfaces "WTVProtocol.h"	 #local: 10; remote: 11
+CheckOut -project WebTVºInterfaces "embed header.h"	 #local: 2; remote: 3
+CheckOut -project WebTVºInterfacesºMetrowerks "StandardHeaders.pch"	 #local: 5; remote: 6
+CheckOut -project WebTVºInterfacesºMetrowerks "StandardHeadersNoDebug.pch"  # new
+CheckOut -project WebTVºROM "General.html"	 #local: 2; remote: 3
+CheckOut -project WebTVºSimulator "CacheWindow.c"	 #local: 9; remote: 10
+CheckOut -project WebTVºSimulator "DisplayablesWindow.c"	 #local: 6; remote: 7
+CheckOut -project WebTVºSimulator "Functions.c"	 #local: 51; remote: 52
+CheckOut -project WebTVºSimulator "MacSimulator.c"	 #local: 12; remote: 13
+CheckOut -project WebTVºSimulator "MacSimulator.h"	 #local: 9; remote: 10
+CheckOut -project WebTVºSimulator "Macintosh.c"	 #local: 224; remote: 226
+CheckOut -project WebTVºSimulator "MacintoshMenus.c"	 #local: 20; remote: 22
+CheckOut -project WebTVºSimulator "MacintoshMenus.h"	 #local: 14; remote: 15
+CheckOut -project WebTVºSimulator "MemoryCheckpointing.c"	 #local: 13; remote: 14
+CheckOut -project WebTVºSimulator "MemoryGlance.c"	 #local: 15; remote: 16
+CheckOut -project WebTVºSimulator "MemorySeismograph.c"	 #local: 16; remote: 17
+CheckOut -project WebTVºSimulator "MemoryWindow.c"	 #local: 46; remote: 47
+CheckOut -project WebTVºSimulator "MessageWindow.c"	 #local: 41; remote: 42
+CheckOut -project WebTVºSimulator "ServiceWindow.c"	 #local: 5; remote: 6
+CheckOut -project WebTVºSimulator "Simulator.c"	 #local: 128; remote: 129
+CheckOut -project WebTVºSimulator "Simulator.h"	 #local: 117; remote: 118
+CheckOut -project WebTVºSimulator "Simulator.rsrc"	 #local: 77; remote: 78
+CheckOut -project WebTVºSimulator "Simulator.rsrc.h"	 #local: 6; remote: 7
+CheckOut -project WebTVºSimulator "SimulatorWindow.c"	 #local: 4; remote: 6
+CheckOut -project WebTVºSimulator "SimulatorWindow.h"	 #local: 2; remote: 3
+CheckOut -project WebTVºSimulator "StdWindow.c"	 #local: 24; remote: 25
+CheckOut -project WebTVºSimulator "StdWindow.h"	 #local: 17; remote: 18
+CheckOut -project WebTVºSimulator "TimerWindow.c"	 #local: 12; remote: 13
+CheckOut -project WebTVºSimulator "TourGuide.c"	 #local: 16; remote: 17
+CheckOut -project WebTVºSoundºMIDI "GenPatch.c"	 #local: 3; remote: 4
+CheckOut -project WebTVºToolsºMPW "WebTVStartup"	 #local: 39; remote: 40
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "CFront"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "CPlus"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "SiowGDB"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "ar"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "as"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "cc1"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "cplusfilt"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "cpp"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "gC"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "gcc"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "gdb"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "ld"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "libgcc.a"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "nm"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "objcopy"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "objdump"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "ranlib"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "size"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "strings"  # new
+CheckOut -project WebTVºToolsºMPWºgnu-mipsºbin "strip"  # new
+CheckOut -project WebTVºUtilities "Stream.c"	 #local: 63; remote: 64

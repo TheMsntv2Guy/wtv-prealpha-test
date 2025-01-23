@@ -1,0 +1,151 @@
+#
+#	File:		CheckWindowOut
+#
+#	Contains:	script to check a window out for modification
+#
+#	Usage:		CheckWindowOut window
+#
+#	Status:		CheckWindowOut may return the following status values:
+#
+#					0		the window was checked out
+#					1		error
+#					2		the user canceled
+#
+#				CheckWindowOut uses the ProjectInfo command to determine the
+#				parent project for a file open as a window. Once this project
+#				has been determined, the file can be properly checked out.
+#				A dialog allows the user to type in a short comment that
+#				indicates what the reason for checking the file out was.
+#				This will be logged into the project, and into the file.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#	Copyright:	© 1992 by General Magic, Inc., all rights reserved.
+#
+#	Change History:
+#
+#				  9/1/95	pyg		adapted for Artemis
+#				12/22/93	pyg		made it safe
+#				  1/3/92	pyg		added special-case code to mount Teletouch project
+#				 11/7/91	dba		adapted for General Magic
+#				 9/27/90	sad		move newer version alert before checkout
+#				11/21/89	dba		made it work with the new headers
+#				 11/8/89	dba		stopped using LastChange marker; invented mark character
+#
+#	To Do:
+#		a way to start a new branch
+#		a way to specify a “task”
+#
+
+Set echo 0
+Set forceOptions ""
+
+Loop
+	If "{1}" =~ /∂-y/
+		set forceOptions "-y"; Shift
+	Else If "{1}" != ""
+		set window "{{1}}"; Shift
+	Else
+		Break
+	End
+End
+
+# get short name of window
+
+if "{{window}}" !~ /:*([¬:]+:*)*([¬:]+)®1/; Alert "Can’t parse window parameter."; Exit 1; end
+set short "{{®1}}"; set cant "“{{short}}” can’t be checked out "
+
+# check what project the window belongs to
+
+set info "``ProjectInfo "{{window}}" ≥ Dev:Null || set Status 0``"
+if "{{info}}" !~ /≈Project: ([¬:]+∫)®1     Checked out:≈/
+	Alert "{{cant}}because it doesn’t belong to a project."; Exit 1
+end
+set project "{{®1}}"
+
+# check if the window is already checked out
+
+set wasModifyReadOnly 0; if "{{info}}" =~ /[¬,]+,[¬ ∂t]+∂*≈/
+	set wasModifyReadOnly 1
+else if "{{info}}" =~ /[¬,]+,[¬ ∂t]+∂+≈/
+	Alert "{{cant}}again because it’s already checked out for modification."; Exit 1
+end
+
+# get the version that is checked out
+
+if "{{info}}" !~ /[¬,]+,([0-9]+)®1≈/; Alert "Can’t parse ProjectInfo “{info}”."; Exit 1; end
+set oldVersion {®1}
+
+# check if the project is mounted
+
+ProjectInfo -project "{{project}}" -only ∑ Dev:Null || begin
+	MountWebTVIfNeeded ≥ Dev:Null
+	ProjectInfo -project "{{project}}" -only ∑ Dev:Null || begin
+		Alert "{{cant}}because the project “{{project}}” is not mounted."; Exit 1
+	end
+end
+
+# see if the file is already checked out
+
+set info "``ProjectInfo -latest -comments -project "{{project}}" "{{short}}" ≥ Dev:Null || set Status 0``"
+if "{{info}}" == ""
+	Alert "{{cant}}because it isn’t really in the project “{{project}}”."; Exit 1
+else if "{{info}}" =~ /≈Owner: ([¬:]+)®1     Checked out:≈Comment: +(≈)®2/
+	set owner "{{®1}}"; set comment "{{®2}}"
+	if "{{comment}}" == ""
+		set commentSentence ""
+	else
+		set commentSentence "  Comment: “{{comment}}”"
+	end
+	if "{{owner}}" == "{{User}}"
+		Alert "{{cant}}because you checked it out elsewhere.{{commentSentence}}"; Exit 1
+	else
+		Alert "{{cant}}because it is checked out by {{owner}}.{{commentSentence}}"; Exit 1
+	end
+else if "{{info}}" =~ /[¬,]+,([0-9]+)®1≈Checked in:≈/
+	set latestVersion {®1}
+else
+	Alert "Can’t parse ProjectInfo “{{info}}”."; Exit 1
+end
+
+set increment `Evaluate {latestVersion} - {oldVersion}`
+if {increment} > 0
+	if {increment} == 1; set versions "version"; else; set versions "versions"; end
+	if {wasModifyReadOnly}
+		Confirm "The “{{short}}” that you will check out is {increment} {versions} newer than the file you originally modified.  Do you still want to check it out?" || Exit 2
+	else
+		Confirm "The “{{short}}” that you will check out is {increment} {versions} newer than your old copy.  Do you still want to check it out?" || Exit 2
+	end
+end
+
+# check the file out
+
+if {wasModifyReadOnly}
+	# First line handles <cancel>, the second handles <no>
+	Rename {forceOptions} "{{window}}" "{{window}}.my" ≥ Dev:Null
+	If "`Exists "{{window}}"`" != ""; Exit 0; End
+	
+	CheckOut -m -project "{{project}}" "{{window}}" || begin
+		Rename -y "{{window}}.my" "{{window}}"
+		Alert "CheckOut failed!"; Exit 1
+	end
+	if {increment} == 0
+		TransferCkid "{{window}}" "{{window}}.my"
+		Rename -y "{{window}}.my" "{{window}}"
+	else
+		Alert "You will have to merge “{{short}}.my” into “{{short}}”."
+		echo "CompareFiles ∂"{{window}}∂" ∂"{{window}}.my∂" # merge needed"
+		echo
+		echo "Delete ∂"{{window}}.my∂" # don’t forget to merge first"
+	end
+else
+	CheckOut -m -project "{{project}}" "{{window}}" || begin
+		Alert "CheckOut failed!"; Exit 1
+	end
+end
+
+# add this file to the checked out list
+if {usingVerifySources} != 1
+	AddToCheckedOutList "{{window}}" || exit 1
+end

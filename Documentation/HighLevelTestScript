@@ -1,0 +1,217 @@
+WebTV High-Level Test Script						October 28, 1995
+---------------------------------------------------------------------
+
+
+1. Power up by touching "Power" button on remote control window.
+
+	- You should see the color WebTV picture on the left, and a column
+	  of text on the right.
+	  
+	- The date should appear in black, and the other six text rows
+	  should be links.
+	  
+	- "Mail" should be selected, with a orange-yellow border surrounding it.
+	  
+	- The transparent WebTV logo should appear on the bottom right-hand
+	  side of the screen.
+	  
+2. Press the left arrow. The "WebTV Home" link should still be selected.
+	  
+3. Press the right arrow twice. This should move the selection to "Cool Sites",
+   removing the selection from "WebTV Home".
+
+4. Continue pressing the right arrow until "National Weather" is selected,
+   then press the right arrow one more time. "National Weather" should 
+   continue to be selected.
+   
+5. Press the execute button. A weather map should appear, along with the blue
+   title "National Weather".
+   
+6. Press the back button. You should see the startup page again. The "WebTV Home"
+   link should be selected.
+   
+7. Move the selection to "Cool Sites", and press the execute button.
+
+	- You should see the Netscape "What's Cool" page. A banner should appear
+	  at the top with the text "EXPLORING THE NET". This banner should have
+	  the orange-yellow border around it.
+	  
+	- There should be a transparent down arrow on the lower right-hand side
+	  of the screen
+	  
+	- The WebTV logo should appear on the bottom right-hand side of the screen.
+	  (below the down arrow)
+	  
+8. Press the right arrow until the last visible link on the screen is selected.
+   
+9. Press the right arrow again.
+
+	- A new screenful of information should appear.
+	
+	- The first link on the screen should be selected.
+	
+	- Both a down arrow and an up arrow should appear on the right hand
+	  side of the screen.
+	  
+10. Press the left hand arrow.
+
+	- The first screenful of the page should be displayed again.
+	
+	- The last link on the page should be selected.
+	
+11. Press the page up arrow. The display should remain the same.
+
+12. Press the page down arrow.
+
+	- A new screenful of information should appear. (which is probably
+	  the same as in step 9)
+	  
+	- The first link on the screen should be selected.
+	
+13. Press the page down arrow again, and then press the page up arrow.
+
+	- The same screenful of information should appear as in step 12.
+	
+	- The first link on the screen should be selected.
+	
+14. Press the back button.
+
+	- The startup page should appear.
+	
+	- The "WebTV Home" link should be selected.
+	
+15. Press the menu button.
+
+	- The menu should appear on the bottom of the screen. It should have a background
+	  image.
+	  
+	- Five icons should appear along the bottom, along with the transparent
+	  WebTV logo in the lower right corner of the screen (on top of the menu).
+	  
+	- The first icon should have the orange-yellow selection around it.
+	
+	- The "WebTV Home" link on the Startup page should be deselected.
+	
+16. Press the right arrow five times. The "Startup" icon should be selected
+    again.
+	
+17. Press the left arrow give times. The "Startup icon should be selected
+    again.
+	
+18. Press the right arrow two times. The "Favorite" icon should be selected.
+
+19. Press the execute button.
+
+	- The "Favorite Places" page should appear.
+	
+	- The first link ("YoYo") should be selected.
+	
+20. Press the menu button. The "Favorite" icon should be selected again.
+
+21. Press the right arrow, and then press execute (on "Recent").
+
+	- The "Recent Places" page should appear with a title and a table
+	  of thumbnails with page titles below them.
+	  
+	- Four thumbnails should appear: WebTVStartup, National Weather, What's
+	  Cool, and Favorite Places. The table should be three cells acrossed,
+	  with one of the thumbnails (Favorite Places) on the second row.
+	  
+	- The first thumbnail (WebTV Startup) should be selected with the
+	  orange-yellow border.
+	  
+	- The WebTV logo should appear in the bottom right corner of the screen.
+	
+22. Press the right arrow two times. The "What's Cool" thumbnail should be
+    selected.
+	
+23. Press the execute button.
+
+	- The Netscape "What's Cool" page should appear again.
+	
+24. Press the menu button, and select the "Go to" icon. Then press the execute
+    button.
+	
+	- The "Location Finder" page should appear.
+	
+	- A text field should be selected with the orange-yellow border.
+	
+25. Press the right arrow button. The text field should remain selected.
+
+26. Type "www.yahoo.com" (without the quotes). Then press the return
+    key.
+	
+	- The Yahoo page should appear, with the Yahoo banner selected with the
+	  orange-yellow border.
+	
+	- A textfield and a button labeled "Search" should appear on the page.
+	  The textfield should appear inset, while the button should appear outset
+	  from the page. The "Search" text should be readable and centered within
+	  the button (may be one pixel higher due to lack of a descending character).
+	  
+27. Press the right arrow until the text field is selected. Type "elephants"
+    in the text field. Then press the right arrow again.
+	
+	- The text in the textfield should be relatively centered. The "p" should
+	  not overlap the bottom of the textfield.
+	  
+	- The "Search" button should be selected.
+	
+28. Press the execute button.
+
+	- A list of pages with "elephants" in it should appear.
+	
+29. Select "The Enchanted Elephant Museum" link and press the execute button.
+
+	- The page should appear with a blue background and white background.
+	
+	- The first link should be the number of visitors. This link should
+	  be selected. Note the number displayed.
+	  
+30. Select the "Reload" menu item from the "File" menu in the simulator.
+
+	- The same page should appear again, except the number should be
+	  increased by one.
+	  
+31. Press the menu button, and select the "Go to" icon.
+
+32. Enter "file://bogus.com" in the textfield. Then press the delete key
+    three times.
+	
+	- The text in the textfield should read "file://bogus".
+	
+33. Type ".net" into the textfield, and the press the return key.
+
+	- An error message should appear on the top 1/3 of the screen.The text
+	  should appear in yellow on a black background. A white and gray border
+	  should surround the edges of the error message.
+	
+	- The error message should have a title of "WebTV Message" and the
+	  message below should read "Cannot open file ":bogus.net". 
+	  
+	- A link named "Continue" should appear in green and should be selected
+	  with the orange-yellow border.
+	  
+	- The textfield on the page below the error message should be deselected.
+	  
+34. Press the execute button.
+
+	- The error message should disappear.
+	
+	- The textfield on the Location Finder page should appear selected again.
+	
+35. Press the menu button, and select the startup page. Then press execute.
+
+	- The Startup page should appear.
+	
+36. Press the "Power" button.
+
+	- The screen should collapse to a think line, and then go to black.
+	
+37. Press the "Power" button again.
+
+	- The Startup page should reappear, with the "Mail" link selected.
+	
+	- Congratulations, this test is completed.
+	  
+	

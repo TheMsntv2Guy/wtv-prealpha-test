@@ -1,0 +1,22 @@
+#
+#	File:		ListModifyReadOnlyScript
+#
+#	Contains:	Exists to perform some of the parsing for ListCheckedOutFiles
+#				for modify read only files because I can’t get %^*&^% streamedit 
+#				to take it after -e.
+#
+#	Written by:	Chas Spillar and Ted Cohn
+#
+#	Copyright:	© 1994 by RasterOps, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <1>	  7/9/94	HEC		first checked in
+#
+#
+#
+
+/∂'(≈)®1∂,[0-9]+"*"/ set filename ®1
+next
+next
+/"Project: "(≈)®2/ print ®2 filename ; set filename "" 

@@ -1,0 +1,296 @@
+#
+#	File:	BuildBoxROM - script to create the final ROM images for downloading
+#
+#	Copyright Artemis Research, Inc. 1996  All rights reserved.
+#
+#
+
+set CaseSensitive 0;  # maily for the options
+
+# globals
+	set	gScriptName				'BuildBoxROM'
+	set StartTime `Date -n`
+	echo "#¶n# {gScriptName} StartingÉ `Date -s`¶n#";
+	set gAppROMOption			0;
+	set gBootROMOption			0;
+	set gDebugOption			1;
+	set gExternalOption			0;
+	set gProductionOption		0;
+	set gThreeMegOption			0;
+	set gVerboseOption			0;
+	set gHexVersion				0;
+	
+	set helpMessage "ECHO ¶"## Usage: {gScriptName} [options] ¶n ¶
+				-help                Print this message ¶n ¶
+				-approm              Create the approm image ¶n ¶
+				-bootrom             Create the bootrom image ¶n ¶
+				-all                 Create both approm and bootrom, and then cat them into a unirom (-both works too)¶n ¶
+				-nondebug            Create a non-debug version of the rom (-nodebug works too) ¶n ¶
+				-external            Create a non-debug, external version of the rom ¶n ¶
+				-production          Create a non-debug, external, production version of the rom ¶n ¶
+				-threemeg            Create a non-debug version of the rom (-3meg works too) ¶n ¶
+				-v[erbose]           Spew buildrom info to the current window ¶n ¶
+				-build=#             Set the build number in ROM (usually only set by the buildmeister). ¶n ¶
+					                 ¶n ¶
+		  Example: ¶n ¶
+				{gScriptName} -all                # builds a debug version of the approm, bootrom, and unirom ¶n ¶
+				{gScriptName} -nondebug  -approm  # creates a non-debug version of the approm ¶n ¶
+				¶" "
+
+loop
+	Break if {#} == 0
+
+	if "{1}" =~ /¶-help/
+		{helpmessage}
+		exit 2;
+	
+	else if "{1}" =~ /Åapprom/  # so -approm and approm should work!
+		set gAppROMOption 1;
+	
+	else if "{1}" =~ /Åbootrom/  # so -bootrom and bootrom should work
+		set gBootROMOption 1;
+	
+	else if "{1}" =~ /Åall/  || "{1}" =~ /Åboth/
+		set gAppROMOption 1;
+		set gBootROMOption 1;
+	
+	else if "{1}" =~ /¶-nodebug/ || "{1}" =~ /¶-nondebug/
+		set gDebugOption 0;
+		
+	else if "{1}" =~ /¶-external/
+		set gExternalOption 1;
+		
+	else if "{1}" =~ /¶-prodcution/
+		set gProcutionOption 1;
+		
+	else if "{1}" =~ /¶-threemeg/ || "{1}" =~ /¶-3meg/
+		set gThreeMegOption 1;
+	
+	else if "{1}" =~ /¶-verbose/ || "{1}" =~ /¶-v/
+		set gVerboseOption 1;
+	
+	else if "{1}" =~ /¶-build=(Å)¨1/
+		set gHexVersion "{{¨1}}";
+	
+	else if "{1}" =~ /¶-Å/
+		ECHO "### {gScriptName}: ERROR: unknown flag: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+
+	else
+		ECHO "### {gScriptName}: ERROR: unexpected argument: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+		
+	end
+	shift
+end
+
+# simple error check
+if ( (!{gAppROMOption}) && (!{gBootROMOption}) )
+	ECHO "### {gScriptName}: ERROR: you must specify either -approm or -bootrom (or both)"
+	exit 2;
+end
+
+if "{UnixVolume:}" == ""
+	set UnixVolume: "{UnixUser}:"
+end
+if "{UnixWTV:}" == ""
+	set UnixWTV: "{UnixVolume:}WebTV:"
+end
+
+if !`exists "{UnixVolume:}"`
+	MountUnix
+end
+
+if (!`exists "{WTV:}.o:"`)
+	NewFolder "{WTV:}.o:"
+end
+
+if ( {gDebugOption} )
+	if ( {gExternalOption} )
+		if ( {gProductionOption} )
+			set WTV.o: "{WTV:}.o:debug-external-production:"
+		else;
+			set WTV.o: "{WTV:}.o:debug-external:"
+		end;
+	else;
+		set WTV.o: "{WTV:}.o:debug:"
+	end;
+else
+	if ( {gExternalOption} )
+		if ( {gProductionOption} )
+			set WTV.o: "{WTV:}.o:nodebug-external-production:"
+		else;
+			set WTV.o: "{WTV:}.o:nodebug-external:"
+		end;
+	else;
+		set WTV.o: "{WTV:}.o:nodebug:"
+	end;
+end;
+
+if ( {gThreeMegOption} )   # i guess this override the debug option, because 3 meg implies non-debug
+	if ( {gExternalOption} )
+		set WTV.o: "{WTV:}.o:3meg-external:"
+	else;
+		set WTV.o: "{WTV:}.o:3meg:"
+	end;
+end;
+
+NewFolder "{WTV.o:}" · dev:null || set Status 0;
+
+# so people don't get confused by old versions...
+NewFolder "{WTV:}.o:old:" · dev:null || set Status 0;
+for oldFile in approm approm.code bootrom box.syms GooberTerm unirom
+	if ( `Exists "{WTV:}.o:{oldFile}"` )
+		move -y "{WTV:}.o:{oldFile}" "{WTV:}.o:old:";
+	end;
+end;
+		
+
+#
+# set up......................................................................................
+#
+	if ( {gDebugOption} )
+		set config ""
+	else
+		set config "-nodebug";
+	end;
+	if ( {gExternalOption} )
+		set config "{config}-external"
+	end;
+	
+	set gAppROMSourceDir:		"{UnixWTV:}objects:app{config}:result:";
+	set gAppROMResult			"{WTV.o:}approm";
+	set gAppROMCode				"{WTV.o:}approm.code";
+	set gAppROMSymbols			"{WTV.o:}box.syms";
+	
+	set gBootROMSourceDir:		"{UnixWTV:}objects:boot{config}:result:"; 
+	
+	if ( {gVerboseOption} )
+		set redirectOptions "";
+	else
+		set redirectOptions " > dev:null "
+	end;
+
+
+if ( {gAppROMOption} )
+
+	if ( !"`Exists -d "{gAppROMSourceDir:}"`" )
+		Alert "Doh!  Your unix directory ¶"{gAppROMSourceDir:}¶" does not exist. Did you build on unix correctly?"
+		exit 2;
+	end;
+
+	echo "# Building App ROM from ¶"{gAppROMSourceDir:}¶"...";
+	if ( ({gThreeMegOption}) || ({gProductionOption})  || (!{gDebugOption}) )
+		set buildromOpts "";
+		set buildromResult "{gAppROMResult}";
+	else
+		echo "# Generating symbols for App ROM...";
+		snarfsyms "{gAppROMSourceDir:}approm.sym" -o "{gAppROMSymbols}" {redirectOptions};
+		set buildromOpts " -p ";
+		set buildromResult "{gAppROMCode}";
+	end;
+	
+	buildrom {buildromOpts} -s 0x00100000 -a 0x000fe000 -v {gHexVersion} -b 0x9FE00000 	¶
+		-c "{gAppROMSourceDir:}approm.o"		¶
+		-f NO_ROM_FS										¶
+		-o "{buildromResult}" {redirectOptions};
+	
+	if ( !( ({gThreeMegOption}) || ({gProductionOption}) || (!{gDebugOption}) ) )
+		catenate "{gAppROMCode}" "{gAppROMSymbols}" > "{gAppROMResult}"
+	end;
+
+	setfile -t '????' -c '????' "{gAppROMResult}"
+	
+end
+
+if ( {gBootROMOption} )
+	if ( !"`Exists -d "{gBootROMSourceDir:}"`" )
+		Alert "Doh!  Your unix directory ¶"{gBootROMSourceDir:}¶" does not exist. Did you build on unix correctly?"
+	end;
+	echo "# Creating ROMFS from ¶"{WTV:}ROM:¶"..."
+	Directory {WTV:}ROM:
+	# temporarily remove the Osaka & unused fonts so everything fits in the rom....
+		NewFolder "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_12" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_14" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_16" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_18" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_20" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_22" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_24" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_26" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_28" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_30" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_32" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_34" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_36" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_38" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Geneva_40" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Helvetica_30" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Helvetica_34" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Helvetica_38" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Monaco_30" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Monaco_34" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Monaco_38" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Osaka_12" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Osaka_16" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}ROM:Fonts:Osaka_28" "{{WTV:}}Temporary:" · Dev:null || set Status 0;
+	romify -romtop=0x9FE00000 ROM > {WTV.o:}ROMFS
+	Directory {WTV:} 
+	echo "# Building Boot ROM from ¶"{gBootROMSourceDir:}¶"..."
+	buildrom -s 0x00200000 -v {gHexVersion} -b 0x9FC00000 		¶
+		-c "{gBootROMSourceDir:}bootrom.o"							¶
+		-f "{WTV.o:}ROMFS"									¶
+		-o "{WTV.o:}bootrom" {redirectOptions};
+	# restore the Osaka and unused fonts.
+		Move -y "{{WTV:}}Temporary:Geneva_12" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_14" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_16" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_18" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_20" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_22" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_24" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_26" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_28" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_30" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_32" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_34" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_36" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_38" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Geneva_40" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Helvetica_30" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Helvetica_34" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Helvetica_38" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Monaco_30" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Monaco_34" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Monaco_38" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Osaka_12" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Osaka_16" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+		Move -y "{{WTV:}}Temporary:Osaka_28" "{{WTV:}}ROM:Fonts:" · Dev:null || set Status 0;
+end
+
+if ( {gAppROMOption} && {gBootROMOption} )
+	echo "# Building unified ROM from ¶"{WTV.o:}bootrom¶" and ¶"{WTV.o:}approm¶"..."
+	catenate "{WTV.o:}bootrom" "{WTV.o:}approm" > "{WTV.o:}unirom"
+	setfile -t '????' -c '????' "{WTV.o:}unirom"
+end
+
+if ( !"`Exists -f "{WTV.o:}GooberTerm"`" )
+	duplicate -y "{WTV:}Tools:GooberTerm:GooberTerm" "{WTV.o:}GooberTerm";
+end
+
+set endTime `Date -n`; 
+set TotalTime `Evaluate {endTime} - {StartTime}`; 
+set Temp `Evaluate {TotalTime} Ö 60`;
+set Seconds `Evaluate {TotalTime} MOD 60`; 
+set Hours `Evaluate {Temp} Ö 60`; 
+set Minutes `Evaluate {Temp} MOD 60`;
+if ("{Seconds}" < 10); set Seconds "0{Seconds}"; end; 
+if ("{Minutes}" < 10); set Minutes "0{Minutes}"; end; 
+if ("{Hours}" < 10); set Hours "0{Hours}"; end;
+echo "#¶n# {gScriptName} FinishedÉ `Date -s`";
+echo "# Build time was {Hours}:{Minutes}:{Seconds}.¶n#¶n#"
+
+# Q.E.D

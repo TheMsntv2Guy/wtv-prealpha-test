@@ -1,0 +1,38 @@
+Set echo 0
+
+Set untilTime ""
+If "{commandsFolder:}" == ""; Set commandsFolder: "MacServer:Processing:Commands:"; End
+
+Loop
+	Break If {#} == 0
+	If "{1}" =~ /¶-p/
+		Set progressFlag 1; Shift
+	Else If "{1}" =~ /¶-for/
+		Shift; Set untilTime `Evaluate -h ¶`Date -n¶` + {1}`; Shift
+	Else If "{1}" =~ /¶-until/
+		Shift; Set untilTime `Evaluate -h {1}`; Shift
+	Else
+		Echo "# MySecondDaemon: unknown option: {1}" > Dev:StdErr
+		Exit 1
+	End
+End
+
+If {progressFlag}; Echo "# Looking for remote commands"; End
+Loop
+	Break If {untilTime} != "" && `Evaluate -h ¶`Date -n¶`` > {untilTime}
+	If "`Exists {{commandsFolder:}}`" == ""
+		If {progressFlag}; Echo "## Cannot find commands folder {{commandsFolder:}}"; End
+		Break
+	End
+	Set newCommandFiles ""
+	(Set newCommandFiles "`Quote {{commandsFolder:}}Å.Command`" || Set status 0) ³ Dev:Null || Set status 0
+	If "{newCommandFiles}" !~ /Å{commandsFolder:}([Â:]+)¨1.CommandÅ/; Continue; End
+	Set newCommandFile Daemon."{user}"
+	Rename -y "{commandsFolder:}{{¨1}}".Command "{{newCommandFile}}" || Continue
+
+	If {progressFlag}
+		(Echo -n "# Executing command for {¨1} @ "); Date -s
+	End
+	"{commandsFolder:}{{newCommandFile}}" || Set status 0
+	Delete -y "{commandsFolder:}{{newCommandFile}}" || Set status 0
+End

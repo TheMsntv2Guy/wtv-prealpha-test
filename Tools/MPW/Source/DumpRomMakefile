@@ -1,0 +1,28 @@
+CHeaderOptions	=	-i {MPW}Interfaces:CIncludes: -i {WTV:}Interfaces: -i {WTV:}Storage: -i {WTV:}Box:Ansi:
+CDefinitions	=	-d WEBTV -d DEBUG -d PRERELEASE ¶
+					-d FOR_MAC -d `Echo {User} | Translate ' '`
+COptions		=	{CDefinitions} {CHeaderOptions} -b2 -r -mc68020
+CCompiler		=	C	
+Linker			= 	Link
+
+ToolFiles = {WTV.o:}DumpROM
+
+ToolLibraries = ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{CLibraries}"StdCLib.o ¶
+		"{CLibraries}"CSANELib.o ¶
+		"{CLibraries}"Math.o ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"ToolLibs.o ¶
+
+#Install							Ä {ToolFiles}
+#	Duplicate -y {ToolFiles} ::
+	
+{WTV.o:}DumpROM					ÄÄ {WTV.o:}DumpROM.c.o
+	{Linker} -w -t MPST -c 'MPS ' {WTV.o:}DumpROM.c.o {ToolLibraries} -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}DumpROM.c.o				Ä DumpROM.c
+	{CCompiler} {COptions} -o {Targ}.New DumpROM.c
+		Rename -y {Targ}.New {Targ}
+

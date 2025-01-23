@@ -1,0 +1,47 @@
+<TITLE>Phone Setup</TITLE>
+<DISPLAY NoStatus NoOptions SkipBack>
+<body bgcolor="#111111" text="#44bb55" link=#dddddd NOHTILEBG>
+<TABLE width=100%>
+
+<TR align=top>
+<TD VALIGN=top HEIGHT=330>
+<BR>
+<H1>Phone Setup<HR></H1>
+<FORM action="client:ConfirmPhoneSetup">
+
+<TABLE>
+<TR><TD width=20>
+<TD align=center valign=top><INPUT type=checkbox name=UsePulseDialing value=true checked=&pulse>
+<TD width=10><TD align=left valign=bottom>Pulse dialing
+<TR><TD>
+<TD align=center valign=top><INPUT type=checkbox name=WaitForDialTone value=true checked=&dtone>
+<TD width=10><TD align=left valign=bottom>Wait for dial tone before dialing
+<TR><TD>
+<TD align=center valign=top><INPUT type=checkbox name=AudibleDialing value=true checked=&audio>
+<TD><TD align=left valign=bottom>Audible dialing
+<TR><TD>
+<TD align=center valign=top><INPUT type=checkbox name=DisableCallWaiting value=true checked=&nowait>
+<TD><TD align=left valign=middle>Disable call waiting using this prefix:
+<TD><INPUT type=text name=CallWaitingPrefix size=4 value=&wstr>
+<TR><TD>
+<TD align=center valign=top><INPUT type=checkbox name=DialOutsideLine value=true checked=&dout>
+<TD><TD align=left valign=middle>Dial outside line using this prefix:
+<TD><INPUT type=text name=DialOutsidePrefix size=4 value=&outstr>
+</TABLE>
+
+<BR><BR><BR>
+<TABLE>
+<TR><TD width=10><TD>Access Number:<TD width=10 height=10>
+<TD align=center valign=top><INPUT type=text name=AccessNumber size=15 value=&anum>
+</TABLE>
+
+</TABLE>
+<HR>
+
+<TABLE>
+<TR>
+<TD width=400>Press the continue button when<BR> you are ready to connect.
+<TD height=40><INPUT type=image nocursor src="images/ContinueButton.gif">
+</FORM>
+</TABLE>
+</BODY>

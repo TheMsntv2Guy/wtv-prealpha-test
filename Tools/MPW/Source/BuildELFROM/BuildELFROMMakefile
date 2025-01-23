@@ -1,0 +1,28 @@
+CHeaderOptions	=	 -i {MPW}Interfaces:CIncludes: -i {WTV:}Interfaces: -i {WTV:}Storage:
+CDefinitions	=	-d WEBTV -d DEBUG -d PRERELEASE ¶
+					-d FOR_MAC -d `Echo {User} | Translate ' '`
+COptions		=	{CDefinitions} {CHeaderOptions} -b2 -r -mc68020
+CCompiler		=	C	
+Linker			= 	Link
+
+ToolFiles = {WTV.o:}BuildELFROM
+
+ToolLibraries = ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{CLibraries}"StdCLib.o ¶
+		"{CLibraries}"CSANELib.o ¶
+		"{CLibraries}"Math.o ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"ToolLibs.o ¶
+
+#Install							Ä {ToolFiles}
+#	Duplicate -y {ToolFiles} ::
+	
+{WTV.o:}BuildELFROM					ÄÄ {WTV.o:}BuildELFROM.c.o
+	{Linker} -w -t MPST -c 'MPS ' {WTV.o:}BuildELFROM.c.o {ToolLibraries} -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}BuildELFROM.c.o				Ä BuildELFROM.c
+	{CCompiler} {COptions} -o {Targ}.New BuildELFROM.c
+		Rename -y {Targ}.New {Targ}
+

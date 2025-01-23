@@ -1,0 +1,23 @@
+
+Usage: SDownload [-base <address>] [-p] [-porta] [-portb] [-reporttimeonly] <file name>
+
+-base <address>	=	Download address
+	-p			=	Show progress
+	-porta		=	Modem port (default)
+	-portb		=	Printer port
+-reporttimeonly	=	Just reports estimated transfer time
+file name		=	File to download
+
+
+
+
+
+C -r  SDownload.c
+Link -d -c 'MPS ' -t MPST ¶
+	SDownload.c.o ¶
+	"{CLibraries}"StdClib.o ¶
+	"{Libraries}"Runtime.o ¶
+	"{Libraries}"Interface.o ¶
+	"{Libraries}"ToolLibs.o ¶
+	-o SDownload
+

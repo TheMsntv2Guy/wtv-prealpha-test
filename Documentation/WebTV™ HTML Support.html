@@ -1,0 +1,967 @@
+<HTML>
+<HEAD>
+<TITLE>WebTVª HTML Support.html</TITLE>
+</HEAD>
+<BODY>
+ <BR>
+
+<H1>WebTV HTML Support  </H1>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+Dave Anderson x518<BR>
+<BR>
+Artemis Research, Inc.<BR>
+<BR>
+1/1/96<BR>
+<BR>
+<STRONG><BR>
+</STRONG>
+This document describes the HTML document elements and attributes supported by the 
+WebTV Browser. The defintion of the HTML elements supported by the WebTV browser 
+are defined by several sources: HTML 2.0 (rfc1866), HTML 3.0 (3/28/95), Netscape 
+HTML extensions to 2.0 and 3.0, InfoExplorer HTML extensions, and extension made by the WebTV 
+browser itself.<BR>
+<BR>
+<BR>
+Each tag and attribute description, includes a reference to source of the HTML definition. 
+These references are:<BR>
+<BR>
+HTML 2.0 HTML 2.0 as defined in rfc1866<BR>
+HTML 3.0 HTML 3.0 as defined by W3C 3/28/95 memo<BR>
+Netscape Extensions supported by the Netscape 1.1 or 2.0b3 browser<BR>
+IExplorer Extensions supported by Microsoft's Internet Explorer 2.0<BR>
+WebTV Extensions unique to the WebTV browser.<BR>
+<BR>
+Notes:<BR>
+<BR>
+Several style elements indicate that they render text as italic. Currently, the WebTV 
+browser does not support rendering of italic text. All of the these elements are 
+currently rendered as normal.<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+<H2>Supported HTML Document Elements  </H2>
+<STRONG><BR>
+</STRONG>
+<BR>
+<STRONG>HTML</STRONG>
+ (HTML 2.0, 5.1)<BR>
+<BR>
+Contains the head and body of the document.<BR>
+<BR>
+<STRONG>HEAD </STRONG>
+(HTML 2.0, 5.2)<BR>
+<BR>
+Contains information about the document. None of the elements in HEAD are displayed 
+as document content.<BR>
+<BR>
+<STRONG>TITLE </STRONG>
+(HTML 2.0, 5.2.1)<BR>
+<BR>
+Contains the title of the document. The title is displayed in the title area of the 
+control panel.<BR>
+<BR>
+<BR>
+<STRONG>BASE </STRONG>
+(HTML 2.0, 5.2.2)<BR>
+<BR>
+Specifies a base URL for the document from which all relative paths should be based.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>HREF </STRONG>
+(HTML 2.0, 5.2.2)<BR>
+The base URL.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>META </STRONG>
+(HTML 2.0, 5.2.5)<BR>
+<BR>
+Contains the extensible meta information about the document.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>HTTP-EQUIV</STRONG>
+ (HTML 2.0)<BR>
+Binds the element to an HTTP header field. An HTTP server may use this information 
+to process the document. In particular, it may include a header field in the responses 
+to requests for this document: the header name is taken from the HTTP-EQUIV attribute 
+value, and the header value is taken from the value of the CONTENT attribute. HTTP 
+header names are not case sensitive.<BR>
+<BR>
+<STRONG>CONTENT</STRONG>
+ (HTML 2.0)<BR>
+The value of the name/value pair.<BR>
+Example: <BR>
+&lt;META HTTP-EQUIV=&quot;refresh&quot; CONTENT=&quot;12; URL=http://foo.bar/blatz.html&quot;&gt;<BR>
+This will automatically load the document specified by URL after 12 seconds.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>BGSOUND (IEXPLORER)<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+This tag specifies the background sound for this document.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SRC</STRONG>
+ (HTML 2.0)<BR>
+Specifies the URL of the sound source file<BR>
+<BR>
+<STRONG>LOOP</STRONG>
+ (IEXPLORER)<BR>
+Specifies how many times to loop. The format is:<BR>
+&lt;BGSOUND SRC=&quot;xxx&quot; LOOP=4&gt;<BR>
+or<BR>
+&lt;BGSOUND SRC=&quot;xxx&quot; LOOP=INFINITE&gt;<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>BODY </STRONG>
+(HTML 2.0, 5.3)<BR>
+<BR>
+Contains the content of the document.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>BACKGROUND </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+The purpose of this attribute is to specify a URL pointing to an image that is to 
+be used as a background for the document. This background is tiled to provide a background 
+for the entire document.<BR>
+&lt;BODY BACKGROUND=&quot;metal/brushed_aluminum.gif&quot;&gt;Document here&lt;/BODY&gt;<BR>
+<BR>
+<STRONG>BGCOLOR </STRONG>
+(Netscape) <BR>
+Specifiy the background color for the document.<BR>
+The format is: <BR>
+&lt;BODY BGCOLOR=&quot;#rrggbb&quot;&gt;Document here&lt;/BODY&gt;<BR>
+where &quot;#rrggbb&quot; is a hexadecimal red-green-blue triplet used to specify the background 
+color. <BR>
+<BR>
+<STRONG>TEXT</STRONG>
+ (Netscape)<BR>
+This attribute is used to control the color of all the normal text in the document. 
+This basically consists of all text that is not specially colored to indicate a link. 
+The format of TEXT is the same as that of BGCOLOR.<BR>
+&lt;BODY TEXT=&quot;#rrggbb&quot;&gt;Document here&lt;/BODY&gt;<BR>
+<BR>
+<STRONG>LINK</STRONG>
+ (Netscape)<BR>
+This attribute lets you control the coloring of link text. The format of LINK is the 
+same as that of TEXT.<BR>
+&lt;BODY LINK=&quot;#rrggbb&quot;&gt;Document here&lt;/BODY&gt;<BR>
+<BR>
+<STRONG>VLINK</STRONG>
+ (Netscape)<STRONG><BR>
+</STRONG>
+This attribute lets you control the coloring of visited link text. The format of VLINK 
+is the same as that of TEXT.<BR>
+&lt;BODY VLINK=&quot;#rrggbb&quot;&gt;Document here&lt;/BODY&gt;<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>XSPEED, YSPEED</STRONG>
+ (WebTV)<STRONG><BR>
+</STRONG>
+These attributes let you specify a speed to scroll the background image in the X and 
+Y direction as pixels per second.<BR>
+&lt;BODY XSPEED=1 YSPEED=1&gt;Document here&lt;/BODY&gt;<BR>
+<BR>
+<STRONG>HSPACE, VSPACE</STRONG>
+ (WebTV)<STRONG><BR>
+</STRONG>
+These attributes let you specify the fixed margin maintained around the documentcontent 
+on the screen. HSPACE specifies the horizontal, or left and right margins. VSPACE 
+specifies the vertical, or top and bottom margins.<BR>
+&lt;BODY HSPACE=10 VSPACE=20&gt;Document here&lt;/BODY&gt;<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>SONG</STRONG>
+ (WebTV)<STRONG><BR>
+</STRONG>
+This attributes specifies the URL of a MIDI file to be played for the document.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>H1 ... H6 </STRONG>
+(HTML 2.0, 5.4)<BR>
+<BR>
+Specifies the heading elements, &lt;H1&gt; through &lt;H6&gt;, which denote section headings. 
+<BR>
+&lt;BODY&gt;<BR>
+&lt;H1&gt;Top level heading&lt;/H1&gt;<BR>
+&lt;H2&gt;Second level heading&lt;/H2/<BR>
+&lt;/Body&gt;<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>ALIGN </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Supports alignment of the heading. Possible values are LEFT, RIGHT and CENTER. JUSTIFY 
+is not supported by WebTV. Alignment affects only this heading.<BR>
+<BR>
+<STRONG>CLEAR</STRONG>
+ (HTML 3.0)<BR>
+This attribute specifies that the heading should move down to a point &quot;clear&quot; of floating 
+images. CLEAR=left will move vertically down until you have a clear left margin (no 
+floating images). CLEAR=right does the same for the right margin, and CLEAR=all moves down until both margins are clear of images.<BR>
+<BR>
+<STRONG>P </STRONG>
+(HTML 2.0, 5.5.1)<BR>
+Specifies the start of a paragraph. Paragraphs are preceeded by one blank line.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>ALIGN </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Supports alignment of the paragraph. Possible values are LEFT, RIGHT and CENTER. JUSTIFY 
+is not supported by WebTV. Alignment stays in effect until next block element.<BR>
+<BR>
+<STRONG>CLEAR</STRONG>
+ (HTML 3.0)<BR>
+This attribute specifies that the paragraph should move down to a point &quot;clear&quot; of 
+floating images. CLEAR=left will move vertically down until you have a clear left 
+margin (no floating images). CLEAR=right does the same for the right margin, and 
+CLEAR=all moves down until both margins are clear of images.<BR>
+<BR>
+<STRONG>PRE </STRONG>
+(HTML 2.0, 5.5.2)<BR>
+<BR>
+Specifies the start of a pre formatted block. A mono-spaced font is used, and tabs 
+are expanded to 8 space tab stops. The WIDTH attribute is not supported.<BR>
+<BR>
+<STRONG>ADDRESS</STRONG>
+ (HTML 2.0, 5.5.3)<STRONG><BR>
+</STRONG>
+<BR>
+This element contains such information as address, signatur and authorship, often 
+at the beginning or end of the body of a document. It is rendered indented.<BR>
+<BR>
+<STRONG>BLOCKQUOTE</STRONG>
+ (HTML 2.0, 5.5.4)<STRONG><BR>
+</STRONG>
+<BR>
+This element contains text quoted from another source. Is preceeded by a blankline, 
+and indented. Example of use:<BR>
+<BR>
+I think the play ends<BR>
+&lt;BLOCKQUOTE&gt;<BR>
+&lt;P&gt;Soft you now, the fair Ophelia. Nymph, in thy orisons, be all<BR>
+my sins remembered.<BR>
+&lt;/BLOCKQUOTE&gt;<BR>
+but I am not sure.<BR>
+<BR>
+<STRONG>LI</STRONG>
+ (HTML 2.0, 5.6.1)<BR>
+<BR>
+This element represents a single item in a ordered, or unordered list.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>TYPE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Controls the type of this list item, and subsequent items in the list. Can take the 
+TYPE values for UL or OL, depending on the type of containing list.<BR>
+<BR>
+<STRONG>UL</STRONG>
+ (HTML 2.0, 5.6.1)<BR>
+<BR>
+This element represents an unordered list of bulletted items.<BR>
+<BR>
+Attributes: <BR>
+<BR>
+<STRONG>TYPE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Supports specification of the type of bullet used for the list. Values are TYPE=disc, 
+TYPE=circle, and TYPE=square. TYPE=circle is rendered as a triangle by WebTV.<BR>
+<BR>
+<STRONG>START </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies a starting level for lists that wish to start at values other than 1. START 
+is always specified in the default numbers, and will be converted based on TYPE before 
+display. <BR>
+<BR>
+Example:<BR>
+&lt;UL TYPE=disc&gt;<BR>
+&lt;LI&gt;First list item<BR>
+&lt;LI&gt;Second list item<BR>
+&lt;p&gt;second paragraph of second item<BR>
+&lt;LI&gt;Third list item<BR>
+&lt;/UL&gt;<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>OL</STRONG>
+ (HTML 2.0, 5.6.2)<BR>
+<BR>
+This element represents an order list of number items.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>TYPE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Supports specification of the type of bullet used for the list. Values are TYPE=disc, 
+TYPE=A (capital letters), TYPE=a (small letters), TYPE=I (large roman numerals), 
+TYPE=i (small roman numerals), or TYPE=1 (default numbers).<BR>
+<BR>
+<STRONG>START </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies a starting level for lists that wish to start at values other than 1. START 
+is always specified in the default numbers, and will be converted based on TYPE before 
+display.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>DIR</STRONG>
+ (HTML 2.0, 5.6.3)<BR>
+<BR>
+This element represents a list of short items, typically up to 20 characters. Elements 
+may be display in multiple columns. WebTV displays them in a single column with BOLD 
+style.<BR>
+<BR>
+<STRONG>MENU</STRONG>
+ (HTML 2.0, 5.6.4)<BR>
+<BR>
+This element represents a list of items displayed in a compact formant. WebTV displays 
+these lists the same of &lt;UL&gt;<BR>
+<BR>
+<STRONG>DL, DT, DD</STRONG>
+ (HTML 2.0, 5.6.5)<BR>
+<BR>
+A definition list is a list of terms and corresponding definitions. Definition lists 
+are formatted with the &lt;DT&gt; term flush left, and the &lt;DD&gt; definition indented. Multiple 
+&lt;DT&gt; elements may be paired with a single &lt;DD&gt; element. Example of use:<BR>
+<BR>
+&lt;DL&gt;<BR>
+&lt;DT&gt;Term&lt;DD&gt;This is the definition of the first term.<BR>
+&lt;DT&gt;Term&lt;DD&gt;This is the definition of the second term.<BR>
+&lt;/DL&gt;<BR>
+<BR>
+<STRONG>CITE </STRONG>
+(HTML 2.0, 5.7.1.1)<BR>
+<BR>
+The &lt;CITE&gt; element is used to indicate the title of a book or other citation. It is 
+rendered as italics.<BR>
+<BR>
+<STRONG>CODE </STRONG>
+(HTML 2.0, 5.7.1.2)<BR>
+<BR>
+The &lt;CODE&gt; element indicates an example of code, rendered in a mono-spaced font.<BR>
+<BR>
+<STRONG>EM </STRONG>
+(HTML 2.0, 5.7.1.3)<BR>
+<BR>
+The &lt;EM&gt; element indicates an empasized phrase. It is rendered in italics.<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>KBD </STRONG>
+(HTML 2.0, 5.7.1.4)<BR>
+<BR>
+The &lt;KBD&gt; element indicates text type by a user. It is rendered in a mono-space font.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>SAMP </STRONG>
+(HTML 2.0, 5.7.1.5)<BR>
+<BR>
+The &lt;SAMP&gt; element indicates a sequence of literal characters. It is rendered in a 
+mono-space font.<BR>
+<BR>
+<STRONG>STRONG </STRONG>
+(HTML 2.0, 5.7.1.6)<BR>
+<BR>
+The &lt;STRONG&gt; element indicates strong emphasis. It is rendered in bold.<BR>
+<BR>
+<STRONG>VAR </STRONG>
+(HTML 2.0, 5.7.1.7)<BR>
+<BR>
+The &lt;VAR&gt; element indicates a placeholder variable. It is rendered in italics.<BR>
+<BR>
+<BR>
+<STRONG>B </STRONG>
+(HTML 2.0, 5.7.2.1)<BR>
+<BR>
+The &lt;B&gt; element indicates bold text. It is rendered in bold.<BR>
+<BR>
+<STRONG>I </STRONG>
+(HTML 2.0, 5.7.2.2)<BR>
+<BR>
+The &lt;I&gt; element indicates italic text. It is rendered in italics.<BR>
+<BR>
+<BR>
+<STRONG>TT </STRONG>
+(HTML 2.0, 5.7.2.3)<BR>
+<BR>
+The &lt;TT&gt; element indicates teletype text. It is rendered using a mono-spaced font.<BR>
+<BR>
+<STRONG>U </STRONG>
+(HTML 2.0, 5.7.2)<BR>
+<BR>
+The &lt;U&gt; element indicates underline text. While WebTV recognizes this tag, it current 
+renders it as normal text.<BR>
+<BR>
+<STRONG>SHADOW </STRONG>
+(WebTV)<BR>
+<BR>
+The &lt;SHADOW&gt; element indicates shadowed text. While WebTV recognizes this tag, it 
+current renders it as normal text.<BR>
+<BR>
+<STRONG>A </STRONG>
+(HTML 2.0, 5.7.3)<BR>
+<BR>
+The &lt;A&gt; element indicates a hyperlink anchor. It is rendered using blue text. At least 
+one of the NAME and HREF attributes should be present. Anchors with the HREF attributes 
+present are selectable.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>HREF</STRONG>
+ (HTML 2.0)<BR>
+Gives the URL of the head anchor of a hyperlink.<BR>
+<BR>
+<STRONG>NAME</STRONG>
+ (HTML 2.0)<BR>
+Names this anchor, and makes it available as the head of a hyperlink.<BR>
+<BR>
+<STRONG>SELECTED</STRONG>
+ (WebTV)<BR>
+Indicates that this anchor should be initially selected.<BR>
+<BR>
+<STRONG>BR </STRONG>
+(HTML 2.0, 5.8)<BR>
+<BR>
+The &lt;BR&gt; element specifies a line break between words.<BR>
+<BR>
+<STRONG>CLEAR</STRONG>
+ (HTML 3.0)<BR>
+This attribute specifies that the break should move down to a point &quot;clear&quot; of floating 
+images. CLEAR=left will break the line, and move vertically down until you have a 
+clear left margin (no floating images). CLEAR=right does the same for the right margin, and CLEAR=all moves down until both margins are clear of images.<BR>
+<BR>
+<STRONG>HR </STRONG>
+(HTML 2.0, 5.9)<BR>
+<BR>
+The &lt;HR&gt; element is a divider between sections of text. It is normally rendered as 
+a full width beveled line.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SIZE</STRONG>
+ (Netscape) <BR>
+The SIZE tag specifies how this the line should be.<BR>
+<BR>
+<STRONG>WIDTH</STRONG>
+ (Netscape)<BR>
+Specifies an exact width in pixels, or a relative width measured in percent of document 
+width.The default horizontal rule is always as wide as the page. <BR>
+<BR>
+<STRONG>ALIGN </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Supports alignment of the divider. Possible values are LEFT, RIGHT and CENTER. Alignment 
+affects only this divider.<BR>
+<BR>
+<STRONG>NOSHADE</STRONG>
+ <BR>
+Specifies no fancy shading of your horizontal rule. <BR>
+<BR>
+<STRONG>IMG </STRONG>
+(HTML 2.0, 5.10)<BR>
+<BR>
+The &lt;IMG&gt; element refers to an image, via a hyperlink, presented in the flow of the 
+document.<BR>
+<BR>
+<BR>
+<STRONG>ALIGN </STRONG>
+(HTML 2.0)<STRONG><BR>
+</STRONG>
+Specified the alignment of the image with respect to the surrounding text. The following 
+values are supported:<BR>
+<BR>
+TOP (HTML 2.0) align the top of the image with the tallest item on the line.<BR>
+MIDDLE (HTML 2.0) align the center of the image witht the basline of the line.<BR>
+BOTTOM (HTML 2.0) align the bottom of the image with the baseline of the line.<BR>
+LEFT (HTML 3.0), the graphic will float down and over to the current left margin, 
+and subsequent text will wrap around the right hand side of the graphic.<BR>
+RIGHT (HTML 3.0), the graphic aligns with the current right margin and, and text wraps 
+around the left hand side of the graphic.<BR>
+TEXTTOP (Netscape) align the top of the image with the top of the tallest text in 
+the line. ABSMIDDLE (Netscape) align the middle of the current line with the middle 
+of the image. BASELINE (Netscape) aligns the bottom of the image with the baseline 
+of the current line. <BR>
+ABSBOTTOM (Netscape) align the bottom of the image with the bottom of the current 
+line. <BR>
+<BR>
+<STRONG>ALT </STRONG>
+(HTML 2.0)<STRONG><BR>
+</STRONG>
+Specifies a text alternative to use if the image cannot be retrieved.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>ISMAP </STRONG>
+(HTML 2.0)<STRONG><BR>
+</STRONG>
+Indicates the image is an image map. The image must be contained in an &lt;A&gt; element 
+for the attribute to be recognized.<BR>
+<BR>
+<STRONG>USEMAP</STRONG>
+ <BR>
+This attribute specifies the name of a client size image map, &lt;MAP&gt; to use for this 
+image.<BR>
+<BR>
+<STRONG>SRC </STRONG>
+(HTML 2.0)<STRONG><BR>
+</STRONG>
+Specifies the URL of the image resource..<BR>
+<BR>
+<STRONG>HEIGHT </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Specifies the height of the image in pixels.<BR>
+<BR>
+<STRONG>WIDTH </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Specifies the width of the image in pixels.<BR>
+<BR>
+<STRONG>BORDER </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies the border with for the image in pixels. Borders are drawn a anti-aliased 
+bevels.<BR>
+<BR>
+<STRONG>HSPACE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies the horzontal space to leave on either side of an image.<BR>
+<BR>
+<STRONG>VSPACE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies the vertical space to leave above and below the image.<BR>
+<BR>
+<STRONG>TRANSPARENCY </STRONG>
+(WebTV)<STRONG><BR>
+</STRONG>
+Specifies the transparency of the image as a percentage, where 0 is opaque and 100 
+in complete transparent.<BR>
+<BR>
+<STRONG>ANI </STRONG>
+(WebTV)<STRONG><BR>
+</STRONG>
+Specifies the the URL of an animation cell resource.<BR>
+<BR>
+<STRONG>FONT </STRONG>
+(Netscape)<BR>
+<BR>
+The &lt;FONT SIZE=value&gt; element supports changes to the size of the font.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SIZE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies the size of font to use for subsequent text.Valid values range from 1-7. 
+The default FONT size is 3. The value given to size can optionally have a '+' or 
+'-' character in front of it to specify that it is relative the the document baseFONT. 
+The default baseFONT is 3, and can be changed with the BASEFONT element.<BR>
+<BR>
+<STRONG>BASEFONT</STRONG>
+ <BR>
+<BR>
+This changes the size of the BASEFONT that all relative FONT changes are based on. 
+It defaults to 3, and has a valid range of 1-7. <BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SIZE </STRONG>
+(Netscape)<STRONG><BR>
+</STRONG>
+Specifies the size of font to use as the new base font size.Valid values range from 
+1-7. The default FONT size is 3.<BR>
+<BR>
+<STRONG>CENTER</STRONG>
+ (Netscape)<STRONG><BR>
+</STRONG>
+<BR>
+All lines of text between the begin and end of CENTER are centered between the current 
+left and right margins.<BR>
+<BR>
+<STRONG>FORM </STRONG>
+(HTML 2.0, 8.1.1)<STRONG><BR>
+</STRONG>
+<BR>
+The &lt;FORM&gt; element contains a sequence of input elements, along with document structuring 
+elements.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>ACTION </STRONG>
+(HTML 2.0)<BR>
+Specifies the action URI for the form. The action URI of a form defaults to the base 
+URI of the document.<BR>
+<BR>
+<STRONG>METHOD</STRONG>
+ (HTML 2.0)<BR>
+Selects a method of accessing the action URI. The set of applicable methods is a function 
+of the scheme of the action URI of the form. Values supported are Query Forms: METHOD=GET 
+and Forms with Side-Effects: METHOD=POST.<BR>
+<BR>
+<STRONG>TABLE </STRONG>
+(HTML 3.0)<BR>
+<BR>
+The &lt;TABLE&gt; specifies a table composed of rows and colums. It can include &lt;CAPTION&gt;, 
+&lt;TH&gt;, &lt;TD&gt;, and &lt;TR&gt; elements.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SRC </STRONG>
+(HTML 2.0)<STRONG><BR>
+</STRONG>
+Specifies the URL of the source file<BR>
+<BR>
+<STRONG>HEIGHT </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Specifies the height of the embedded document in pixels.<BR>
+<BR>
+<STRONG>WIDTH </STRONG>
+(HTML 3.0)<STRONG><BR>
+</STRONG>
+Specifies the width of the embedded document in pixels.<BR>
+<BR>
+<STRONG>EMBED </STRONG>
+(Netscape)<BR>
+<BR>
+The &lt;EMBED&gt; allows other types of documents to be embedded in an HTML document. While 
+WebTV supports the EMBED tag, it currently does not support an specific embedded 
+document types.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SRC<BR>
+</STRONG>
+Specifies the URL of the source file<BR>
+<BR>
+<STRONG>HEIGHT<BR>
+</STRONG>
+Specifies the height of the embedded document in pixels.<BR>
+<BR>
+<STRONG>WIDTH<BR>
+</STRONG>
+Specifies the width of the embedded document in pixels.<BR>
+<BR>
+<BR>
+<STRONG>MAP</STRONG>
+ <BR>
+<BR>
+Specifies an image map to use in the USEMAP attribute of an IMG. Contains mutliple 
+&lt;AREA&gt; elements.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>NAME</STRONG>
+ <BR>
+Names the map. Used by USEMAP to identify the map.<BR>
+<BR>
+<BR>
+<STRONG>AREA</STRONG>
+ <BR>
+<BR>
+Specifies an area within an image map.<BR>
+<BR>
+Attributes:<BR>
+<BR>
+<STRONG>SHAPE</STRONG>
+ <BR>
+Specifies the shape. Currently on RECT is supported.<BR>
+<BR>
+<STRONG>COORDS</STRONG>
+ <BR>
+Coordinates of the shape. For RECT coords are specified &quot;top, left, botom, right&quot;.<BR>
+<BR>
+<STRONG>HREF</STRONG>
+ <BR>
+Specifies the URL corresponding to this area.<BR>
+<BR>
+<STRONG>NOHREF</STRONG>
+ <BR>
+Specifies an area for which no action is taken.<BR>
+<BR>
+<BR>
+<BR>
+
+<H2>Unsupported HTML 2.0  </H2>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+This section lists the elements and attributes of HTML 2.0 as specified in rfc 1866 
+that are not supported by WebTV.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>ISINDEX </STRONG>
+(HTML 2.0, 5.2.3)<BR>
+<BR>
+<STRONG>LINK </STRONG>
+(HTML 2.0, 5.2.4)<BR>
+<BR>
+<STRONG>META </STRONG>
+(HTML 2.0, 5.2.5)<BR>
+<BR>
+The following attribute is NOT supported:<BR>
+<BR>
+<STRONG>NAME</STRONG>
+ (HTML 2.0, 5.2.5)<BR>
+The name of the name/value pair. If not present HTTP-EQUIV gives the name.<BR>
+<BR>
+<STRONG>NEXTID </STRONG>
+(HTML 2.0, 5.2.6)<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>PRE </STRONG>
+(HTML 2.0, 5.5.2)<BR>
+<BR>
+The following attribute is not supported:<BR>
+<BR>
+<STRONG>WIDTH </STRONG>
+(HTML 2.0, 5.5.2)<STRONG><BR>
+</STRONG>
+Specifies the maximum number of characters on a line.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>XMP, LISTING </STRONG>
+(HTML 2.0, 5.5.2.1)<BR>
+<BR>
+Use of both of these elements is depracated.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>DL</STRONG>
+ (HTML 2.0, 5.6.5)<BR>
+<BR>
+The following attribute is not supported:<BR>
+<BR>
+<STRONG>COMPACT </STRONG>
+(HTML 2.0, 5.6.5)<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>A </STRONG>
+(HTML 2.0, 5.7.3)<BR>
+<BR>
+The following attributes are not supported:<BR>
+<BR>
+<STRONG>TITLE</STRONG>
+ (HTML 2.0)<BR>
+Suggests a title for the destination resource -- advisory only.<BR>
+<BR>
+<STRONG>REL</STRONG>
+ (HTML 2.0)<BR>
+Gives the relationship(s) described by the hyperlink. Semantics are unspecified.<BR>
+<BR>
+<STRONG>REV</STRONG>
+ (HTML 2.0)<BR>
+Sames as REL, except semantics are for reverse direction.<BR>
+<BR>
+<STRONG>URN</STRONG>
+ (HTML 2.0)<BR>
+specifies a preferred, more persistent identifier for the head anchor of the hyperlink. 
+The syntax and semantics of the URN attribute are not yet specified.<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>IMG</STRONG>
+ (HTML 2.0)<BR>
+<BR>
+The following attributes are not supported:<BR>
+<BR>
+<STRONG>ALT</STRONG>
+ (HTML 2.0)<BR>
+WebTV recongizes this tag, but currently does not use that alternate text in the rendering 
+of the page.<BR>
+<BR>
+<STRONG>FORM </STRONG>
+(HTML 2.0, 8.1.1)<STRONG><BR>
+</STRONG>
+<BR>
+The following attribute is not supported:<BR>
+<BR>
+<STRONG>ENCTYPE</STRONG>
+ (HTML 2.0)<BR>
+Specifies the media type used to encode the name/value pairs for transport, in case 
+protocol does not itself impose a format.<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<BR>
+
+<H2>Unsupported HTML 3.0  </H2>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+This section lists the elements and attributes of HTML 3.0 as specified in the March 
+28, 1995 W3C memo that are not supported by WebTV. This list is not yet complete 
+(obviously).<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<BR>
+
+<H2>Unsupported Netscape Extensions  </H2>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+This section lists the elements and attributes supported by Netscape as extensions 
+to HTML 2.0 and HTML 3.0 that are not supported by WebTV.<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>BODY </STRONG>
+(HTML 2.0, 5.2.1)<BR>
+<BR>
+The following &lt;BODY&gt; attribute is not supported:<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG>ALINK</STRONG>
+ <BR>
+This attribute lets you control the coloring of active link text. The format of ALINK 
+is the same as that of TEXT.<BR>
+&lt;BODY ALINK=&quot;#rrggbb&quot;&gt;Document here&lt;/BODY&gt;<BR>
+<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>NOBR</STRONG>
+ <BR>
+<BR>
+The NOBR element stands for NO BReak. This means all the text between the start and 
+end of the NOBR elements cannot have line breaks inserted between them. While NOBR 
+is essential for those odd character sequences you really don't want broken, please 
+be careful; long text strings inside of NOBR elements can look rather odd. <BR>
+<BR>
+<STRONG>WBR<BR>
+</STRONG>
+<BR>
+The WBR element stands for Word BReak. This is for the very rare case when you have 
+a NOBR section and you know exactly where you want it to break. Also, any time you 
+want to give the Netscape Navigator help by telling it where a word is allowed to 
+be broken. The WBR element does not force a line break (BR does that) it simply lets the 
+Netscape Navigator know where a line break is allowed to be inserted if needed.<BR>
+<BR>
+<STRONG>BIG<BR>
+</STRONG>
+<BR>
+The &lt;BIG&gt; element specifies that the enclosed text should be displayed, if practical, 
+using a big font (compared with the current font). <BR>
+<BR>
+<STRONG>SMALL</STRONG>
+ <BR>
+<BR>
+The &lt;SMALL&gt; element specifies that the enclosed text should be displayed, if practical, 
+using a small font (compared with normal text). <BR>
+<BR>
+<STRONG>SUB</STRONG>
+ <BR>
+<BR>
+The &lt;SUB&gt; element specifies that the enclosed text should be displayed as a subscript, 
+and, if practical, using a smaller font (compared with normal text).<BR>
+<BR>
+<STRONG>SUP</STRONG>
+ <BR>
+<BR>
+The &lt;SUP&gt; element specifies that the enclosed text should be displayed as a superscript, 
+and if practical, using a smaller font (compared with normal text)<BR>
+<BR>
+<STRONG>SERVER PUSH<BR>
+</STRONG>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+<H2>Unsupported Internet Explorer 2.0 Extensions  </H2>
+<BR>
+<BR>
+This section lists the elements and attributes supported by Microsoft's Internet Exporer 
+2.0 as extensions to HTML 2.0 and HTML 3.0 that are not supported by WebTV.<STRONG><BR>
+</STRONG>
+<BR>
+<BR>
+<STRONG>MARQUEE<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>COLOR NAMES<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>FONT<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+The following attributes are not supported:<BR>
+<BR>
+<STRONG>COLOR<BR>
+</STRONG>
+Specifies the color of the font as #rrggbb or color name.<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>FACE<BR>
+</STRONG>
+Specifies a font face to use as a priority list of font names.<BR>
+<BR>
+<STRONG>IMG<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+The following attributes are not supported:<BR>
+<BR>
+<STRONG>DYNSRC<BR>
+</STRONG>
+Specifies the URL of a video clip for VRML world to display.<STRONG><BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+<STRONG>LOOP<BR>
+</STRONG>
+Specifies the loop count for a video clip. INFINITE is allowed.<BR>
+<BR>
+<STRONG>PLAINTEXT<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+Renders text in plain text without processing tags.<BR>
+<BR>
+<STRONG>S<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+Renders text in strike through type.<BR>
+<BR>
+<STRONG>STRIKE<BR>
+</STRONG>
+<STRONG><BR>
+</STRONG>
+Renders text in strike through type.<BR>
+<BR>
+<BR>
+
+</BODY>
+</HTML>

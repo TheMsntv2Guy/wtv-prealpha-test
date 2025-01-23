@@ -1,0 +1,551 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+Address of section .text set to 0x9fc00000
+Address of section .data set to 0x80000700
+LOAD ./objects/boot/obj/crt0.s.o
+LOAD ./objects/boot/lib/BoxLib.o
+LOAD ./objects/boot/lib/AnsiLib.o
+LOAD ./objects/boot/lib/CommunicationsLib.o
+LOAD ./objects/boot/lib/TinyLib.o
+LOAD ./objects/boot/lib/TellyscriptLib.o
+LOAD ./objects/boot/lib/DebugLib.o
+LOAD ./objects/boot/lib/InputLib.o
+LOAD ./objects/boot/lib/StorageLib.o
+                0x00000000a0012000                . = 0xa0012000
+
+.text           0x000000009fc00000    0x14950
+                0x000000009fc00000                _ftext = .
+ *(.init)
+                0x000000009fc00000                eprol = .
+ *(.text)
+ .text          0x000000009fc00000      0x6d0 ./objects/boot/obj/crt0.s.o
+                0x000000009fc00000                start
+                0x000000009fc00684                move_reset_stack
+                0x000000009fc00690                __main
+                0x000000009fc00698                InitSGRAM
+                0x000000009fc006b8                JumpToApp
+ .text          0x000000009fc006d0     0x90b0 ./objects/boot/lib/BoxLib.o
+                0x000000009fc006d0                main
+                0x000000009fc008cc                CheckSystemIntegrity
+                0x000000009fc009bc                UpdateAG
+                0x000000009fc009c4                Now(void)
+                0x000000009fc00c50                SetROMTiming(unsigned long, unsigned long, unsigned long)
+                0x000000009fc00d90                DealWithFlashDownload
+                0x000000009fc00ea8                FlashDownloadIdle
+                0x000000009fc01f40                ExpandLzss
+                0x000000009fc02090                bipWriteFIFO(unsigned char *, unsigned short)
+                0x000000009fc02260                bipInit
+                0x000000009fc0229c                bipFIFOCount(void)
+                0x000000009fc02324                bipConnect
+                0x000000009fc023c4                bipClose
+                0x000000009fc024a0                bipWrite
+                0x000000009fc0253c                bipRead
+                0x000000009fc02600                ShowBuildInfo(void)
+                0x000000009fc02670                SetBoxLEDs
+                0x000000009fc026b0                GetBoxLEDs
+                0x000000009fc026c4                FlashBoxLED
+                0x000000009fc02778                SPOTVersion
+                0x000000009fc02780                OpenSymbolFile
+                0x000000009fc027d8                FindSymbol
+                0x000000009fc02890                FindSymbolByName
+                0x000000009fc02914                Reboot
+                0x000000009fc02960                DetermineBootType
+                0x000000009fc0299c                ColdBooted
+                0x000000009fc029a8                CrashStackCrawl
+                0x000000009fc02a50                BoxDebugger
+                0x000000009fc02ae8                ParseCommandLine(char *)
+                0x000000009fc02d1c                doReg(unsigned long, char **, unsigned long)
+                0x000000009fc02dbc                DumpSPOTRegister(unsigned long, char **)
+                0x000000009fc02e14                SetSPOTRegister(unsigned long, char **)
+                0x000000009fc02e74                SetLongs(unsigned long, char **)
+                0x000000009fc02f04                SetBytes(unsigned long, char **)
+                0x000000009fc02f9c                SetHalfwords(unsigned long, char **)
+                0x000000009fc03038                DumpMem(unsigned long, char **)
+                0x000000009fc032e0                DumpSingleLong(unsigned long, char **)
+                0x000000009fc03334                DumpSingleByte(unsigned long, char **)
+                0x000000009fc03384                DumpSingleHalfword(unsigned long, char **)
+                0x000000009fc033d8                DisassembleBeginning(unsigned long, char **)
+                0x000000009fc033f4                DisassembleMiddle(unsigned long, char **)
+                0x000000009fc03410                FindFunctionEntry(unsigned long *)
+                0x000000009fc03448                DisassembleFunction(unsigned long, char **)
+                0x000000009fc034ec                DisassembleCommon(unsigned long, char **, unsigned long)
+                0x000000009fc03588                DisassembleLoop(unsigned long *, unsigned long)
+                0x000000009fc036a8                stonum(char *)
+                0x000000009fc036e8                ParsePossibleReg(char *)
+                0x000000009fc037a4                DisplaySSN(unsigned long, char **)
+                0x000000009fc037d4                FillMem(unsigned long, char **)
+                0x000000009fc03874                FillByteMem(unsigned long, char **)
+                0x000000009fc03958                FillMemCount(unsigned long, char **)
+                0x000000009fc039f8                FillByteMemCount(unsigned long, char **)
+                0x000000009fc03ad0                printhex(long)
+                0x000000009fc03bc0                DumpExceptionRegs(unsigned long, char **)
+                0x000000009fc03d70                DumpExceptionRegs2(unsigned long, char **)
+                0x000000009fc03e3c                debugErrEntry
+                0x000000009fc04280                ReturnFromException(unsigned long, char **)
+                0x000000009fc042c4                Breakpoint(unsigned long, char **)
+                0x000000009fc0432c                BreakpointClear(unsigned long, char **)
+                0x000000009fc04340                BreakpointDisplay(unsigned long, char **)
+                0x000000009fc04364                Go(unsigned long, char **)
+                0x000000009fc04408                DataWatchClear(unsigned long, char **)
+                0x000000009fc04414                DataWatch(unsigned long, char **)
+                0x000000009fc04474                DataWriteWatch(unsigned long, char **)
+                0x000000009fc044d4                DataReadWatch(unsigned long, char **)
+                0x000000009fc04540                ROMCodeChecksumOK
+                0x000000009fc04668                ROMFSChecksumOK
+                0x000000009fc051b4                disasm(unsigned long *, unsigned long *, int, int)
+                0x000000009fc05340                EnableFences(unsigned long)
+                0x000000009fc05400                DisableFences(unsigned long)
+                0x000000009fc054d0                WriteEnableFlash
+                0x000000009fc05554                EraseAndFlashBlock
+                0x000000009fc05650                InitHWKeyboard
+                0x000000009fc05a14                HWKeyboardIdle
+                0x000000009fc05b90                SetHWKBLEDs
+                0x000000009fc05c00                GetHWKBLEDs
+                0x000000009fc05cd8                PollHWKeyboard
+                0x000000009fc05e40                SetDisplayMode
+                0x000000009fc05e90                GetDisplayWidth
+                0x000000009fc05e9c                GetDisplayHeight
+                0x000000009fc05ea8                InitDisplay
+                0x000000009fc06074                KillDisplay
+                0x000000009fc060cc                EnableInterlacedDisplay
+                0x000000009fc0625c                EnableDisplay
+                0x000000009fc06378                SetDisplayInterrupts
+                0x000000009fc0638c                GetDisplayPageBase
+                0x000000009fc06408                GetDisplayRowBytes
+                0x000000009fc06414                SetDisplayOverscanColor
+                0x000000009fc06468                EraseDisplay
+                0x000000009fc0653c                Init7187(void)
+                0x000000009fc06920                InitModem
+                0x000000009fc069e8                ModemGetCD
+                0x000000009fc069f4                MonitorCD
+                0x000000009fc06a7c                ModemSetDTR
+                0x000000009fc06afc                ModemGetDTR
+                0x000000009fc06b08                ModemFIFOCount
+                0x000000009fc06b48                putchar_modem
+                0x000000009fc06bf0                getbuf_modem
+                0x000000009fc06d30                InitIIC
+                0x000000009fc071e4                IICWrite
+                0x000000009fc07258                IICRead
+                0x000000009fc072e0                InitIR
+                0x000000009fc0742c                IRIdle
+                0x000000009fc07aa0                TestBranch(unsigned long *, unsigned char, unsigned char)
+                0x000000009fc07b0c                NextInstrAddr(unsigned long *, unsigned char, unsigned char)
+                0x000000009fc07dd0                InitSiliconSerialNumber
+                0x000000009fc080a0                CheckSmartCard
+                0x000000009fc080d4                SmartCardIdle
+                0x000000009fc08120                PostSmartCardEvent
+                0x000000009fc08160                FlushDataCache
+                0x000000009fc08194                ClearCache
+                0x000000009fc08200                move_exc_code
+                0x000000009fc0829c                enable_cpu_ints
+                0x000000009fc082b4                disable_cpu_ints
+                0x000000009fc082cc                InterruptException
+                0x000000009fc0831c                GeneralException
+                0x000000009fc08348                otherException
+                0x000000009fc08350                debuggerContext
+                0x000000009fc08454                restoreContextAndReturn
+                0x000000009fc08550                EnableInts
+                0x000000009fc08568                DisableInts
+                0x000000009fc085b4                ClearAllInts
+                0x000000009fc085e8                DisableAllInts
+                0x000000009fc0861c                InterruptDecode
+                0x000000009fc08f3c                returnFromDebugger
+                0x000000009fc08f50                ReadSiliconSerialNumber
+                0x000000009fc090a0                Read1WireWord
+                0x000000009fc09120                DelayUS
+                0x000000009fc09160                FetchConfig
+                0x000000009fc0916c                FetchCalg
+                0x000000009fc09178                SetCalg
+                0x000000009fc0919c                SetCounter
+                0x000000009fc091a8                FetchCounter
+                0x000000009fc091b4                SetSR
+                0x000000009fc091c0                GetRandom
+                0x000000009fc091dc                TimeVBL
+                0x000000009fc09270                CallDebugger
+                0x000000009fc0927c                EnableWatchdog
+                0x000000009fc092c0                BangSerial
+                0x000000009fc093f0                InitCrashLog
+                0x000000009fc09414                LogCrash
+                0x000000009fc09620                DupeFlasher
+                0x000000009fc09650                CallRAMFlasher
+                0x000000009fc0965c                FlashBlockRAM
+ .text          0x000000009fc09780     0x2a50 ./objects/boot/lib/AnsiLib.o
+                0x000000009fc09780                putchar
+                0x000000009fc0982c                getchar
+                0x000000009fc09848                getstring
+                0x000000009fc099d0                TV_putchar
+                0x000000009fc09c6c                TV_paintchar
+                0x000000009fc0a954                vprintf
+                0x000000009fc0a980                vsprintf
+                0x000000009fc0a9e4                vsnprintf
+                0x000000009fc0aa50                printf
+                0x000000009fc0aa80                sprintf
+                0x000000009fc0aacc                snprintf
+                0x000000009fc0add4                atoi
+                0x000000009fc0adf4                atol
+                0x000000009fc0ae14                strcat
+                0x000000009fc0ae98                strchr
+                0x000000009fc0af0c                strcmp
+                0x000000009fc0afa4                strcpy
+                0x000000009fc0aff0                strlen
+                0x000000009fc0b048                strncmp
+                0x000000009fc0b0f8                strncpy
+                0x000000009fc0b1a8                strrchr
+                0x000000009fc0b21c                strstr
+                0x000000009fc0b2ac                strtoul
+                0x000000009fc0b2c8                strtol
+                0x000000009fc0b360                memchr
+                0x000000009fc0b3b8                memcmp
+                0x000000009fc0b408                memcpy
+                0x000000009fc0b430                memmove
+                0x000000009fc0b640                memset
+                0x000000009fc0c19c                sscanf
+ .text          0x000000009fc0c1d0      0x110 ./objects/boot/lib/CommunicationsLib.o
+                0x000000009fc0c1d0                SerialReadSync(PortNums, char *, long)
+                0x000000009fc0c22c                SerialWriteSync(PortNums, char *, long)
+                0x000000009fc0c28c                SerialCountReadPending(PortNums)
+                0x000000009fc0c2a8                SerialSetFlowControl(PortNums, FlowTypes)
+                0x000000009fc0c2b0                SerialSetDtr(PortNums, unsigned char)
+                0x000000009fc0c2d0                SerialSetBaud(PortNums, short)
+ .text          0x000000009fc0c2e0     0x3750 ./objects/boot/lib/TinyLib.o
+                0x000000009fc0cd98                WritePDU(unsigned short, unsigned char *, unsigned short)
+                0x000000009fc0d41c                GetPPPConnected(void)
+                0x000000009fc0d428                SetPPPConnected(unsigned char)
+                0x000000009fc0d434                TCPIdle(unsigned char)
+                0x000000009fc0d4bc                nowstartppp(void)
+                0x000000009fc0e08c                tcp_Free(tcp_TCB *)
+                0x000000009fc0e474                tcpInit
+                0x000000009fc0e4f8                tcpOpen
+                0x000000009fc0e648                tcpListen
+                0x000000009fc0e704                tcpSend
+                0x000000009fc0e86c                tcpCredit
+                0x000000009fc0e914                tcpAbort
+                0x000000009fc0e97c                tcpHandler
+                0x000000009fc0efc4                tcpNotify
+                0x000000009fc0f0e8                tcpPoll
+                0x000000009fc0f1d4                checksum
+                0x000000009fc0f41c                SetIpAddress
+                0x000000009fc0f424                ipAddress
+                0x000000009fc0f42c                ipIn
+                0x000000009fc0f4e4                ipSend
+                0x000000009fc0f510                ipMonitor
+                0x000000009fc0f538                ipInit
+                0x000000009fc0f728                udpInit
+                0x000000009fc0f794                udpOpen
+                0x000000009fc0f85c                udpClose
+                0x000000009fc0f890                udpAbort
+                0x000000009fc0f8c4                udpHandler
+                0x000000009fc0f9f8                udpNotify
+ .text          0x000000009fc0fa30     0x2f10 ./objects/boot/lib/TellyscriptLib.o
+                0x000000009fc0fb10                SFormatString(unsigned char *, unsigned char *, long *)
+                0x000000009fc0fe00                SI_setabort(long *)
+                0x000000009fc0fe10                SI_stack(long *)
+                0x000000009fc0fe20                allocate(long)
+                0x000000009fc0fe84                SI_Interpret(void)
+                0x000000009fc10834                expression(SYMBOL *)
+                0x000000009fc114b8                skippair(unsigned char, unsigned char)
+                0x000000009fc11560                needtoken(unsigned char)
+                0x000000009fc115a0                iftoken(unsigned char)
+                0x000000009fc115dc                nexttoken(void)
+                0x000000009fc11628                addsymbol(SYMBOL *, unsigned char *, long, unsigned char, unsigned char)
+                0x000000009fc1177c                error(errs, unsigned char *)
+                0x000000009fc119c4                a2x(unsigned char *)
+                0x000000009fc12140                AddIntrinsics(INTRINSIC *)
+                0x000000009fc1219c                SetupPointers(unsigned char *, long, unsigned char *)
+                0x000000009fc121f8                LinkFunctions(void)
+                0x000000009fc12440                TellyIdle(void)
+                0x000000009fc1245c                SetScriptAborted(void)
+                0x000000009fc12478                GetScriptProgress(void)
+                0x000000009fc12484                GetScriptProgressPercentage(long)
+                0x000000009fc125c0                GetScriptProgressText(long)
+                0x000000009fc126dc                SetScriptProgress(TellyProgress)
+                0x000000009fc126e8                SetScriptResult(TellyResult)
+                0x000000009fc126f4                SetPhoneSettings(PHONE_SETTINGS *)
+                0x000000009fc12784                GetPhoneSettings(void)
+                0x000000009fc12790                GetConnectionLog(void)
+                0x000000009fc1279c                AddConnectionLog(long)
+                0x000000009fc127cc                SendConnectionLog(void)
+                0x000000009fc12818                GetScriptResult(void)
+                0x000000009fc12824                GetConnectionStats(void)
+                0x000000009fc12830                RunScript(char const *, long)
+                0x000000009fc128e8                SI_Error(short, unsigned char *, short)
+ .text          0x000000009fc12940        0x0 ./objects/boot/lib/DebugLib.o
+ .text          0x000000009fc12940      0x640 ./objects/boot/lib/InputLib.o
+                0x000000009fc12940                NextInput(Input *)
+                0x000000009fc129b0                PostInput(Input *)
+                0x000000009fc12a2c                FlushInput(void)
+                0x000000009fc12a3c                GetGlobalModifiers(void)
+                0x000000009fc12a48                UpdateGlobalModifiers(unsigned char, unsigned char)
+                0x000000009fc12b20                CapsLockKeyDown(void)
+                0x000000009fc12b30                HandlesInput::DispatchInput(Input *)
+                0x000000009fc12e04                HandlesInput::BackInput(void)
+                0x000000009fc12e0c                HandlesInput::DownInput(Input *)
+                0x000000009fc12e14                HandlesInput::ExecuteInput(void)
+                0x000000009fc12e1c                HandlesInput::ForwardInput(void)
+                0x000000009fc12e24                HandlesInput::HomeInput(void)
+                0x000000009fc12e2c                HandlesInput::KeyboardDownInput(Input *)
+                0x000000009fc12e54                HandlesInput::KeyboardInput(Input *)
+                0x000000009fc12e5c                HandlesInput::KeyboardLeftInput(Input *)
+                0x000000009fc12e84                HandlesInput::KeyboardRightInput(Input *)
+                0x000000009fc12eac                HandlesInput::KeyboardUpInput(Input *)
+                0x000000009fc12ed4                HandlesInput::LeftInput(Input *)
+                0x000000009fc12edc                HandlesInput::OptionsInput(void)
+                0x000000009fc12ee4                HandlesInput::PowerInput(void)
+                0x000000009fc12eec                HandlesInput::RecentInput(void)
+                0x000000009fc12ef4                HandlesInput::RightInput(Input *)
+                0x000000009fc12efc                HandlesInput::ScrollDownInput(Input *)
+                0x000000009fc12f04                HandlesInput::ScrollUpInput(Input *)
+                0x000000009fc12f0c                HandlesInput::SearchInput(void)
+                0x000000009fc12f14                HandlesInput::SmartCardInsertInput(void)
+                0x000000009fc12f44                HandlesInput::SmartCardRemovedInput(void)
+                0x000000009fc12f74                HandlesInput::UpInput(Input *)
+ .text          0x000000009fc12f80     0x19d0 ./objects/boot/lib/StorageLib.o
+                0x000000009fc12f80                __pure_virtual_called
+                0x000000009fc12fac                __builtin_new
+                0x000000009fc12fc8                __builtin_delete
+                0x000000009fc12fe4                InitializeMemoryManagement(void)
+                0x000000009fc133d0                AllocateMemory(unsigned long, unsigned char)
+                0x000000009fc13610                MemorySize(void *)
+                0x000000009fc13780                FreeMemory(void *)
+                0x000000009fc138c8                ReallocateMemory(void *, unsigned long)
+                0x000000009fc13ac8                AllocateZero(unsigned long, unsigned char)
+                0x000000009fc13b10                CopyMemory(void const *, void *, long)
+                0x000000009fc13b94                SwapMemory(void *, long, long)
+                0x000000009fc13c2c                ZeroMemory(void *, unsigned long)
+                0x000000009fc13c4c                DumpFreeBlocks(void)
+                0x000000009fc13d64                MemContents(char *, char *, char *)
+                0x000000009fc13e04                DumpHeapBlocks(unsigned char)
+                0x000000009fc14040                InitializeFilesystems
+                0x000000009fc14218                Resolve
+                0x000000009fc14294                Create
+                0x000000009fc143c0                Remove
+                0x000000009fc14428                Checksum
+                0x000000009fc14450                FileHasChanged
+                0x000000009fc14540                GetFirstFilesystemName
+                0x000000009fc14550                GetNextFilesystemName
+                0x000000009fc14590                NVSanityCheck(void)
+                0x000000009fc14624                NVInit(NVPhase)
+                0x000000009fc14730                NVCommit(void)
+                0x000000009fc14798                NVChecksum(unsigned long *)
+                0x000000009fc147d0                NVWrite(unsigned char *, long, unsigned long)
+                0x000000009fc14860                NVRead(unsigned long, long *)
+                0x000000009fc148c8                NVGetFlags(void)
+                0x000000009fc148d4                NVSetFlags(unsigned long)
+ *(.fini)
+                0x000000009fc14950                etext = .
+                0x000000009fc14950                _etext = .
+                0x000000009fc14950                . = .
+
+.rdata          0x000000009fc14950     0x5d90
+ *(.rdata)
+ .rdata         0x000000009fc14950     0x36e0 ./objects/boot/lib/BoxLib.o
+ .rdata         0x000000009fc18030     0x1040 ./objects/boot/lib/AnsiLib.o
+ .rdata         0x000000009fc19070      0x6f0 ./objects/boot/lib/TinyLib.o
+ .rdata         0x000000009fc19760      0x6f0 ./objects/boot/lib/TellyscriptLib.o
+ .rdata         0x000000009fc19e50       0x10 ./objects/boot/lib/DebugLib.o
+ .rdata         0x000000009fc19e60      0x110 ./objects/boot/lib/InputLib.o
+                0x000000009fc19ea8                HandlesInput virtual table
+ .rdata         0x000000009fc19f70      0x770 ./objects/boot/lib/StorageLib.o
+                0x000000009fc1a6e0                _fdata = ALIGN (0x10)
+
+.data           0x0000000080000700     0x6640
+ *(.data)
+ .data          0x0000000080000700        0x0 ./objects/boot/obj/crt0.s.o
+ .data          0x0000000080000700     0x58e0 ./objects/boot/lib/BoxLib.o
+                0x0000000080000700                except_regs
+                0x00000000800007c8                audioIntRegs
+                0x0000000080000890                gBlockReqStr
+                0x0000000080000990                gNextBlockReqStr
+                0x0000000080000a90                gSerialNumberStr
+                0x0000000080000ad0                fReadBuffer
+                0x0000000080001ad0                gHowString
+                0x0000000080001b10                client_regs
+                0x0000000080001c50                kbData
+                0x0000000080001c60                vidq
+                0x0000000080001ce0                modemRcvData
+                0x0000000080005ce0                modemXmtData
+                0x0000000080005de0                irData
+ .data          0x0000000080005fe0      0xaf0 ./objects/boot/lib/AnsiLib.o
+                0x0000000080005fe0                tvtextbuf
+ .data          0x0000000080006ad0        0x0 ./objects/boot/lib/CommunicationsLib.o
+ .data          0x0000000080006ad0        0x0 ./objects/boot/lib/TinyLib.o
+ .data          0x0000000080006ad0      0x270 ./objects/boot/lib/TellyscriptLib.o
+                0x0000000080006ad0                errstr
+                0x0000000080006b20                Intrinsics
+                0x0000000080006cc0                gConnectionStats
+ .data          0x0000000080006d40        0x0 ./objects/boot/lib/DebugLib.o
+ .data          0x0000000080006d40        0x0 ./objects/boot/lib/InputLib.o
+ .data          0x0000000080006d40        0x0 ./objects/boot/lib/StorageLib.o
+                0x000000008000ed40                _gp = (ALIGN (0x10) + 0x8000)
+
+.lit8
+ *(.lit8)
+
+.lit4
+ *(.lit4)
+
+.sdata          0x0000000080006d40      0xbf0
+ *(.sdata)
+ .sdata         0x0000000080006d40      0x950 ./objects/boot/lib/BoxLib.o
+                0x0000000080006d40                gBaudCount
+                0x0000000080006d48                SystemIntHook
+                0x0000000080006d4c                gSystemTicks
+                0x0000000080006d50                gVideoShift
+                0x0000000080006d54                SystemExceptionHook
+                0x0000000080006d8f                index
+                0x0000000080006d90                gServerIP
+                0x0000000080006d94                gServerPort
+                0x0000000080006d98                gCompressedBlock
+                0x0000000080006d9c                gDecompressedBlock
+                0x0000000080006da0                gFlashStartAddr
+                0x0000000080006da4                gThatWasTheLastBlock
+                0x0000000080006dc4                fReadHead
+                0x0000000080006dc8                fReadTail
+                0x0000000080006dcc                fSocket
+                0x0000000080006de0                gVBLsPerConnectedFlashes
+                0x0000000080006de4                gVBLsElapsed
+                0x0000000080006de8                gNumSymbols
+                0x0000000080006dec                gSymbols
+                0x0000000080006e08                curDumpStart
+                0x0000000080006e0c                lastLen
+                0x0000000080006e20                linesToDis
+                0x0000000080006e38                gBreakPoint
+                0x0000000080006e3c                gBreakContinue
+                0x0000000080006f44                gOldBlankColor
+                0x0000000080006f48                gOldVidFCntl
+                0x0000000080006f60                mysteryIntCause
+                0x0000000080006f64                mysteryIntSR
+                0x0000000080006f68                mysteryIntEPC
+                0x0000000080006fbc                gBigEndian
+                0x000000008000756e                gE0State
+                0x0000000080007570                vidToggle
+                0x0000000080007574                kbHead
+                0x0000000080007578                kbTail
+                0x0000000080007580                gShiftAmount
+                0x0000000080007584                gShifts
+                0x0000000080007588                gVBump
+                0x000000008000758c                gRefreshSkips
+                0x0000000080007590                oddBuffer
+                0x0000000080007594                evenBuffer
+                0x00000000800075a8                dmaSize
+                0x00000000800075ac                gScreenHeight
+                0x00000000800075b0                gScreenWidth
+                0x00000000800075b4                gScreenMaxHActive
+                0x00000000800075b8                gScreenMaxVActive
+                0x00000000800075c0                gOverscanColorLineStart
+                0x00000000800075c4                gOverscanColor
+                0x00000000800075c8                gOverscanDefaultColor
+                0x00000000800075cc                vidqhead
+                0x00000000800075d0                vidqtail
+                0x00000000800075e0                gRTSEnableCount
+                0x00000000800075e4                modemIntCnt
+                0x00000000800075e8                modemStatusIntCnt
+                0x00000000800075ec                modemLineStatusIntCnt
+                0x00000000800075f0                modemTxBufEmptyCnt
+                0x00000000800075f4                modemTxStashCnt
+                0x00000000800075f8                modemNoMoreToTxCnt
+                0x00000000800075fc                modemRxBufFullCnt
+                0x0000000080007600                modemRxStashCnt
+                0x0000000080007604                modemNoIntCnt
+                0x0000000080007608                modemCharPutCnt
+                0x000000008000760c                modemCharGotCnt
+                0x0000000080007620                modemRcvHead
+                0x0000000080007624                modemRcvTail
+                0x0000000080007628                modemXmtHead
+                0x000000008000762c                modemXmtTail
+                0x0000000080007630                modemRcvBufDelta
+                0x0000000080007634                modemXmtBufDelta
+                0x0000000080007638                gLSR
+                0x0000000080007639                gMSR
+                0x000000008000763c                modemRcvBufOvf
+                0x0000000080007640                modemXmtBufOvf
+                0x0000000080007644                gDataTerminalReady
+                0x000000008000765c                sej2lcp
+                0x0000000080007660                irHead
+                0x0000000080007664                irTail
+                0x0000000080007668                irkbModifiers
+                0x0000000080007669                irremoteModifiers
+                0x000000008000766a                gIRRemoteDelay
+                0x000000008000766b                gIRRemoteRate
+                0x000000008000766c                gIRKBDelay
+                0x000000008000766d                gIRKBRate
+                0x000000008000766e                irFlags
+                0x0000000080007680                gSmartCardEvent
+ .sdata         0x0000000080007690       0x60 ./objects/boot/lib/AnsiLib.o
+                0x0000000080007690                gCrashLogPrintfs
+                0x0000000080007691                gPutCharTV
+                0x0000000080007692                gPrintEnable
+                0x0000000080007694                currow
+                0x0000000080007698                curcol
+                0x00000000800076a0                _kEmptyString
+                0x00000000800076a4                _BoxCtype
+                0x00000000800076a8                _BoxTolower
+                0x00000000800076ac                _BoxToupper
+ .sdata         0x00000000800076f0       0x10 ./objects/boot/lib/CommunicationsLib.o
+                0x00000000800076f0                gIROutRefNum
+                0x00000000800076f2                gIRInRefNum
+                0x00000000800076f4                gModemOutRefNum
+                0x00000000800076f6                gModemInRefNum
+                0x00000000800076f8                gModemInitialized
+ .sdata         0x0000000080007700       0x30 ./objects/boot/lib/TinyLib.o
+                0x0000000080007704                gOurIPAddr
+                0x0000000080007708                gIPState
+ .sdata         0x0000000080007730      0x180 ./objects/boot/lib/TellyscriptLib.o
+                0x0000000080007740                EmptyStr
+                0x0000000080007754                Globals
+                0x0000000080007758                tptr
+                0x000000008000775c                LoMem
+                0x0000000080007760                SymTop
+                0x0000000080007764                linenumber
+                0x0000000080007768                StackPtr
+                0x000000008000776c                TokenBuffer
+                0x0000000080007770                EndGlobals
+                0x000000008000784c                gScriptProgress
+                0x00000000800078a8                ScriptRef
+ .sdata         0x00000000800078b0       0x20 ./objects/boot/lib/DebugLib.o
+                0x00000000800078b0                gDebugParentURL
+                0x00000000800078b4                gDebugChildURL
+                0x00000000800078b8                gLastRequestedURL
+                0x00000000800078bc                gPreventDebuggerBreaks
+                0x00000000800078c0                compilerStopsHereIfPostulationIsFalse
+ .sdata         0x00000000800078d0       0x10 ./objects/boot/lib/InputLib.o
+                0x00000000800078d8                irKBMods
+                0x00000000800078d9                pcKBMods
+                0x00000000800078da                globalMods
+ .sdata         0x00000000800078e0       0x50 ./objects/boot/lib/StorageLib.o
+                0x00000000800078ec                kCPlusObjectTagString
+                0x00000000800078f0                gMemoryManagementInitialized
+                0x00000000800078f1                gFillFreeMem
+                0x0000000080007930                edata = .
+                0x0000000080007930                _edata = .
+                0x0000000080007930                _fbss = .
+
+.sbss           0x0000000080007930      0x110
+ *(.sbss)
+ .sbss          0x0000000080007930       0x80 ./objects/boot/lib/BoxLib.o
+ .sbss          0x00000000800079b0       0x40 ./objects/boot/lib/TinyLib.o
+ .sbss          0x00000000800079f0       0x30 ./objects/boot/lib/TellyscriptLib.o
+ .sbss          0x0000000080007a20       0x20 ./objects/boot/lib/StorageLib.o
+ *(.scommon)
+
+.bss            0x0000000080007a40      0xf10
+ *(.bss)
+ .bss           0x0000000080007a40        0x0 ./objects/boot/obj/crt0.s.o
+ .bss           0x0000000080007a40       0x40 ./objects/boot/lib/BoxLib.o
+ .bss           0x0000000080007a80        0x0 ./objects/boot/lib/AnsiLib.o
+ .bss           0x0000000080007a80        0x0 ./objects/boot/lib/CommunicationsLib.o
+ .bss           0x0000000080007a80      0x9e0 ./objects/boot/lib/TinyLib.o
+ .bss           0x0000000080008460      0x370 ./objects/boot/lib/TellyscriptLib.o
+ .bss           0x00000000800087d0        0x0 ./objects/boot/lib/DebugLib.o
+ .bss           0x00000000800087d0      0x180 ./objects/boot/lib/InputLib.o
+ .bss           0x0000000080008950        0x0 ./objects/boot/lib/StorageLib.o
+ *(COMMON)
+                0x0000000080008950                end = .
+                0x0000000080008950                _end = .
+OUTPUT(./objects/boot/result/bootrom.ld ecoff-bigmips)

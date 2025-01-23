@@ -1,0 +1,15 @@
+#
+# Trim:
+#
+# Trim trailing spaces and tabs from end of each line in file
+#
+
+If {#} == 0
+	Set Window "{Target}"
+Else
+	Set Window "{1}"
+End
+
+Find ¥ "{Window}"
+Set Exit 0
+Replace -c ° /[¶t¶f ]+°/ "" "{Window}"

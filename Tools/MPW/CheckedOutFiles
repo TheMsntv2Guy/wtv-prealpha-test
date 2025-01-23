@@ -1,0 +1,86 @@
+#
+#	File:		CheckedOutFiles
+#
+#	Contains:	script to echo names of files checked out modifiable in a project
+#
+#	Usage:		CheckedOutFiles [-project project | -m] [-nomodifyreadonly]
+#
+#	Status:		CheckedOutFiles may return the following status values:
+#
+#					0		success
+#					1		error
+#
+#	Written by:	scott douglass and Darin Adler
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History (most recent first)
+#
+#				 8/24/95	pyg		adapted for use at Artemis, pulled out use of remote flag
+#				  9/9/93	gbm		just playing around (again), donÕt mind me...
+#				 11/6/91	dba		adapted for use at General Magic
+#		<14>	 3/29/90	sad		handle ÒWARNING: this file has been renamed!Ó
+#		<14>	 3/29/90	sad		handle ÒWARNING: this file has been renamed!Ó
+#		<13>	  2/8/90	sad		work around Shell "" !~ / */ bug; handle modifyreadonly files;
+#									fix quoting bug in Files {CheckOutDir}
+#		<12>	  2/1/90	dba		one more time
+#		<11>	  2/1/90	dba		fix check for error on parse Info
+#		<10>	  2/1/90	dba		use information in local files unless you give the -remote
+#									option; fix the version check
+#		 <9>	 1/31/90	sad		add quoting in FileVersInfo test
+#				 12/6/89	sad		better parsing of ProjectInfo
+#				11/15/89	dba		fix comments
+#				11/13/89	sad		redirect ProjectInfo not an author warnings
+#				 11/9/89	dba		twiddled relentlessly
+#				 11/8/89	dba		fix quoting in irrelevant ways
+#				  8/7/89	sad		fix no -project case
+#				 7/20/89	sad		add -project option
+#				 5/26/89	sad		change parsing of ProjectInfo output for new Shell
+#				 2/17/89	sad		written from CheckInAll
+#
+#	To Do:
+#		handle file names with spaces
+#
+Set savedParameters "{{Parameters}}"
+Alias UsageError 'Echo "¶"{{0}} {{savedParameters}}¶" doesnÕt make sense.¶nUsage: ¶"{{0}} [-project project | -m]¶"" > Dev:StdErr; Exit 1'
+
+Set options ""; Set project ""; Set showCheckedOut 1; Set showModifyReadOnly 1
+Set MROOption ""; Set COOption ""
+
+Loop
+	If {#} >= 2 && "{1}" =~ /-project/
+		If "{{options}}" == ""; Set options "-project"; Set project ¶""{2}¶""; Shift 2
+		Else; UsageError; End
+	Else If {#} >= 1 && "{1}" =~ /-m/
+		If "{{options}}" == ""; Set options "-m"; Shift
+		Else; UsageError; End
+	Else If {#} >= 1 && "{1}" =~ /-nomodifyreadonly/
+		If {showCheckedOut} == 1 && {showModifyReadOnly} == 1; Set showModifyReadOnly 0; Set MROOption "-noMRO"; Shift
+		Else; UsageError; End
+	Else If {#} >= 1 && "{1}" =~ /-onlymodifyreadonly/
+		If {showCheckedOut} == 1 && {showModifyReadOnly} == 1; Set showCheckedOut 0; Set COOption "-noCO"; Shift
+		Else; UsageError; End
+	Else If {#} ­ 0
+		UsageError
+	Else
+		Break
+	End
+End
+
+# try to create the CheckedOutList if it doesnÕt exist
+If "``Exists "{WTV:}"CheckedOutList``" == ""
+	SyncCheckedOutList
+End
+
+If "{WTV:}" !~ /(Å)¨1:/ ; Alert "Impossible error!" ; exit 1; end
+Set prefix "{{¨1}}"
+For file in ``Catenate "{WTV:}"CheckedOutList``
+	If ``Exists "{prefix}{file}"`` != ""
+		If "``ProjectInfo -s "{prefix}{file}"``" =~ /[Â,]+,[0-9.a-z]+([+*])¨1Å/
+				# big weirdness here... ("*"=="+") evaluates to true! So we put an x in it: ("x*"=="x+")
+			If ( ("x{{¨1}}" == "x*") && {showModifyReadOnly} ) || ( ("x{{¨1}}" == "x+") && {showCheckedOut} )
+				Echo "{prefix}{file}"
+			End
+		End
+	End
+End

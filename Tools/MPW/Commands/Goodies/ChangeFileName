@@ -1,0 +1,147 @@
+#
+#	File:	ChangeFileName - Change the name of a file in a projector project.
+#	Date:	28 Mar 89
+#
+#	Copyright Apple Computer, Inc. 1989  All rights reserved.
+#
+#	DISCRIPTION:
+#		This is a script designed to make changing a file name under projector as painless
+#		as possible.  The script changes the name for every version in the projector
+#		project.  It also adds the following to the comment field:
+#			A note saying that the file name changed.
+#			The date of the original checkin.
+#			And the orginal comments.
+#		All the other information about the file is preserved also.  
+#		NOTE when the script is done, all the old revisions of the "old file" are removed,
+#		there is no trace or history of them left! (except in the new comment field that the
+#		name had been changed.
+#
+#		Status:	ChangeFileName may return the following status values:
+#				0		No Error.
+#				1		Error.
+#				2		Syntax Error.
+#				3		Old file is checked out for modification.
+#				4		Branch error, found that file had branches.
+#
+#
+#	Change History (most recent first):
+#
+#		 <2>	 9/11/95	JOE		
+#	28 Mar 89	EKH		New Today!
+#
+
+
+#
+# Set up some original variables used in this script
+#
+	Set Usage "Usage: ChangeFileName -project '<project>' <oldName> <newName>";
+
+#
+# Now begin...
+#
+
+Set Exit 0
+Begin
+	# Save the current directory...
+		Set currDir "`Directory`";
+	# Check the input parameters
+		IF ("{1}" !~ /-project/); 
+			Echo {Usage}; 
+			Exit 2;
+		ELSE
+			Set theProject "{2}";
+		END;
+	Set oldName "{3}"
+	Set newName "{4}"
+	# Check for safe usage....
+		IF ({oldName} == ""); Echo {Usage}; Exit 2; END;
+		IF ({newName} == ""); Echo {Usage}; Exit 2; END;
+	# If it's a fullpath name, get just the name, for error dialogs...
+		If "{oldName}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+			Exit 2
+		End
+		Set shortOName "{¨1}"					# get short name for dialogs
+		If "{newName}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+			Exit 2
+		End
+		Set shortNName "{¨1}"					# get short name for dialogs
+	# Check to make sure the project is mounted, and the current project...
+		Project "{theProject}" · Dev:Null;
+		IF ({Status} != 0);
+			Alert "The project Ò{theProject}Ó is not currently mounted!";
+			Exit 1;
+		END;
+	# Check if the old file is checked out for Modification...
+		Set Info "`ProjectInfo -m "{oldName}"`"
+		If ("{Info}" != "")
+			Alert "{shortOName} is checked out for modification!  Please check it in and try again."
+			Exit 3
+		End
+	# Now get the complete project listing of that file along with comments.
+		Set longListing "`ProjectInfo -comments "{shortOName}"`"		
+	# Now make sure that there are't any branches, cause they are to complex to handle...
+		IF ( "{longListing}" =~ /(Å)({shortOName}[,]+[0-9]+[a-z]+[0-9]+)(Å)/);
+			Alert "The file {shortOName} has branches, this script can NOT handle files with braches, it is too complex!¶n¶nSorry!"
+			Exit 4;
+		END;
+	# Now change the name of all the specified revisions...
+		Set workingDir "{Boot}CFNtemp:";
+		NewFolder "{workingDir}";
+		Directory "{workingDir}";
+		Set currListing "{longListing}";
+
+		Loop
+			(Evaluate "{currListing}" =~ /(Å)¨1({shortOName}[,]+[0-9]+)¨2([ ]Ç5È)([A]+Å)¨3/) · Dev:Null
+			Set currListing "{¨1}";
+			Set currRev "{¨2}"
+			Set currInfo "{¨3}"
+			# Get the Version number
+				(Evaluate "{currRev}" =~ /{shortOName},([0-9]+)¨1/) · Dev:Null
+				Set versNum "{¨1}";
+			# Seperate out the other parts of the file listing...
+				(Evaluate "{currInfo}" =~ /Å'Author: '(Å)¨1'Checked in: '(Å)¨2'Task: '(Å)¨3'Comment:'(Å)¨4/) · Dev:Null
+				Set theAuthor "{¨1}";
+				Set orgDate "{¨2}";
+				Set theTask "{¨3}";
+				Set theComment "{¨4}";
+				(Evaluate "{theAuthor}" =~ /(Å)¨1([ ]Ç5È)/) · Dev:Null
+				Set theAuthor "{¨1}";
+				(Evaluate "{orgDate}" =~ /(Å)¨1([ ]Ç5È)/) · Dev:Null
+				Set orgDate "{¨1}";
+				(Evaluate "{theTask}" =~ /(Å)¨1([ ]Ç5È)/) · Dev:Null
+				Set theTask "{¨1}";
+			# Sometimes there are these BIG spaces in the comment, so this will remove them
+				Loop
+					IF ("{theComment}" !~ /(Å)¨1('         ')(Å)¨2/)
+						Break;
+					END;
+					Set theComment "{¨1} {¨2}";
+				END;
+			# Add some text to the comment...
+				Set newComment "NAME CHANGED from {shortOName} to {shortNName}.¶nOrig. Checkin: {orgDate}.¶nOrig. Comments: {theComment}"
+			# Checkout the old version as read-only.
+				Checkout -project "{theProject}" -noTouch -d "{workingDir}" "{shortOName},{versNum}";
+			# Orphan the old file
+				OrphanFiles "{shortOName}";
+			# Now check in the new file with all the information we gathered.
+				IF ({versNum} <= 1);
+					Rename "{shortOName}" "{shortNName}";
+					Checkin -new -delete -project "{theProject}" -u "{theAuthor}" -t "{theTask}" -cs "{newComment}" "{shortNName}";
+				ELSE
+					Checkout -noTouch -m -project "{theProject}" -d "{workingDir}" "{shortNName}";
+					TransferCKID "{shortNName}" "{shortOName}";
+					Delete "{shortNName}";
+					Rename "{shortOName}" "{shortNName}";
+					Checkin -y -delete -project "{theProject}" -u "{theAuthor}" -t "{theTask}" -cs "{newComment}" "{shortNName}";
+				END;
+
+			Break IF ("{currListing}" == "");
+		End;
+	# Restores the original directory.
+		Directory {currDir};
+	# Restores the original directory.
+		Delete -y "{WorkingDir}";
+	# Now that all the new files are checked in, we will delete all the old one out of the project.
+		DeleteRevisions -y -file -project "{theProject}" "{shortOName}";
+End
+Exit 0;

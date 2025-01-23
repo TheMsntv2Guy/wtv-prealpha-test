@@ -1,0 +1,57 @@
+#
+# Build the Source Menu (based on files in current directory)
+#
+Set Exit 0
+	DeleteMenu Source · Dev:Null
+	Set CurDir "`Directory`"
+	If "`Exists Makefile ³ Dev:Null`"
+		AddMenu Source "Makefile" 'Open "'"{CurDir}Makefile"'"' · Dev:Null
+	End
+	If "`Exists Å.Åmake ³ Dev:Null`"
+		For srcfile In Å.Åmake
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.h) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.h
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.cp) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.cp
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.c) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.c
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.p) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.p
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.a) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.a
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+#
+	If "`(Exists Å.r) ³ Dev:Null`"
+		AddMenu Source (- ' '
+		For srcfile In Å.r
+			AddMenu Source "{srcfile}" 'Open "'"{CurDir}{srcfile}"'"' · Dev:Null
+		End
+	End
+Set Exit 1

@@ -1,0 +1,451 @@
+/* These are comments from SoundApp.[cr],
+ * from which the original Simulator.[cr] are taken
+ */
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/*
+Apple Macintosh Developer Technical Support
+
+MultiFinder-Aware SoundApp Application
+
+SoundApp
+
+SoundApp.c - C Source
+
+Jim Reekes - Macintosh Developer Technical Support
+Copyright © 1989-1994 Apple Computer, Inc.
+All rights reserved.
+
+Versions:
+		1.03				January, 1990
+		1.04				Sept, 1990
+		1.2					August, 1994		translated to C
+
+Components:
+		SoundApp.c			January, 1990		MPW C source code
+		SoundUnit.c			January, 1990		MPW C source code
+		SoundUnit.h			January, 1990		MPW C source code
+		SoundApp.r			January, 1990		MPW Rez source code
+		SoundAppSnds.r		January, 1990		MPW Rez source code
+		SoundApp.make		January, 1990		MPW build script
+
+Formatting was done with FONT = Courier or Monaco, SIZE = 10, TABS = 4
+
+Version comments
+
+1.04: This was an update to support the Utilities Unit that MacDTS
+developed.  Some of it was routines formally created for SoundApp,
+with additional ones coming from other sources.  This helps to reduce
+the "destractive" code from the samples and makes them easier to maintain.
+
+1.1: 	• This is the "new" SoundApp which adds some new features.
+		• Some knowledge of the new Sound Manager is present
+		  in areas that were work-arounds for old Sound Manager bugs
+		• Recording of sounds is now possible with the Sound Input Manager
+		• The document window will keep the Record button hidden if
+		  the Sound Inpute Manager is not available for recording,
+		  otherwise it will expand the window size to show this button.
+		• Supports copy and pasting of sound resources
+		• Conversion to MPW 3.2 was established (with some amount of pain)
+		• SoundApp now has its own documents
+		• Supports launching by open documents from Finder
+		• Added color icons for the System 7.0 desktop
+		• Added the new Sound Manager error strings
+		• DoErrorSound tests for safe beeps
+		• Made Apple Legal happy by getting rid of the xxxxCmd
+		  and changed it to the freqDurationCmd.  Also got rid of
+		  any other use of the work "xxxx" in a musical context
+
+1.2:	• Translated into C, some clean up along the way
+		• Using universal headers
+		• Gave up on the DTS utilities code, everything is self-contained
+
+Formatting was done with FONT = Courier, SIZE = 10, TABS = 4
+
+many thanks to: Bo3b Johnson, Mark Bennett, Andy Shebanow, Keith
+Rollin, Chris Derossi, Pete Helme, Darin Adler, and my co-workers that
+sat near me while I was making lots of noise testing this application.
+
+To the reader,
+
+SoundApp.p is a sample application source file for demonstrating
+the Sound Manager.  It requires the use of the SoundUnit to handle
+all of the sound routines.  This portion of the source code handles the
+application’s management of memory, errors, user interface, etc..
+The read me notes are here in the source code because people tend to
+not read them otherwise.
+
+SoundApp is a demonstration of the Sound Manager released in System
+6.0.x.  SoundApp is also a example of how to write a Macintosh
+application that performs good user interface and proper error
+handling.  Believe it or not, but the Sound Manager portion was the
+easiest part for me to write.  It was all the user interface and error
+handling that was the most difficult.  One thing became very clear to
+me in the course of writing this application.  The following axiom is
+one of the few great truths in the universe.
+
+If you write a Macintosh application without MacApp, you’re working
+too hard.
+
+Throughout the development of SoundApp I would run into typical
+situations that make programming a Macintosh too hard.  When this
+happened I asked myself “what would MacApp do?” and that was followed
+by the thought “then why am I writing code that is already out there
+for me to use?”  I started out intending on writing a very simple
+application that anyone could read, and understand the Sound Manager.
+I felt this meant not requiring the person to read Object Oriented
+Pascal.  I accomplished part of my goal.  People should be able to
+learn how to use the Sound Manager (in its present condition), but it
+didn’t turn out to be such a simple application as I had hoped for.
+
+I have put a large amount of comments into the code.  This is
+something I’m really picky about.  People do not comment their code
+enough.  Each procedure has a paragraph that should explain what to
+expect that routine to do, and how it goes about doing it.  There are
+some bigger issues that I will put into the release notes below.
+There are some things that make the Macintosh harder to develop for
+than it should be.  Simple things should be simple.  Too many things
+on the Mac that should be simple are not.  Maybe someday these things
+will be fixed.
+
+• GetFontInfo requires a port set to the font in question.  If I
+wanted to find the height of the System Font, I had to first set the
+current port to the WindowMgr.  I could have used my own window, but
+what if I needed the font info before I had a window available?
+• The toolbox blows chunks when your heap gets “too low.”  I believe
+this magical number is between 32k and zero.  The odds of blowing
+chunks increase logarithmically as one approaches 0 free bytes.
+• The Dialog Manager is not a free lunch and in fact will cost you
+plenty.
+• There’s no safe way to determine how much memory opening a
+resource file will take away from your heap.
+• There’s no way to determine how safe it is opening a resource that
+could be shared by other applications, especially on a local volume.
+• The Resource Manager doesn’t always set ResErr.
+• The Sound Manager returns even less errors.
+• The List Manager returns no errors.
+• Writing a staggering routine for new windows encompasses a number
+of difficulties.  How does one find the height of a window’s title
+region before the window is visible?
+
+Am I just a complainer?  Do I have a bad attitude?  Probably, but
+I’m just trying to point out the above areas make the Mac programming
+experience difficult.  These are areas that get developers into
+trouble.  These areas need a sign in front of them that says,
+“Danger!”  These are areas that developers get into and then write to
+MacDTS for help.
+
+Notation Conventions
+--------------------
+All global variables begin with a lower case “g”.
+All constants begin with “k” except for those noted here.
+Resource IDs begin with “r”.
+Menu IDs being with “m” and items with an “i”.
+Resource strings begin with “s”.
+
+Human Interface
+---------------
+This is the most important and about the most difficult aspect of
+programming on the Macintosh.  In the development of SoundApp I gave much
+thought to the human interface issues.  In fact, in talking with the Human
+Interface Group additions to the existing guidelines were made.  The
+method of window stacking used here was a new one.  This was documented in
+a Human Interface Tech Note.  I even made one compromise (hard to
+believe!) suggested by the Human Interface Group.  I originally had the
+buttons and the list in my choice of font and size.  They felt that
+buttons should be in the System font and the list should also be the same.
+I liked my font choice better, but the group had a point that I really
+couldn’t argue with.  That was, “If there isn’t a compelling reason to
+change something standard, then don’t change it.”  Buttons on a Macintosh
+typically appear in the System font.  Changing the font, just because I
+wanted to, was considered gratuitous.  Standard File is in the System font
+and it also contains a list and buttons.  Since my window are very similar
+to that dialog, I’m using the System Font.
+
+SoundApp is never modal unless an error occurs and I need to show and
+alert.  Controls are inactivated for inactive windows.  The default button
+is given the proper outline, and this outline disappears when the window
+is deactivated.  Keyboard equivalents for the buttons cause the button to
+appear as if it had been clicked in.  The check box in the Standard File
+dialog remembers the user’s last setting.  The about box is only
+semi-modal.  It will allow the user access to switch to another application.
+The status window under some circumstances was found to disappear too quickly,
+so a built in delay was added.  Windows are centered or stacked according
+to the Human Interface Guidelines.  The sound level isn’t adjusted by the
+application, and instead the users is informed of the current level and
+told how it can be adjusted.
+
+The About box
+-------------
+It’s rad.  Has a color icon, shows the 'vers' resource, goes Moof!™.  It
+also demonstrates how to handle a modal window without the Dialog Manager.
+This technique can be use for any window, including dialog windows.  The
+dialog’s update routine would call UpdtDialog.  The really new point to
+notice is this window is modal but ONLY within the application’s layer.
+While running under MultiFinder, the user can switch to other
+applications.  While the About window is present, it is the only window
+belonging to the application that accepts user actions.
+
+Memory Management
+----------------
+This has to be the most difficult portion of a Mac application to
+write.  This along with the user interface.  I spent too many nights
+chasing down crashes while running the application under low memory.
+I found unpleasant surprises while doing this.  The Sound Manager
+doesn’t check for NIL pointers.  OpenResFile may take large portions
+of my heap away.  The toolbox seems to need at least 32k of free space
+in the heap of my Mac II running color.
+
+I wrote a simple grow zone procedure that will dump a reserve memory
+block.  This is only considered for use in an emergency.  I never rely
+on using it directly.  If the reserve has been released, I will not
+continue an operation such as playing a sound or showing the status
+window until it is regained.  Grow zones should not be considered a
+solution to memory management.  They can be used to augment your
+overall memory management scheme.
+
+Error Checking
+--------------
+Lots and lots and lots of it.  I could even do more.  Programmers
+need to do more of this.  The Sound Manager will crash when
+encountering a NIL pointer.  My application should never crash.  If
+you can find a way to crash this application, then I want to hear
+about it.  Using a bogus 'snd ' resources doesn’t count and I’ve found
+many of those.  Writing proper error checking into the code during
+development really helped.  Always handle errors, and pass along the
+error.  I will let the first error encountered to be passed all the
+way up to the caller and eventually my error dialog will show up for
+the user.
+
+SetPort Strategy
+----------------
+Any routine that needs to use Quickdraw will set the port.  I do not
+believe that it should also be responsible for restoring the port back
+to what it may have been before the routine was called.  So, you’ll
+find there is an absence of the GetPort, SetPort, do my thing, and
+then SetPort again.  Instead I SetPort and do my thing.  The Mac often
+is setting the port unnecessarily.
+
+Strings
+-------
+All of my strings are resources.  There are no strings that appear
+within the code.  This helps memory management and allows me to adjust
+the application to international systems without compiling any code.
+I could simply use ResEdit, or some other tool, to localize this
+application.  I find it is just as easy to run Rez again than
+attempting to use ResEdit.  Besides, after editing with ResEdit I want
+the source for that and would have to run DeRez which isn’t nearly as
+clean as my original source files.
+
+Window Stacking
+---------------
+I hate applications that will open a new document that covers up an
+existing document, unless the new document covers the entire screen.
+So, my application’s documents have a small window size.  I wanted to
+open new windows that would not cover up older ones.  This is nice for
+the user, since they will not have to move windows just to get at
+other documents.  ResEdit will stagger new windows off of the
+frontmost window but I find that this isn’t the best approach.  It
+will still cover up other windows and I also don’t like windows that
+will open half way between two monitors.  I wanted a better approach:
+one that would always stagger new windows and not cover up older ones.
+
+When I want to center a window, I need to know its entire rectangle
+size.  The rub is that I cannot determine its size until I show it
+because I only know about the window’s boundsRect.  This does not
+include the area that contains the title bar.  That’s the strucRgn,
+which is an empty region for an invisible window.  I could do what
+MacApp does, but if I have to do another thing that MacApp already
+does I’ll give up and stick with MacApp.  I ended up writing a routine
+that takes a guess at the height of the window’s title bar.  This is
+another thing that was harder than it should have been.
+
+Dialog Manager (and some of the reasons I don’t like it)
+--------------------------------------------------------
+My first approach was to use modeless dialogs for document windows,
+thinking that I could write an application that would demonstrate how to
+deal with them and all of their idiosyncrasies.  Not long into the
+development cycle it became obvious to me that I was fighting something
+that contained more disadvantages than advantages.  I removed all the
+dialog code and only used standard windows and controls the old fashion
+way.  In the case of the About window, which is semi-modal, I have a test
+that will return TRUE for a window that should be treated as modal.  This
+allows my window to be handled by my standard event handlers and I don’t
+have to write dialog filters.  There are some things that do not get
+handled properly while calling ModalDialog.  ModalDialog ignores disk
+insert events.  The activate or update events do not get handled for
+background windows.  Using a modeless dialog fails with MultiFinder if
+switching takes place while the dialog is the frontmost window.  The
+problem is that DialogSelect ignores and removes the suspend/resume event.
+Another advantage to all this is that drawing was much faster.
+
+As an example of some of the problems with ModalDialog and the activate
+event.  Try this with the Finder.  Open a window and choose “View by name.”
+Then select a few names with the shift key and resize the window so the
+vertical scroll bar is visible.  Move this window to one edge of the
+screen or a second monitor.  Now choose “Set Startup.”  This is a modal
+dialog.  If you look at the Finder window with the selected files, you’ll
+notice that the scrollbar and the text are still highlited.  This is not
+the proper user interface.  This is because the deactivate routines are
+not called while in ModalDialog.  You can even find this problem with
+SoundApp.  On deactivate events I will change my controls to the inactive
+state.  If you place the buttons to the side of the screen and then bring
+up the standard file dialog, you’ll notice that the buttons don’t change
+properly.  ModalDialog also prevents the application from updating
+background windows too.  To solve this a dialog filter procedure is
+required.  In most cases, this filter would be as complex and the event
+loop.  It would also make it necessary to call your event routines from
+outside of the normal event loop.  All on this isn’t worth the effort.
+
+You can see how this does not happen while using this application’s
+About window.  Select an item in the document window and choose “Play
+Melody.”  This will leave the status window on screen so that you can
+drag it to cover the document window.  Now select “About SoundApp” to
+bring up the about window.  This causes the status window to close,
+which uncovers the document window leaving an invalid area.  The
+document window gets an activate event, then the About window appears.
+Then the document window is properly deactivated and updated.  Yeah,
+just like it should happen.
+
+So, the tradeoff was that I didn’t have to work around all the
+strange things the Dialog Manager does such as running a secondary
+event loop, and requiring me to have userItems or filterProcs.  This
+made the code smaller, more readable, and faster.  I think I will
+avoid the Dialog Manger from now one unless I’m using a very simple
+dialog.  The about window of this application proved too much for the
+Dialog Manager.
+
+One thing dialogs are good for is running ResEdit and laying out the
+dialog.  To help position controls, I used a DLOG resource of the same
+size as my WIND resource.  The DITL of this dialog contains the
+positions I wanted for my CNTL resources.  This helped me to look at
+where I could expect my buttons to show up.  This is one of the main
+reasons people think they need the Dialog Manager, because ResEdit
+makes it easy to build dialogs.  ResEdit alone has contributed to
+nearly all of the Dialog Manager abuse in the world today.
+
+I used a Rect resource for positioning the list rectangle of the
+document windows.  These windows look very much like a modeless
+dialog.  (They used to be, but that presented to many problems.)  The
+About window is also a standard window, but shown modally.  Just like
+ModalDialog, but my modal window does allow switching under
+MultiFinder.  You can change the window to a dBoxProc and then
+MultiFinder will not switch while this is the active window.  To help
+with the layout of the about window, I position the text within it
+based on the size of the window.  The status window does this too.
+These two things, the Rect resource and text based on the size of the
+window, help when changing the text.  If the new text doesn’t fit,
+then resize the window’s resource.  I used some trick with Rez to help
+layout my window contents.  Refer to the SoundApp.r sources.
+
+I’ve read and understood Tech Note 203, and have learned how to
+apply it.  Bo3b Johnson is a smart guy, and developers should trust
+his opinions.
+
+List Manager
+------------
+It’s very easy to be tempted by this part of the toolbox, along with
+the Dialog Manager.  The List Manager is a slow beast at times.  It
+also has some problems with “doing the right thing.”  I’ve found that
+the list will not be updated properly when the user clicks in a cell
+that is out of bounds.  LClick will return TRUE with a cell that
+doesn’t exists.  LActivate will erase the scrollbars instead of
+highlighting the properly.  Finally, the List Manager does not return
+errors.  How would a person know if LSetCell worked?
+
+I’ve read and understood Tech Note 203, and have learned how to
+apply it.
+
+Resource Manager
+----------------
+I test all the handles being returned from the Resource Manager
+before using them, and if I get a NIL then I look at ResError.
+ResError sometimes lies and returns noErr and a NIL handle.  ResError
+is usually good for getting an error code AFTER you’ve already found
+an error.
+
+Opening a resource file that is already open by another application
+is dangerous.  The Resource Manager will not tell you when you’ve done
+this.  There needs to be a OpenRFPerm that will return permission
+errors such as resFileBusyErr.  Refer to Tech Note 185.
+
+When I or the Toolbox needs to get at one of my resources,
+CurResFile must be set to my application.  Also, look out for one
+particularly nasty situation when switching resource files.   If the
+segment loader goes for a CODE segment, it better be from our resource
+file!  The idea here is, in case you didn’t get it already, always
+have the current resource file be set to the application.  If a
+resource is needed from another file, switch momentarily to get the
+resource and immediately restore the current resource file to the
+application.  I take an added measure of defense and whenever I need a
+resource I use the Get1Resource calls.  These will only search the
+current resource file.
+
+Strategies For Sound
+--------------------
+All of the Sound Manager code is contained in the SoundUnit.p.  This
+code was written to be general purpose, providing useful routines for
+other applications.  Lots of error checking is performed.  I’ve also
+extended the support for SndPlay and made it really asynchronous.
+I’ve demonstrated most of the abilities the present Sound Manager has
+to offer.  I will have to revise the SoundAppUnit to include any new
+features (e.g., multi channel support) when the next Sound Manager is
+released.
+
+I allocate my own memory to be used as sound channels.  I allocate
+these pointers early in the application’s startup time to avoid memory
+fragmentation.  These channels are of the standard size (holding 128
+commands) but I’ve extended the structure to include my own
+information.  When I create a new sound channel, I pass it a pointer
+to this memory.  This will link in the 'snth' resource and hardware to
+my channel.  When I dispose of the channel, the Sound Manager will
+purge this resource and disconnect me from the hardware.  When adding
+the 'snth' resource, the Sound Manager will allocate a pointer into
+the application’s heap instead of the system’s.  This is a modifier
+stub used by the 'snth'.  This could cause some problems with memory
+management.  I create and dispose of all my channels as soon as
+possible, and this doesn’t cause me problems.
+
+I keep track of which document is playing a sound, along with a
+global of when the application is playing sound.  I needed to keep
+track of which document is playing because if the user disposes of
+that document, I will have to stop playing the sound contained in it
+since the user wants to dispose of that data.  I keep track of when
+the application is playing sound in a global.  This is only used by
+the routine that calculates the sleep time for WaitNextEvent.
+
+I came up with a pretty sick music notational system using Rez.
+Refer to the notes in the SoundAppSnds.r file.  If you’ve just
+finished a meal, wait four hours before reading.
+
+The SoundUnit handles all of the Sound Manager code entirely.  This
+eliminates any and all references to the Sound Manager from the
+application.  The SoundUnit will return any error encountered while
+calling the Sound Manager, and does some extra error checking the
+Sound Manager doesn’t do.
+
+The portion of the application that uses the wave table synthesizer
+is more complex than the other two.  I wanted to include an example
+channel modifier for use in the wave table channels.  This would have
+been a transpositional modifier that would take a given freqDurationCmd and
+transpose it by some amount.  This would be nice for the routine that
+plays a scale, by allowing the other three channels to be playing the
+same scale but at a different interval.  Unfortunately, I found that
+the Sound Manager has bugs using a modifier, at least with the wave
+table synths, and could not use them.
+
+I’ve created a few wave table sounds and keep them in a 'snd '
+resource.  This allows me to change the sound of the wave table
+channels and not change any of the code.  Creating wave table data is
+complicated.  The example sounds I’ve included are samples I’ve taken
+from various sources.  I’ve cleaned them up quit a bit.  This was to
+set loop points, try and reduce clicks, correct the sample rates, and
+base frequencies.  This is also a complicated task.  Maybe I should document
+these techniques.
+
+Jim Reekes E.O., Macintosh Developer Technical Support
+Sunday, August 7, 1994 7:06:41 PM
+*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// global defines

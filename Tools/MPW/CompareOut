@@ -1,0 +1,25 @@
+# Generate commands to compare each of the checked out
+# and MRO files against the previous versions.
+# This is useful for reviewing changes so far,
+# without requiring modification of the checked out files.
+
+Set progressFlag 0
+Set echo 0
+
+If "{1}" =~ /¶-p(rogress)Ç0,1È/; Set progressFlag 1; End
+
+If "``Exists "{{WTV:}}NewProjectorFiles"``" != ""
+	If {progressFlag}; Echo "#		New Files:"; End
+	Set filesFile "{{WTV:}}NewProjectorFiles"
+	For file in `Catenate {filesFile}`
+		Echo "Open {{file}}"
+	End
+End
+
+If "``Exists "{WTV:}"CheckedOutList``" != ""
+	If {progressFlag}; Echo "#		Existing Files:"; End
+	Set filesFile "{{WTV:}}CheckedOutList"
+	For file in `Catenate {filesFile}`
+		Echo "CompareOneRevision {{file}}"
+	End
+End

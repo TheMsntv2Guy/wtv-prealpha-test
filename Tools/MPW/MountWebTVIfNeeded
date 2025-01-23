@@ -1,0 +1,7 @@
+Set mountStatus 0
+Set IsWebTVMounted "``MountProject -pp ³ Dev:Null || Set mountStatus 1``" ³ Dev:Null || Set mountStatus 1
+
+If {mountStatus} || "{{IsWebTVMounted}}" !~ /ÅWebTVºÅ/
+	MountWebTV ³ Dev:Null || MountWebTV
+End
+Project WebTVº

@@ -1,0 +1,81 @@
+Old Formats
+	CelImage: All frame data stored as areas in a GIF document
+		PERIOD = %d (mandatory)
+		IMAGE = %s (mandatory)
+		SWING (optional)
+		FRAME = %d %d %d %d\nADVANCE = %d %d (optional)
+		FRAME = %d %d %d %d\nADVANCE = %d %d (optional)
+		...
+		FRAME = %d %d %d %d\nADVANCE = %d %d (optional)
+		
+	AnimationImage: All frame data stored as separate GIFs
+		PERIOD = %d (mandatory)
+		SWING (optional)
+		IMAGE = %s (optional)
+		IMAGE = %s (optional)
+		...
+		IMAGE = %s (optional)
+
+New Formats: Everything is converted to lower-case, conceptually
+	CelImage: All frame data stored as areas in a GIF document
+		PERIOD = %d (mandatory)		# number of 60ths of a second
+		IMAGE = %s (mandatory)
+		SWING (optional)
+		HBOUNCE						# will bounce back off the left or right wall
+		VBOUNCE						# will bounce back off the top or bottom wall
+		HFLIP						# will flip on horizontal bounce
+		VFLIP						# will flip on vertical bounce
+		BLUR						# leave a motion blurred trail
+		# everything after pound sign is a comment
+		#
+		FRAME <frame name> = %d %d %d %d\nADVANCE = %d %d (optional)
+		FRAME <frame name> = %d %d %d %d\nADVANCE = %d %d (optional)
+		...
+		FRAME <frame name> = %d %d %d %d\nADVANCE = %d %d (optional)
+		SOUND <sound name> = %s (optional)
+		#
+		LOOP (or LOOP %d) (or LOOP <sound name>)
+			FRAME <frame name>
+			FRAME = %d %d %d %d\nADVANCE = %d %d (optional)
+			SOUND <sound name>
+			SOUND = %s (optional)
+			DELAY %d			# delay this many 60ths of a second
+			DELAY <sound name>	# delay until this sound done playing
+			ZOOM = %d%			# 100% = same size as before
+			FADE = %d%			# 0% = fully transparent
+			FADEOUT				# begin a controlled fade to 0% over next several frames
+		END
+		<All unparseable lines are ignored>		
+
+Implementations
+	typedef struct
+	{
+		ushort	type;
+		union
+		{
+			DrawFrameCommand		draw;
+			DelayFrameCommand		delay;
+			SoundFrameCommand		sound;
+			ZoomFrameCommand		zoom;
+			FadeFrameCommand		fade;
+			FadeOutFrameCommand		fadeout;
+			CountedLoopFrameCommand	countedLoop;
+			SoundLoopFrameCommand	soundLoop;
+			EndFrameCommand			end;
+		} u;
+	} FrameCommand;
+	To figure size of array, count newlines and allocate that many Frames
+	
+New Tags
+	???<IMG ANI="<cel url name>" LAYER=%d ANISTARTX=%d ANISTARTY=%d LOOP>   (layer value may be -32767 to 32767 (>0 is in front of document))
+
+ToDo
+	Deal with bad animations
+		- no frames
+		- bad bounds
+		- bad advance
+	Write unit test
+	Write builder?
+	Support JPEG (and others) via NewImageData (instead of NewGIFImage)
+	Support multiple layers
+	Scrolling for animations?

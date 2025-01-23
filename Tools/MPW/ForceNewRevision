@@ -1,0 +1,41 @@
+MountWebTVIfNeeded
+Set Exit 0
+Begin
+	If {#} ­ 1
+		Echo "### Usage - {0} file"
+		Exit 0
+	End
+	
+	#	Make sure the file exists
+	Set full `Exists -f "{1}"`
+	If "{full}" == ""
+		Echo "### {0} - File ¶"{1}¶" not found"
+		Exit 1
+	End
+	If "{full}" =~ /Å{wtv:}(Å)¨1:(Å)¨2/
+		Set dir "{¨1}:"
+		Set file "{¨2}"
+		Set project "`Echo "WebTVº{dir}" | StreamEdit -e '1 Replace -c ° /:/ "º"'`"
+	Else If "{full}" =~ /Å{wtv:}(Å)¨1/
+		Set dir ""
+		Set file "{¨1}"
+		Set project "WebTVº"
+	End
+	set path "{wtv:}{dir}{file}"
+	If "`projectinfo -latest -s "{project}{file}"`" =~ /Å,([0-9]+)¨1Å/
+		If "`projectinfo -s "{path}"`" =~ /Å¶*Å/
+			Orphanfiles "{path}"
+		End
+		Rename -y "{path}" "{path}".new
+		CheckOut -y -project "{project}" "{file}"
+		TransferCkID "{path}" "{path}".new
+		Delete -i "{path}"
+		Rename -y "{path}".new "{path}"
+		ExtraModifyReadOnly "{path}"
+		Echo "CheckWindowIn ¶"¶{WTV:¶}{dir}{file}¶" # forced to version {¨1}*"
+		Echo "CheckWindowIn ¶"¶{WTV:¶}{dir}{file}¶" # local: {¨1}*; remote: {¨1}" >> "{wtv:}Temporary:commandListUpdate"
+	Else
+		Echo "### Unable to obtain project information."
+	End
+End	> Dev:StdErr
+

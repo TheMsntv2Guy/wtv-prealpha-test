@@ -1,0 +1,142 @@
+#
+#	File:		CheckedOutFiles
+#
+#	Contains:	script to echo names of files checked out modifiable in a project
+#
+#	Usage:		CheckedOutFiles [-project project | -m]
+#
+#	Status:		CheckedOutFiles may return the following status values:
+#
+#					0		success
+#					1		error
+#
+#	Written by:	scott douglass and Darin Adler
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <2>	 9/11/95	JOE		
+#		 <9>	 1/31/90	sad		add quoting in FileVersInfo test
+#		12/6/89		sad		better parsing of ProjectInfo
+#		11/15/89	dba		fix comments
+#		11/13/89	sad		redirect ProjectInfo not an author warnings
+#		11/9/89		dba		twiddled relentlessly
+#		11/8/89		dba		fix quoting in irrelevant ways
+#		8/7/89		sad		fix no -project case
+#		7/20/89		sad		add -project option
+#		5/26/89		sad		change parsing of ProjectInfo output for new Shell
+#		2/17/89		sad		written from CheckInAll
+#
+#	To Do:
+#		handle file names with spaces
+#
+
+Alias UsageError 'Alert "Ò{0} {Parameters}Ó doesnÕt make sense.¶nUsage:  Ò{0} [-project project | -m]Ó" ; Exit 1'
+
+Set Exit 0
+
+Begin
+
+	Set Options ""
+	Set Project ""
+
+	If {#} == 2 && "{1}" =~ /-project/
+		If {Options} == ""
+			Set Options "-project"
+			Set Project ¶""{2}¶""
+		Else
+			UsageError
+		End
+	Else If {#} == 1 && "{1}" =~ /-m/
+		If {Options} == ""
+			Set Options "-m"
+		Else
+			UsageError
+		End
+	Else If {#} ­ 0
+		UsageError
+	End
+
+	# first get all the check-out directories for the current project
+
+	Set CheckOutDirs "`CheckOutDir -r {Options} {Project}; Set CheckOutDirStatus {Status}; Echo`"
+	If {CheckOutDirStatus}
+		Echo "### {0} - CheckOutDir failed." > Dev:StdErr
+		Exit 1
+	End
+
+	Loop
+		Break If "{CheckOutDirs}" !~ / *CheckOutDir +-project ¶'Ç0,1È([Â:]+º)¨1¶'Ç0,1È ¶'Ç0,1È([Âº]*:)¨2¶'Ç0,1È (Å)¨3/
+		Set Project "{¨1}"
+		Set CheckOutDir "{¨2}"
+		Set CheckOutDirs "{¨3}"
+
+		# now for each directory, get all modified files in the project
+
+		Set Info "`ProjectInfo -s -a "{User}" -m -project "{Project}" ³ Dev:Null; Set ProjectInfoStatus {Status}`"
+		If {ProjectInfoStatus}
+			Echo "### {0} - ProjectInfo of Ò{Project}Ó failed." > Dev:StdErr
+			Exit 1
+		End
+
+		Continue If "{Info}" == ""
+
+		If "{Info}" =~ /¶'Ç0,1È?+º¶'Ç0,1È(Å)¨1/
+			Set Info "{¨1}"
+		Else
+			Echo "### {0} - CouldnÕt parse Info: Ò{Info}Ó" > Dev:StdErr
+			Exit 1
+		End
+
+		Loop
+			Break If "{Info}" !~ /[Â+]*     Ç0,1È¶'([Â,]+)¨1,([0-9.a-z]+¶+)¨2¶' (Å)¨3/
+			Set ProjectFileName "{¨1}"
+			Set ProjectVersInfo "{¨2}"
+			Set Info "{¨3}"
+
+			Set DirFile "{CheckOutDir}{ProjectFileName}"
+
+			If `Exists "{DirFile}"`"" ­ ""
+				Quote "{DirFile}"
+
+				Begin
+					Set FileInfo "`ProjectInfo "{DirFile}"`"
+					If "{FileInfo}" =~ /¶'Ç0,1È([Â,]+)¨1,([0-9.a-z]+[+*]Ç0,1È)¨2¶'Ç0,1È(     WARNING: this file has been renamed!)Ç0,1ÈÅProject: ([Â:]+º)¨5     Checked out: Å/
+						Set FileFileName "{¨1}"
+						Set FileVersInfo "{¨2}"
+						Set VersInfo "({FileVersInfo} vs {ProjectVersInfo})"
+						Set FileProject "{¨5}"
+
+#						If `RelString "{FileProject}" "{Project}"` ­ 0
+						If "{FileProject}" ­ "{Project}"
+							Echo -n "### "
+							Quote -n File "{DirFile}"
+							Echo " is in the wrong project (Ò{FileProject}Ó vs Ò{Project}Ó)"
+						Else If "{FileVersInfo}" ­ "{FileVersInfo}"
+							Echo -n "### "
+							Quote -n File "{DirFile}"
+							Echo " is wrong version ({FileVersInfo} vs {ProjectVersInfo})"
+						End
+					Else
+						Echo "### {0} - CouldnÕt parse FileInfo: Ò{FileInfo}Ó"
+						Exit 1
+					End
+				End > Dev:StdErr
+			Else
+				Echo -n "### "
+				Quote -n File "{ProjectFileName}"
+				Echo " is checked out from Ò{Project}Ó but not in the directory Ò{CheckOutDir}Ó." > Dev:StdErr
+			End
+		End
+		If "{Info}" ­ ""
+			Echo "### {0} - CouldnÕt parse Info: {Info}" > Dev:StdErr
+			Exit 1
+		End
+	End
+	If "{CheckOutDirs}" ­ ""
+		Echo "### {0} - CouldnÕt parse CheckOutDirs: {CheckOutDirs}" > Dev:StdErr
+		Exit 1
+	End
+
+End

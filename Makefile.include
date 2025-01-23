@@ -1,0 +1,355 @@
+#
+# Include Makefile for WebTV
+#
+
+
+#---- Conditionals ---------------------------------------------------------------
+#
+ifdef APP_ROM
+  DEFINES			= $(APP_DEFINES)
+  CONFIG_BASE		= $(TOPDIR)/objects/app
+endif
+
+ifdef BOOT_ROM
+  DEFINES			= $(BOOT_DEFINES)
+  CONFIG_BASE		= $(TOPDIR)/objects/boot
+endif
+
+ifdef GOOBER_ROM
+  DEFINES			= $(GOOB_DEFINES)
+  CONFIG_BASE		= $(TOPDIR)/objects/goober
+endif
+
+ifdef UNI_ROM
+  DEFINES			= 
+  CONFIG_BASE		= $(TOPDIR)/objects/unirom
+endif
+
+ifdef NON_DEBUG
+  D_CONFIG			= $(CONFIG_BASE)-nodebug
+else
+  D_CONFIG			= $(CONFIG_BASE)
+endif
+
+ifdef EXTERNAL_BUILD
+  E_CONFIG			= $(D_CONFIG)-external
+else
+  E_CONFIG			= $(D_CONFIG)
+endif
+
+ifdef PRODUCTION_BUILD
+  P_CONFIG			= $(E_CONFIG)-production
+else
+  P_CONFIG			= $(E_CONFIG)
+endif
+
+CONFIG				= $(P_CONFIG)
+
+SRC					= .
+OBJ					= ${CONFIG}/obj
+LIB					= ${CONFIG}/lib
+CWD					= ${shell pwd}
+HOMEDIR				= $(shell cd;pwd)
+SUBPATH				= $(strip $(subst $(HOMEDIR)/,,$(PWD)))
+
+TARGET_DIRS			=		\
+		${CONFIG}			\
+		${CONFIG}/obj		\
+		${CONFIG}/lib		\
+		${CONFIG}/result	\
+#
+		
+$(TARGET_DIRS):
+	@mkdir -p $@
+		
+
+
+#-------- Sub Directory rules -----------------------------------------------------
+#
+APP_SUBDIRS = \
+		Audio \
+		Audio/MPEGAudio \
+		Boot \
+		Box \
+		Box/Ansi \
+		Communications \
+		Communications/Crypto \
+		Communications/TCP/Tiny \
+		Communications/Tellyscript \
+		Debug \
+		Graphics \
+		Graphics/JPEG \
+		HTML \
+		Input \
+		Sound \
+		Sound/MIDI \
+		Storage \
+		System \
+		Testing \
+		Utilities \
+		UserInterface \
+#
+
+BOOT_SUBDIRS = \
+		Box \
+		Box/Ansi \
+		Communications \
+		Communications/TCP/Tiny \
+		Communications/Tellyscript \
+		Debug \
+		Input \
+		Storage \
+#
+
+GOOBER_SUBDIRS = \
+		Box \
+		Box/Ansi \
+		Goober \
+		Input \
+		Storage \
+		Testing \
+#
+
+ifdef APP_ROM
+  SUBDIRS			= $(APP_SUBDIRS)
+endif
+
+ifdef BOOT_ROM
+  SUBDIRS			= $(BOOT_SUBDIRS)
+endif
+
+ifdef GOOBER_ROM
+  SUBDIRS			= $(GOOBER_SUBDIRS)
+endif
+
+
+.PHONY: ${SUBDIRS} 
+${SUBDIRS} : 
+	echo ""
+	echo "    -> $@"
+	(cd $@; ${MAKE} subdir) 
+	
+
+.PHONY: EntryPoint
+EntryPoint :
+	echo ""
+	(cd Box; ${MAKE} LocalEntryPoint) 
+
+
+#
+# Set up the paths for makedepend
+#
+MAKEDEPEND_PATH += /tools/X11/R6/bin:	# Path to makedepend for Suns
+MAKEDEPEND_PATH += /usr/X11/bin:		# Path to makedepend for BSDI machines
+PATH := $(MAKEDEPEND_PATH):${PATH}
+export PATH
+
+#-------- DEFINES used by tools -----------------------------------------------------
+#
+
+COMMON_DEFINES = -DWEBTV -DPRERELEASE -DSPOT1  \
+		-DCPU_R4640 -DHARDWARE -D__MIPSEB__ -D_MIPS_SZINT=32 \
+		-D_MIPS_SZLONG=32 -D_MIPS_SZPTR=32 -DNO_TTYTYPE  \
+		-DSPOT3_REFRESH_HACK -DHW_INTERLACING -DSPOT3_SHIFT_HACK \
+		-DBUILD_DATE="\"`date +"%m/%d/%y,%H:%M:%S"`\"" -DBUILDER="\"`whoami`\""
+
+ifndef NON_DEBUG
+  COMMON_DEFINES += -DDEBUG -DPRINTF_ENABLED
+endif
+
+ifdef EXTERNAL_BUILD
+  COMMON_DEFINES += -DEXTERNAL_BUILD
+endif
+
+APP_DEFINES = $(COMMON_DEFINES) -DAPPROM -DIGOR_MIDI  \
+		-DDEBUG_BOXPRINT -DROMBASE=0x$(APP_ROMBase) -DROMSIZE=0x$(APP_ROMSize) -DROMFSTOP=0x$(ROMFileSysTop)
+
+ifndef NON_DEBUG
+  APP_DEFINES +=	-DDEBUG_MONKEY
+endif
+
+ifndef PRODUCTION
+  APP_DEFINES +=	-DDEBUG_TOURIST
+  COMMON_DEFINES +=  -DSERIAL_DEBUG
+endif
+
+
+BOOT_DEFINES = $(COMMON_DEFINES) -DBOOTROM -DROMBASE=0x$(BOOT_ROMBase) \
+		-DROMSIZE=0x$(BOOT_ROMSize)	-DROMFSTOP=0x$(ROMFileSysTop)
+
+GOOB_DEFINES = $(COMMON_DEFINES) -DGOOBER -DGOOBER_HACK -DNO_TTYTYPE \
+		-DROMBASE=0x$(GOOB_ROMBase) -DROMSIZE=0x$(GOOB_ROMSize) -DROMFSTOP=0x$(GOOB_ROMTop)
+
+
+#-------- Options used by tools -----------------------------------------------------
+#
+
+ROMDataAddress 	=	80000700
+
+ROMFileSysTop	=	9FE00000
+
+APP_ROMSize		=	00100000
+APP_ROMTop		=	9FEF0000
+APP_ROMBase		= 	9FE00000
+
+BOOT_ROMSize	=	00200000
+BOOT_ROMTop		=	9FE00000
+BOOT_ROMBase	= 	9FC00000
+
+GOOB_ROMSize	=	00040000
+GOOB_ROMTop		=	9FC40000
+GOOB_ROMBase	=	9FC00000
+
+APP_LD_FLAGS	= -G 2048 -N -Xlinker -Ttext -Xlinker $(APP_ROMBase) \
+	   				-Xlinker -Tdata -Xlinker $(ROMDataAddress) -Xlinker -Map -Xlinker ${CONFIG}/result/link.map  
+
+BOOT_LD_FLAGS	= -G 2048 -N -Xlinker -Ttext -Xlinker $(BOOT_ROMBase) \
+	   				-Xlinker -Tdata -Xlinker $(ROMDataAddress) -Xlinker -Map -Xlinker ${CONFIG}/result/link.map  
+
+GOOBER_LD_FLAGS	= -G 2048 -N -Xlinker -Ttext -Xlinker $(GOOB_ROMBase) \
+	   				-Xlinker -Tdata -Xlinker $(ROMDataAddress) -Xlinker -Map -Xlinker ${CONFIG}/result/link.map  
+
+GENFLAGS		= -nostdinc -nostdlib
+
+ifndef NON_DEBUG
+  OPTIMIZER		= -O1 -Wcomment -Wchar-subscripts 	\
+ 				-Wimplicit -Winline -Wmissing-prototypes	\
+              -Wmissing-declarations -Wnested-externs -Wno-import	\
+              -Wparentheses -Wpointer-arith \
+              -Wreturn-type -Wshadow -Wstrict-prototypes -Wswitch	\
+              -Wtrigraphs	\
+              -Wuninitialized -Wunused -Wwrite-strings
+else
+  OPTIMIZER		= -O3 -fno-unroll-loops -fpeephole -fno-keep-inline-functions
+endif
+
+CPUFLAGS        =  -mips3 -m4650 -mmad -msingle-float -mgp32 -msoft-float     \
+                   -mno-memcpy -mno-abicalls -mno-long-calls
+                   #    -membedded-data        ??? use this for less runtime ram utilization
+
+CFLAGS            = $(OPTIMIZER) $(CPUFLAGS) -fpermissive -fsigned-char -pipe -fno-rtti -fno-exceptions -x c++ -fno-builtin $(GENFLAGS)
+ASMCFLAGS        = -pipe -xassembler-with-cpp $(CPUFLAGS) -fno-builtin $(GENFLAGS)
+
+INCLUDE_FLAGS	=	-I $(TOPDIR)/Interfaces \
+					-I $(TOPDIR)/Storage \
+					-I $(TOPDIR)/Utilities \
+					-I $(TOPDIR)/Graphics \
+					-I $(TOPDIR)/Graphics/JPEG \
+					-I $(TOPDIR)/UserInterface \
+					-I $(TOPDIR)/Communications \
+					-I $(TOPDIR)/Communications/Crypto \
+					-I $(TOPDIR)/Communications/TCP/Tiny \
+					-I $(TOPDIR)/Communications/Resolver \
+					-I $(TOPDIR)/Communications/Tellyscript \
+					-I $(TOPDIR)/Sound/MIDI \
+					-I $(TOPDIR)/Box \
+					-I $(TOPDIR)/Box/Ansi \
+					-I $(TOPDIR)/Goober \
+					-I $(TOPDIR)/Goober/pforth \
+#
+
+
+
+ifndef PHASE_STRING
+  ifdef NON_DEBUG
+    ifdef EXTERNAL_BUILD
+      PHASE_STRING := "non-debug, external"
+    else
+      PHASE_STRING := "non-debug"
+    endif
+  else
+    PHASE_STRING := "debug"
+  endif
+endif
+
+ifndef BUILD_STRING
+  BUILD_STRING := " Built `date +"%m/%d/%y %H:%M:%S"`, by `whoami` "
+endif
+
+
+#
+# Set up paths for gcc
+#
+GCC_ROOT = /tools/gnu-mips
+GCC_PATH := $(GCC_ROOT)/bin:$(GCC_PATH)
+GCC_PATH := $(GCC_ROOT)/mips-ecoff/bin:$(GCC_PATH)
+GCC_PATH := $(GCC_ROOT)/lib/gcc-lib/mips-ecoff/2.7.2:$(GCC_PATH)
+PATH := $(GCC_PATH)${PATH}
+
+CC			= gcc
+LD			= ld
+RM			= rm -rf
+MV			= mv -f
+OBJDUMP		= /tools/gnu-mips/bin/mips-ecoff-objdump
+OBJDUMP_OPTS = --disassemble
+STRIP		= /tools/gnu-mips/bin/mips-ecoff-strip
+ECHO		= /tools/gnu/bin/echo
+
+#
+# Default rules for compiling
+#
+CPPFLAGS    = $(CFLAGS)    $(DEFINES) $(INCLUDE_FLAGS)
+ASMCPPFLAGS = $(ASMCFLAGS) $(DEFINES) $(INCLUDE_FLAGS)
+
+
+
+#-------- Object rules -----------------------------------------------------
+#
+# Determine the targets for the objects.  Expect the following to be defined in makefiles:
+#	BOOT_CSRC, BOOT_ASRC, APP_CSRC, APP_ASRC, GOOBER_CSRC and GOOBER_ASRC 
+#
+
+ifdef APP_ROM
+  OBJS = ${APP_CSRC:%.c=${OBJ}/%.o} ${APP_ASRC:%.s=${OBJ}/%.s.o}
+endif
+
+ifdef BOOT_ROM
+  OBJS = ${BOOT_CSRC:%.c=${OBJ}/%.o} ${BOOT_ASRC:%.s=${OBJ}/%.s.o}
+endif
+
+ifdef GOOBER_ROM
+  OBJS = ${GOOBER_CSRC:%.c=${OBJ}/%.o} ${GOOBER_ASRC:%.s=${OBJ}/%.s.o}
+endif
+
+DEPS = ${OBJS:%.o=%.d}
+
+
+#--------- default rules -------------------------------------------------
+#
+${OBJ}/%.o : ${SRC}/%.c
+	${ECHO} "       Compiling $(<F)"
+	${CC} -c ${CPPFLAGS} -o ${OBJ}/$(*F).o ${CWD}/$< -MD && ( ${ECHO} -n "${OBJ}/" > $(@D)/$(*F).d; cat ${CWD}/$(*F).d >> $(@D)/$(*F).d; ${RM} ${CWD}/$(*F).d; )
+
+${OBJ}/%.s.o : ${SRC}/%.s
+	${ECHO} "       Assembling $(<F)";
+	${CC} -c ${ASMCPPFLAGS} -o $@ ${CWD}/$< -MD && ( ${ECHO} -n "${OBJ}/" > $(@D)/$(*F).d; cat ${CWD}/$(*F).d >> $(@D)/$(*F).d; ${RM} ${CWD}/$(*F).d )
+
+${OBJ}/%.s : ${SRC}/%.c
+	${ECHO} "       Compiling $(<F)"
+	${CC} -S ${CPPFLAGS} -o ${OBJ}/$(*F).s ${CWD}/$< -MD && ( ${ECHO} -n "${OBJ}/" > $(@D)/$(*F).d; cat ${CWD}/$(*F).d >> $(@D)/$(*F).d; ${RM} ${CWD}/$(*F).d; )
+
+
+
+
+#-------- Library rules -----------------------------------------------------
+#
+LIBRARY = $(LIB)/$(notdir $(SUBDIR))Lib.o
+
+
+${LIBRARY}: $(OBJS)
+	${ECHO} "       Creating $(@F) "
+	${LD} -r -o $@ $(OBJS)
+
+.PHONY : subdir
+subdir : ${EXTRA_TARGETS} ${LIBRARY}
+
+
+LINK_LIBRARIES	= ${foreach subdir, ${SUBDIRS}, ${LIB}/${notdir ${subdir}}Lib.o} 
+
+	
+
+#-------- Dependency generation -----------------------------------------------------
+#
+
+# Include the dependency files
+-include $(DEPS)  

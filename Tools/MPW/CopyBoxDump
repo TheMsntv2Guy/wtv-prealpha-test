@@ -1,0 +1,16 @@
+If "{UnixVolume:}" == ""
+	Set UnixVolume: "{UnixUser}:"
+End
+If "{UnixWTV:}" == ""
+	Set UnixWTV: "{UnixVolume:}WebTV:"
+End
+
+If !`exists "{UnixVolume:}"`
+	MountUnix
+End
+
+If !`exists "{WTV:}.o:"`
+	NewFolder "{WTV:}.o:"
+End
+
+Duplicate -y "{UnixWTV:}boxdump" "{WTV:}.o:boxdump"

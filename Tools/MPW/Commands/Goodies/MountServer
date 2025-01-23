@@ -1,0 +1,92 @@
+#
+#	File:		MountServer
+#
+#	Contains:	script to mount a server
+#
+#	Usage:		MountServer username [[zone:]server]:[volume][:]
+#
+#	Status:		MountServer may return the following status values:
+#
+#					0		the server was mounted
+#					1		error
+#					2		the user canceled
+#
+#				MountServer mounts a a server volume. If the volume is not already mounted,
+#				it asks for a password for the volume.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988, 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History:
+#
+#		11/9/89		dba		twiddle relentlessly
+#
+#	To Do:
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+if {#} != 2
+	echo 'Usage:		MountServer username [[zone:]server]:[volume][:]'
+	exit 1
+end
+
+Begin
+	Set User "{1}"
+	Set Server "{2}"
+	Set ChooseErrors "{SystemFolder}ChooseErrors"
+
+	# make sure that names are formed properly
+
+	If "{Server}" =~ /([Â:]*)¨2:([Â:]+)¨3:Ç0,1È/
+		Set Zone ""
+		Set Server "{¨2}"
+		Set Volume "{¨3}"
+	Else If "{Server}" =~ /([Â:]*)¨1:([Â:]+)¨2:([Â:]+)¨3:Ç0,1È/
+		Set Zone "{¨1}"
+		Set Server "{¨2}"
+		Set Volume "{¨3}"
+	Else
+		Alert "CanÕt parse server name: Ò{Server}Ó"
+		Exit 1
+	End
+
+	# check if the volume is mounted
+
+	If `Exists "{Volume}:"`"" == ""
+		# handle case where one volume from this server is already mounted (or empty password)
+		Choose "{Zone}:{Server}:{Volume}" ³ Dev:Null
+		If {Status} ­ 0
+			If x"{LoginPassword}" ­ x
+				Set password {loginPassword}
+			Else
+				Set IgnoreCmdPeriod 1
+				Set password "`CoolRequest -h -p "Enter your password on the Ò{Server}Ó server, please:"; Set GetPasswordStatus {Status}`"
+				Set IgnoreCmdPeriod 0
+				Exit 2 If {GetPasswordStatus}
+			End
+	
+			Set echo 1
+			Choose "{Zone}:{Server}:{Volume}"  -u "{User}" -pw "{password}" · "{ChooseErrors}"
+			Set echo 0
+			Set ChooseStatus {Status}
+			Unset password
+			If {ChooseStatus} ­ 0
+				Alert "`Catenate "{ChooseErrors}"`"
+				Delete -i "{ChooseErrors}"
+				Exit 1
+			End
+			Delete -i "{ChooseErrors}"
+		End
+	End
+
+End {somewhere}

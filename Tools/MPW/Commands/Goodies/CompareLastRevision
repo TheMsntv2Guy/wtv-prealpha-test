@@ -1,0 +1,49 @@
+#
+#	File:		CompareLastRevision
+#
+#	Contains:	script to compare a file with the last revision of it
+#
+#	Usage:		CompareLastRevision fileÉ
+#
+#				CompareLastRevision runs a compare command with the last revision
+#				of a file checked out for modification.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988, 1989 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History:
+#
+#		11/9/89		dba		twiddled a bit; CompareRevisions is better
+#		11/8/89		dba		change != to ­
+#
+#	To Do:
+#
+
+Set Exit 0
+
+For File In {"Parameters"}
+	If "{File}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+		Echo "### {0} - Ò{File}Ó: bad file name" > Dev:StdErr
+		Continue
+	End
+	Set Short "{¨1}"
+
+	Set Info "`ProjectInfo "{File}"`"
+	If "{Info}" !~ /ÅProject: ([Â:]+º)¨1     Checked out: Å/
+		Echo "### {0} - Ò{File}Ó: not part of project" > Dev:StdErr
+		Continue
+	End
+	Set Project "{¨1}"
+
+	CheckOut -d "{Boot}" -project "{Project}" "{Short}"
+	Set CheckOutStatus {Status}
+	If {CheckOutStatus}
+		Echo "### {0} - unable to check out Ò{File}Ó" > Dev:StdErr
+		Exit {CheckOutStatus}
+	End
+
+	Compare -n -t -x "{Boot}{Short}" "{File}"
+
+	Delete -i "{Boot}{Short}"
+End

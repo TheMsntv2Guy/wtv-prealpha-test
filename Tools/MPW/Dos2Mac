@@ -1,0 +1,6 @@
+For file in {Parameters}
+	#Close -y "{{file}}" || set status 0
+	translate 
+ < "{{file}}" > translate.tmp
+	Move -y translate.tmp "{{file}}"
+End

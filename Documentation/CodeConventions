@@ -1,0 +1,57 @@
+Indentation
+
+* K&R brace and indentation style
+* Tab stops at 4
+* Functions defined with return types on separate lines
+* Functions declared with return types on same line
+
+Primitive types
+
+* long/ulong (32 bits)
+* short/ushort (16 bits)
+* char/uchar (8 bits)
+* Boolean (true, false)
+* Error (<errno.h> or Errors.h)
+* Avoid int except for loop counts, no Public/Private
+
+Constants
+
+* true/false for Boolean
+* nil for pointers (not NULL)
+* use enum when possible
+
+Names
+
+* Intercaps for everything
+* All function names start with a capital letter
+* Local variables start with a lowercase letter
+* Get/Set/New prefixes for functions
+* 'k' prefix for constants
+* 'g' prefix for global variables
+
+Parameters
+
+* Const pointers to data that is not modified (e.g. const char* name)
+* Non-const pointers to data that is modified (e.g. FILE* file)
+
+Comments
+
+* Function-level comments go inside the function (on line after opening brace)
+* Block-level comments go on line above block
+* Statement-level comments go to the right of the statement (rarely used)
+
+Style
+
+* Early return is encouraged, multiple levels of indentation is discouraged
+* Goto is ok for error exiting and cleanup
+* Pointers declared with '*' immediately following type (e.g. char* buffer)
+* Code sharing is encouraged.
+* Object oriented style is encouraged.
+* Simplicity of style is encouraged.
+* Common style is encouraged.
+* Declare static functions at the top of the file.
+* Avoid global variables, and don't them between files. 
+* All routines that can return an Error, should.  (except for ENOMEM)
+* Log and immediately exit() if out of memory.
+* Always check and log errors returned by any function.
+* Avoid return statements in the middle of a function, instead goto the end.

@@ -1,0 +1,4 @@
+IMAGE file://ROM/Images/panelborder.gif
+INNERBOUNDS 24,24,76,76
+NOFILTER
+DRAWCENTER

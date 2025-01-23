@@ -1,0 +1,71 @@
+** Web Crawler Ideas Input Sheet
+Last Updated: Tuesday, October 10, 1995 2:12:42 PM
+Tabstop=4
+
+This is a conventient place for people using projector to drop in suggestions
+for evolving the web crawler.  This list will be mailed to Lee periodically.
+It may go away if we decide on a different input method for suggestions.
+
+
+Table of Contents
+-----------------------------------
+1. Suggestion list
+2. Crawler architecture
+
+Contents
+-----------------------------------
+1. This is a list of suggestions of our practical uses for a long-running web crawler:
+
+	Vital:
+		- Determine average sizes:
+			- HTML page alone
+			- Average GIF
+			- Average JPEG
+			- Average page + media types
+	
+	Useful:
+		- Determine average access times:
+			- Different access transport
+				- T1, ISDN, 28.8, 14.4
+			- TCP connection times
+			- Round trip times
+				- Large data
+				- Small data
+		- Percentage of pages w/ certain characteristics:
+			- shttp, https pages
+			- Netscape extensions
+			- Common HTML errors seen
+			- Password required
+			- ftp links
+			- gopher links
+			- Wide images
+			- "Difficult" image maps
+			- Forms
+			- Tables
+		- Extremes:
+			- Biggest page (core and w/ images)
+			- Slowest to retrieve
+			- Most heavily "linked to" pages
+		- Bad links
+	
+	Fun:
+		- Pages w/ given word occurring
+		- Number of existing pages sorted by country
+		- Total number of pages
+	
+	
+2. These are suggestions for the architecture of the crawler:
+
+	Vital:
+		- Allow access to the crawler so that others may modify and run it
+			- Source code accessible
+			- Simple make command
+			- Simple execution script
+			- Example of simple modification
+			- (Plug in architecture : dynamic linking or via script execution)
+	Useful:
+		- Share code amongst crawlers
+		- Set up scheduling planning and tracking
+		- Maintain database that can be useful for simple queries, w/out needing
+		  to hit the net each time
+	Fun:

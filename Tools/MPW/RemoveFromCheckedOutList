@@ -1,0 +1,14 @@
+If {#} == 0
+	Echo "# RemoveFromCheckedOutList requires at least one parameter!"
+	Exit 1
+End
+
+Echo -n >> "{{WTV:}}"CheckedOutList
+
+For file In {parameters}
+	If "{file}" =~ /:(Å)¨1/; Set file "`Directory`{¨1}"; End
+	If "{file}" !~ /{WTV:}(([Â:]+:*)*[Â:]+)¨1/; Alert "RemoveFromCheckedOutList canÕt parse file parameter."; Exit 1; End
+	Set shortPathMinusColon "{{¨1}}"
+
+	StreamEdit -e "/¥:{shortPathMinusColon}¶n/ delete" -o "{{WTV:}}"CheckedOutList "{{WTV:}}"CheckedOutList
+End

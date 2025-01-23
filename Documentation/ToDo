@@ -1,0 +1,20 @@
+Add your own ToDos in here, if you please.
+
+CelImage
+	Parsing
+		- Make CelImage parsing robust
+			- Deal w/ out of memory in parsing
+			- Deal w/ parsing errors
+		- Tag memory correctly
+	Drawing
+		- Implement scale
+		- Implement rotation
+		- Handle bouncing
+	HTML Integration
+		- ACTION on button
+		- Give absolute position
+		etc.
+	Misc
+		- Handle JPEGs
+	Questions:
+		- How to finalize DataList?

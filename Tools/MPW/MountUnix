@@ -1,0 +1,12 @@
+If "{UnixVolume:}" == ""
+	Set UnixVolume: "{UnixUser}:"
+End
+If "{UnixMachine}" == ""
+	Set UnixMachine ":homeless"
+End
+
+If x"{UnixPassword}" == x
+	Choose "{UnixMachine}:{UnixVolume:}" -u "{UnixUser}" -askpw
+Else
+	Choose "{UnixMachine}:{UnixVolume:}" -u "{UnixUser}" -pw "{UnixPassword}"
+End

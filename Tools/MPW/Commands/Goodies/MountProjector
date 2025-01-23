@@ -1,0 +1,75 @@
+#
+# MountProjector		Andrew Shebanow		6/28/88
+#
+# Modification History:
+#
+#	2/6/89(AGS)		Added code to execute ProjInit script, and replaced
+#					references to MySrc variable with SourceDir
+#	1/24/89(AGS)	Changed 'cd' command to 'Directory',
+#	6/30/88(DJB)	Changed from using replace on files to using Evaluate
+#	7/8/88(AGS)		No need to create project list now, since we do it
+#					every time we do a SetProjector.
+#
+# Script to mount a project
+#
+# Note that you must use Execute to run this script
+# if you want BuildMenu to know about your new build
+# target.
+#
+
+# save exit status
+Set OldExit {Exit}
+Set Exit 0
+
+# Set up project specific items
+Set ProjDir NIL
+
+Set ProjDir `GetListItem -r 16 -single -d {RootProjectList} -m "Choose a project"` > Dev:Null ³ Dev:Null
+
+# If User Selected a real project name
+if "{ProjDir}" != NIL
+
+	# Extract the root project name
+	( Evaluate "{ProjDir}" =~ /Å:(Å)¨1:/ ) · Dev:Null
+	Set ProjName "{¨1}"
+	
+	# Mount the project, make it the default
+	MountProject "{ProjDir}" ³³ "{WorkSheet}"
+	
+	# If directory exists, checkout to it
+	If "`Exists -d {SourceDir}{ProjName}.src`"
+		# set the checkout dir to a file
+		Set CheckDir "{SourceDir}{ProjName}.src"
+	Else If "`Exists -d {SourceDir}{ProjName}`"
+		# set the checkout dir to a file
+		Set CheckDir "{SourceDir}{ProjName}"
+	# Else For Dave B.
+	Else If "`Exists -d {SourceDir}{ProjName}_Fldr`"
+		# set the checkout dir to a file
+		Set CheckDir "{SourceDir}{ProjName}_Fldr"
+	Else
+		# We didn't find the checkout dir, so use default
+		Set CheckDir "{ProjDir}"		
+	End
+	CheckOutDir -r -project "{ProjName}" "{CheckDir}" ³³ "{WorkSheet}"
+	
+	# Make checkout dir the current directory
+	Directory "{CheckDir}"
+	
+	# Set Program Variable for Build menu
+	Set Program {ProjName}
+	Export Program
+
+	# Update our menus
+	DeleteMenu Source ·· Dev:Null || Set Status 0
+	ProjListMenu
+	
+	# Execute project init script if present
+	If "`Exists ProjInit`" != ""
+		Execute ProjInit ·· "{WorkSheet}"
+	End
+
+End
+
+# restore previous state of {Exit}
+Set Exit {OldExit}

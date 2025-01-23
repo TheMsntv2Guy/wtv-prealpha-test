@@ -1,0 +1,47 @@
+CheckWindowIn "{WTV:}Content:MIDI:all.html" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:B- jukebox3.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:B-jukebox 1.2.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:B-Jukebox2.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:B-Log On.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:B-Splash v.2.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Dismiss Error Win.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Long Win Scrl dn.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Long Win Scrl up.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Make Link Window.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Med Win Scrl dn.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Med Win Scrl up.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Modem Dialup.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-New Mail.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Option Win Scl Dn.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Option Window Scroll Up.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Page Back.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Page Scroll Sound.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Save Away.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Scroll Limit.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Select Pop-Up.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Short Win Scrl dn.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Short Win Scrl up.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Soft Error.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Submit-Search II.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-Type Sound.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-¥old¥ Goto Window.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:M-¥old¥ Submit-Search.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox1.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox2.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox3.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox4.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox5.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox6.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox7.mid" 	   #	new
+CheckWindowIn "{WTV:}Content:MIDI:P-jukebox8.mid" 	   #	new
+CheckWindowIn "{WTV:}NewProjectorFiles" 	   #	new
+CheckWindowIn "{WTV:}OldChangeLog" 	   #	new
+CheckWindowIn "{WTV:}ROM:AudioScope.html" 	   #	new
+CheckWindowIn "{WTV:}ROM:Images:Keyboard3.gif" 	   #	new
+CheckWindowIn "{WTV:}ROM:Keyboard.html" 	   #	new
+CheckWindowIn "{WTV:}ROM:Keyboard3.html" 	   #	new
+CheckWindowIn "{WTV:}ROM:NumericKeypad.html" 	   #	new
+CheckWindowIn "{WTV:}ROM:PhoneSetup2.html" 	   #	new
+CheckWindowIn "{WTV:}ROM:table" 	   #	new
+Delete "{WTV:}Box:\\HWAudio.c"	# mpw temp
+Delete "{WTV:}System:\\System.c"	# mpw temp

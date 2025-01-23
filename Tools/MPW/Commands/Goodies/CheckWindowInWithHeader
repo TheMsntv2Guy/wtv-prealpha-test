@@ -1,0 +1,184 @@
+#
+#	File:		CheckWindowIn
+#
+#	Contains:	script to check a window in
+#
+#	Usage:		CheckWindowIn window
+#
+#	Status:		CheckWindowIn may return the following status values:
+#
+#					0		the window was checked in
+#					1		error
+#					2		the user canceled
+#
+#				CheckWindowIn presents a dialog that allows the user to type
+#				in a short comment that indicates what changes have been made
+#				to the file since it was checked out. These will be logged into
+#				the project, and into the file.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History (maintain by hand, CheckWindowIn confuses itself by editing itself):
+#
+#				  1/3/90	dba		pass suffix to FindChange
+#				12/29/89	dba		donÕt bother stripping the file (too slow)
+#				11/15/89	dba		change comment handling a bit
+#				 11/9/89	dba		stopped using LastChange marker; invented mark character
+#
+#	To Do:
+#		a way to keep working (keep the modifiable)
+#		a way to introduce a new branch
+#		a way to enter a ÒtaskÓ
+#		make ModifyReadOnly work even better by getting NewVersion from project
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+Set ProjectHeaders 1
+
+Begin
+
+	Set OldComment "{SystemFolder}OldComment"
+	Set NewComment "{SystemFolder}NewComment"
+	Set CheckInErrors "{SystemFolder}CheckInErrors"
+	Set Window "{1}"
+
+	# get short name of window
+
+	If "{Window}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+		Alert "CanÕt parse window parameter."
+		Exit 1
+	End
+	Set Short "{¨1}"					# get short name for dialogs
+	Set Cant "Ò{Short}Ó canÕt be checked in"
+
+	# check what project the window belongs to
+
+	Set Info "`ProjectInfo "{Window}" -comments`"
+
+	Unset New
+	Unset OldVersion
+	Unset NewVersion
+	Unset Project
+
+	Set GotOldComment 0
+
+	If "{Info}" !~ /[Â,]+,([0-9]+)¨1([¶+¶*]Ç0,1È)¨3ÅProject: ([Â:]+º)¨2     Checked out: Å/
+		If `Project` == ""
+			Alert "{Cant} because there are no projects mounted."
+			Exit 1
+		End
+
+		Set New "-new -project `GetListItem -r 10 ¶`MountProject -pp -s -r¶` -d ¶`Project¶` ¶
+			-m "Ò{Short}Ó isnÕt in a project. Choose one to add it to:"; Set GetListItemStatus {Status}`"
+		Exit 2 If {GetListItemStatus}
+
+		Echo -n "first checked in" > "{OldComment}"
+		Set GotOldComment 1
+
+		If "{InitialVersion}" ­ ""
+			Set NewVersion "{InitialVersion}"
+		Else
+			Set NewVersion 1
+		End
+	Else
+		Set OldVersion {¨1}
+		Set NewVersion `Evaluate {OldVersion} + 1`
+		Set OldVersion "{OldVersion}{¨3}"
+		Set Project "{¨2}"
+
+
+		# check if the project is mounted
+
+		ProjectInfo -project "{Project}" -only
+		If {Status}
+			Alert "{Cant} because the project Ò{Project}Ó is not mounted."
+			Exit 1
+		End
+
+		# ensure that the window is checked out
+
+		If "{Info}" !~ /[Â,]+,[Â ¶t]+[¶+¶*]Å/
+			Alert "{Cant} because it wasnÕt checked out."
+			Exit 1
+		End
+
+		# parse an old comment if it is present
+
+		If "{Info}" =~ /ÅComment: +(Å)¨1/
+			Echo -n "{¨1}" > "{OldComment}"
+			Set GotOldComment 1
+		End
+	End
+
+	If {ProjectHeaders}
+		Mark -y ¤ OldSelection "{Window}"
+		If "{OldVersion}" ­ ""
+			FindChange "{Window}" "{OldVersion}" "{OldComment}" && Set GotOldComment 1
+		End
+	End
+
+	Set GetOldComment ""
+	If {GotOldComment}
+		Set GetOldComment "-d < ¶"{OldComment}¶""
+	End
+
+	Set IgnoreCmdPeriod 1
+		CoolRequest -q {GetOldComment} "What did you change in Ò{Short}Ó?" > "{NewComment}"
+		Set CommentStatus {Status}
+	Set IgnoreCmdPeriod 0
+
+	Delete -i "{OldComment}"
+
+	If {CommentStatus}
+		If {ProjectHeaders}
+			Find OldSelection "{Window}"
+			Unmark OldSelection "{Window}"
+		End
+		Delete -i "{NewComment}"
+		Exit 2
+	End
+
+	If {ProjectHeaders}
+
+		# add/modify a change in the change history
+
+		Evaluate "`Files -n -q -x m "{Window}"`" =~ /[Â¶/]+ ([1-9]Å)¨1/
+		Set Date "{¨1}"					# get date before adding change
+
+		Clear ¤ "{Window}"				# get rid of the old change
+		AddChange "{Window}" "{NewVersion}" "{NewComment}"
+		If {Status}						# if we canceled
+			Find OldSelection "{Window}"
+			Unmark OldSelection "{Window}"
+			Exit 2
+		End
+
+		SetFile -m "{Date}" "{Window}"	# set date back to before change
+
+		Find OldSelection "{Window}"
+		Unmark OldSelection "{Window}"
+		Save "{Window}"					# save before checking in
+
+	End
+
+	CheckIn {New} -cf "{NewComment}" "{Window},{NewVersion}" · "{CheckInErrors}"
+	Set CheckInStatus {Status}
+	Delete -i "{NewComment}"
+	If {CheckInStatus}
+		Alert "{Cant}. You may need to check it in on a branch.¶n`Catenate "{CheckInErrors}"`"
+		Exit 1
+	End
+	Delete -i "{CheckInErrors}"
+
+End {somewhere}

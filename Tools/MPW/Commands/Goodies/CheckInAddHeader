@@ -1,0 +1,148 @@
+
+open {4}
+
+Begin
+
+	Set Project "{1}"
+	Set Version "{2}"					# use this version
+	Set Comment "{3}"	
+	Set Window "{4}"					# add change to this file (must be open window)
+
+	# add <> to version number
+
+	If "{Version}" != ""
+		If "{Version}" =~ /[Â¶[<]Å/
+			Set Version "<{Version}>"
+		End
+	End
+
+	# get short name of window
+
+	If "{Window}" =~ /:*([Â:]+:*)*([Â:]+.([a-z68]+)¨2)¨1/
+		Set Short "{¨1}"
+		Set Suffix {¨2}
+	Else If "{Window}" =~ /:*([Â:]+:*)*([Â:]+)¨1/
+		Set Short "{¨1}"
+		Set Suffix ""
+	Else
+		Exit 1
+	End
+
+	If "{Suffix}" =~ /[chris]/		# comments for C, C headers, Rez, and .i files (used in Finder)
+		Set StartComment	'/*'
+		Set EndComment		'*/'
+		Set Leader			''
+	Else If "{Suffix}" =~ /cp/		# comments for C++
+		Set StartComment	'/*'
+		Set EndComment		'*/'
+		Set Leader			''
+	Else If "{Suffix}" =~ /p/		# comments for Pascal
+		Set StartComment	'{'
+		Set EndComment		'}'
+		Set Leader			''
+	Else If "{Suffix}" =~ /a/		# comments for assembly language
+		Set StartComment	';'
+		Set EndComment		';'
+		Set Leader			';'
+	Else If "{Suffix}" =~ /aii/		# comments for 6502 assembly language
+		Set StartComment	';'
+		Set EndComment		';'
+		Set Leader			';'
+	Else If "{Suffix}" =~ /68k/		# comments for 68K Psyq assembler
+		Set StartComment	';'
+		Set EndComment		';'
+		Set Leader			';'
+	Else							# comments for shell scripts, Makefiles etc.
+		Set StartComment	'#'
+		Set EndComment		'#'
+		Set Leader			'#'
+	End
+
+	If "{Contents}" == ""
+		Set Contents "xxx put contents here xxx"
+	End
+
+	If "{Writers}" == ""
+		Set Writers "xxx put writers here xxx"
+	End
+
+	If "{Copyright}" == ""
+		If "`Date -a -d`" =~ /Å, (19[0-9][0-9])¨1/
+			Set Copyright "© {¨1} by WebTV, Inc., all rights reserved."
+		End
+	End
+
+	Find ¥ "{Window}"
+	Begin
+			Echo "{StartComment}"
+			Echo "{Leader}¶tFile:¶t¶t{Short}"
+			Echo "{Leader}"
+			Echo "{Leader}¶tContains:¶t{Contents}"
+			Echo "{Leader}"
+			Echo "{Leader}¶tWritten by:¶t{Writers}"
+			Echo "{Leader}"
+			Echo "{Leader}¶tCopyright:¶t{Copyright}"
+			Echo "{Leader}"
+			Echo "{Leader}¶tChange History (most recent first):"
+			Echo "{Leader}"
+			Echo "{Leader}"
+			Echo "{Leader}¶tTo Do:"
+			Echo "{EndComment}"
+			Echo
+	End > "{Window}.¤"
+	Find !0 "{Window}"
+	Find ÆÁ3 "{Window}"
+
+	# concoct the change line for the change history
+
+	If "{Version}" == ""
+		Set Version ¶t¶t
+	Else
+		If "{Version}" =~ /?Ç5,È/
+			If "   {Version}" =~ /Å(????????)¨1/
+				Set Version "{¨1}"
+			End
+		Else
+			If "   {Version}" =~ /Å(????)¨1/
+				Set Version "¶t{¨1}"
+			End
+		End
+	End
+
+	If "  `Date -d -s`" =~ /Å(????????)¨1/
+		Set ChangeDate "{¨1}"
+	Else
+		Set ChangeDate "??/??/??"
+	End
+
+	If "{UserInitials}" == ""			# no initials, use user name instead
+		Set UserInitials ""				# in case it was not defined before
+		Set TrimmingName "{User}"		# use this for the loop
+		Loop
+			If "{TrimmingName}" =~ /([a-z])¨1[a-z.]* (Å)¨2/
+				Set UserInitials {UserInitials}{¨1}
+				Set TrimmingName "{¨2}"
+			Else If "{TrimmingName}" =~ /([a-z])¨1[a-z.]*/
+				Set UserInitials {UserInitials}{¨1}
+				Break
+			Else
+				Set UserInitials "{User}¶n¶t¶t¶t¶t¶t¶t¶t"
+				Break
+			End
+		End
+	End
+
+	# put the comment at the top of the change history
+
+	Begin
+		Echo -n "{Leader}¶t{Version}¶t{ChangeDate}¶t{UserInitials}¶t¶t"
+		WrapCommentText 65 "{Leader}¶t¶t¶t¶t¶t¶t¶t¶t¶t" < "{Comment}" || ¶
+			Echo -n "xxx put comment here xxx"
+		Echo
+	End > "{Window}.¤"
+
+End
+
+checkin -new -project "{1}" -y "{4}"
+
+close -y "{Active}"

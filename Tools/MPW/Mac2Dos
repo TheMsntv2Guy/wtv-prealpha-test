@@ -1,0 +1,16 @@
+For file in {Parameters}
+	Unset alreadyOpen
+	If "`Windows`" =~ /Å{file}Å/; Set alreadyOpen 1; End
+	
+	File "{{file}}"
+	
+	Loop
+		Find ¥ "{{file}}"; Replace -c ° /¶n([Â
+])¨1/ ¶n
+¨1 "{{file}}" || break
+	End
+	Find ¥ "{{file}}"; Replace -c ° /¶n°/ ¶n
+ "{{file}}" || Set status 0
+	
+	If !{alreadyOpen}; Close -y "{{file}}"; End
+End

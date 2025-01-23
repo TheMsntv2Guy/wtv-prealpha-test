@@ -1,0 +1,110 @@
+<HTML>
+<HEAD>
+<TITLE>WebTV Memory Management Proposal</TITLE>
+</HEAD>
+
+<BODY BACKGROUND="artemis_bigtile.gif" TEXT=#301000>
+
+<CENTER>
+<H1>WebTV Memory Management Proposal</H1>
+</CENTER>
+<BR>
+<ABSTRACT><I>
+This is a proposal for the final memory layout and management
+for the first WebTV product.  It proposes a pointer-based scheme
+with one single memory space (even for cached resources).
+</I></ABSTRACT>
+
+<P><BR><P><H2>Layout</H2>
+Low memory addresses are reserved for CPU exception handlers and system globals.
+Above this, are buffers reserved for sound, video, communications,
+and any other reserved space.
+
+<P>Following this is the dynamic allocation space referred to as
+a <B>region</B>.  The region serves all of the dynamic memory
+requests, both for cache and standard allocation requests.  The region
+is separated into the heap and the cache.
+
+<P>Above the region is room for a single processor stack, parameter
+memory, and patch space.  All of this is dynamically sized at boot
+time to reflect the amount of internal RAM and expansion RAM
+(which is assumed adjacent).
+
+<P>Memory within the heap is organized as a series of contiguous
+blocks.  Some of these blocks are <B>free</B>, and are singly-linked
+into a free list.  
+
+<P>Others are <B>used</B>.  Used blocks maintain several fields in
+the header:
+<UL>
+<LI><B>Length</B>:  The physical length of the block.
+<LI><B>Underflow</B>:  The difference between physical and logical length.
+The underflow is a small positive number.
+<LI><B>Object number</B>:  An identifier that describes the c++ class of
+the block, with additions for other well known objects.
+</UL>
+
+<P>All used and free blocks are at least 8 bytes large, in order
+to accommodate the header fields.  Each block is a multiple of 4
+bytes in length in order to avoid most alignment problems.
+
+<P><BR><P><H2>Management</H2>
+
+<P>All used blocks are locked into their particular locations
+in memory, except at very well defined times.  Therefore, transient
+problems with fragmentation may exist.
+
+<P>However, this is greatly ameliorated because at idle time the
+heap manager will compact the heap and readjust pointers within the
+objects that refer to them.  It will handle this readjustments using
+the following scheme:
+
+<OL>
+<B><LI></B>For c++ objects, dispatch off the class number and call the
+appropriate version of the virtual function
+<CODE>Boolean EachPointer(EachPointerFunction*, EachPointerParameters*)</CODE>.
+<B><LI></B>For other objects, look at a pair of tables of entries in ROM or RAM that
+have a 32 bit mask of where the pointers are in the object, as
+longword offsets (which gives 128 bytes worth of pointer slots).  The
+ROM table holds the first n entries, and the RAM table the rest, and
+they are indexed into by the object number of each block.
+<B><LI></B>We have a list of all globals that might point into the
+heap, and adjust them as each block moves.
+</OL>
+
+<P><BR><P><H2>Usage</H2>
+
+<P>This management technique allows the use of pointers, rather than
+requiring the use of handles with its attendant issues (e.g.
+stale pointers, 8 bytes/reference) and also avoid the issues with
+back pointers.  By using this scheme we will have an easier time
+importing new code and managing our code; the memory management
+is centralized.
+
+<P>But the downside is that we still accrue fragmentation during
+long operations.  This can be lessened quite a bit if large blocks
+were allocated immedaitely after idle.  The worst case comes when 
+many small blocks are allocated, most of them are deleted (in no
+particular order), and then a large block is requested.  Operations
+should be factored to make this possible.
+
+<P> When a large operation is requested then the single free block
+is examined.  If too small then we request the cache to shrink by
+the delta.
+
+<P><BR><P><H2>Milestones</H2>
+
+<P><UL>
+<LI><B>10/17</B>: Runtime modified for idle-time compaction <I><A HREF="mailto:goldman@artemis.com">Phil</A></I>
+<LI><B>10/22</B>: Cache resizable <I><A HREF="mailto:john@artemis.com">John</A></I>
+<LI><B>10/25</B>: Operations analyzed and re-factored for low fragmentation <I><A HREF="mailto:goldman@artemis.com">Phil</A></I>
+</UL>
+
+<P><BR><P><BR><P><BR>
+<ADDRESS>
+<A HREF="mailto:goldman@artemis.com">Phil Goldman</A>,
+November 1995
+</ADDRESS>
+
+</BODY>
+</HTML>

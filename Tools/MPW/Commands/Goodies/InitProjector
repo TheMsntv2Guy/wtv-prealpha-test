@@ -1,0 +1,26 @@
+# InitProjector		Andrew Shebanow/Dave Burnard 	6/28/88
+#
+# Setup file for projects
+
+# save exit status
+Set OldExit {Exit}
+Set Exit 0
+
+# Define and Export global variables needed by SetProjector and MountProjector
+Set RootProjectList ""
+Set ProjectNameList ""
+Export RootProjectList
+Export ProjectNameList
+
+# EDIT this list to match the folders where you put your projects
+for ProjDir in `Catenate "{ProjDirList}"`
+	# List all subdirectories of specified directory
+	Set TmpProjList "`Files -d -f "{ProjDir}"`"
+	Set RootProjectList "{RootProjectList} {TmpProjList}"
+End
+
+# get rid of variables
+Unset ProjDir
+
+# restore exit status
+Set Exit {OldExit}

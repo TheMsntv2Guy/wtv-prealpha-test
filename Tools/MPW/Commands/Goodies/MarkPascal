@@ -1,0 +1,21 @@
+#	MarkPascal
+#	based on SignPosts by Russ Wetmore
+
+Set white '[ ¶t]'
+Set reserved '[A-Za-z_][A-Za-z0-9_.]*'
+Alias window.¤ 'Catenate "{window}".¤'
+
+Set Exit 0
+For window in {"Parameters"}
+	For token In PROGRAM UNIT FUNCTION PROCEDURE
+		Find ¥ "{window}"
+		Loop
+			Find /¥{white}*{token}{white}+{reserved}/ "{window}"
+			Break If {Status} != 0
+			Find Æ(¤Æ:\{white}\) "{window}"
+			Find /{reserved}/ "{window}"
+			Mark -y ¤ "`window.¤`" "{window}"
+		End
+	End
+End
+Set Exit 1

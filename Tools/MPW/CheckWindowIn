@@ -1,0 +1,129 @@
+#
+#	File:		CheckWindowIn
+#
+#	Contains:	script to check a window in
+#
+#	Usage:		CheckWindowIn window
+#
+#	Status:		CheckWindowIn may return the following status values:
+#
+#					0		the window was checked in
+#					1		error
+#					2		the user canceled
+#
+#				CheckWindowIn checks in the given window to Projector.  Actually,
+#				it operates on file names rather than window names.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#	Copyright:	© 1992 by General Magic, Inc., all rights reserved.
+#	Copyright:	© 1995 by Artemis Research, Inc., all rights reserved.
+#
+#	Change History:
+#
+#				 8/24/95	jbs		adapted for Artemis
+#				 2/22/92	jbs		added hook for automatic updating of release notes
+#				  1/3/92	pyg		special-case code for TeleTouch project
+#				 11/7/91	dba		adapted for General Magic
+#				 7/31/90	dba		fix nasty bug that deletes selection on check-in again
+#				  6/8/90	PN		Fix the procedure to make it scriptable
+#				  2/6/90	dba		fix nasty bug that deletes selection on check-in
+#				  1/3/90	dba		pass suffix to FindChange
+#				12/29/89	dba		donÕt bother stripping the file (too slow)
+#				11/15/89	dba		change comment handling a bit
+#				 11/9/89	dba		stopped using LastChange marker; invented mark character
+#
+#	To Do:
+#		a way to keep working (keep the modifiable)
+#		a way to introduce a new branch
+#		a way to enter a ÒtaskÓ
+#		make ModifyReadOnly work even better by getting NewVersion from project
+#
+
+set _status 0; set window "{{1}}"
+# get short name of window
+
+if "{{window}}" !~ /(:*([Â:]+:*)*)¨2([Â:]+)¨1/; Alert "CanÕt parse window parameter."; exit 1; end
+set dir "{{¨2}}"
+set short "{{¨1}}"; set cant "Ò{{Short}}Ó canÕt be checked in"
+
+# check what project the window belongs to
+
+set info "``ProjectInfo "{{window}}" ³ Dev:Null || set Status 0``"
+if "{{info}}" !~ /[Â,]+,([0-9]+)¨1([¶+¶*]Ç0,1È)¨3ÅProject: ([Â:]+º)¨2     Checked out: Å/
+	if `Project` == ""; Alert "{{Cant}} because there are no projects mounted."; exit 1; end
+
+	set newVersion 1
+
+	if "``Files -f "{{window}}"``" !~ /(Å:)¨1[Â:]+/; Alert "Internal error."; exit 1; end
+	set directory "{{¨1}}"
+	if "``CheckOutDir -m -r`` CheckOutDir" =~ /ÅCheckOutDir -project ([Â:]+º)¨1 {{directory}} CheckOutDirÅ/
+		set new "-new -project ¶"{{¨1}}¶""
+	Else
+		set IgnoreCmdPeriod 1
+		set new "-new -project ``GetListItem ¶`¶`MountProject -pp -s -r¶`¶` -s -r 10 -w 50 ¶
+			-m "Ò{{Short}}Ó isnÕt in a project. Choose one to add it to:" || set _status "{Status}"``"
+		set IgnoreCmdPeriod 0
+		exit 2 if "{_status}"
+	end
+Else
+	set newVersion `Evaluate {¨1} + 1`; set new ""
+	set project "{{¨2}}"
+
+	# check if the project is mounted
+
+	ProjectInfo -project "{{project}}" -only · Dev:Null || begin
+		MountWebTVIfNeeded ³ Dev:Null
+		ProjectInfo -project "{{project}}" -only · Dev:Null || begin
+			Alert "{{cant}}because the project Ò{{project}}Ó is not mounted."; exit 1
+		end
+	end
+
+	# ensure that the window is checked out
+
+	if "{{info}}" !~ /[Â,]+,[Â ¶t]+[¶+¶*]Å/
+		Alert "{{cant}} because it wasnÕt checked out."; exit 1
+	end
+end
+
+# do the check in
+
+if "{window}" =~ /Å¹Å/ && "`files -l "{window}"`" =~ /Å ([0-9]+)¨1KÅ/ 
+	if {¨1} > 500
+		Alert "You must remove binaries before checking in ¶"{window}¶""; exit 1
+	end
+end
+set checkInErrors "{{SystemFolder}}CheckInErrors"
+CheckIn {new} "{{window}},{newVersion}" · "{{checkInErrors}}" || begin
+		Alert "{{Cant}}. You may need to check it in on a branch.¶n``Catenate "{{checkInErrors}}"``"
+		exit 1
+	end && begin
+		if {usingVerifySources} != 1
+			RemoveFromCheckedOutList "{{window}}"
+		# if a revert file was left over from ExtraModifyReadOnly, then get rid of it if the check-in succeeds
+			delete -i "{{dir}}\\{{short}}"
+		else
+			If "{window}" =~ /Å{wtv:}(Å)¨1:(Å)¨2/
+				Set dir "{¨1}:"
+				Set file "{¨2}"
+			Else If "{window}" =~ /Å{wtv:}(Å)¨1/
+				Set dir ""
+				Set file "{¨1}"
+			Else If "{window}" =~ /:(Å)¨1:(Å)¨2/
+				Set dir "{¨1}:"
+				Set file "{¨2}"
+			Else If "{window}" =~ /:(Å)¨1/
+				Set dir ""
+				Set file "{¨1}"
+			End
+			echo "CheckWindowIn ¶"¶{WTV:¶}{dir}{file}¶" # `Evaluate {newVersion}-1`" >> "{WTV:}Temporary:commandListUpdate"
+		end
+	end
+if {usingVerifySources} == 0
+	echo "{{window}},{newVersion}" >> {WTV:}ChangeLogEntry
+end
+if {newVersion} == 1 && "{{window}}" =~ /Å.c/
+	echo '	(DonÕt forget to change the CodeWarrior project and MPW Makefile)' >> {WTV:}ChangeLogEntry
+end
+Delete -i "{{checkInErrors}}"

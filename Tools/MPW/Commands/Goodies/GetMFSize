@@ -1,0 +1,128 @@
+##*****************************************************************************
+##
+##  Project Name:	UserScripts
+##     File Name:	GetMFSize
+##
+##   Description:	This script will get the Multifinder SIZE resources,
+##					interpret them, and return the current size, minimum
+##					size, and default size.
+##
+##*****************************************************************************
+##                       A U T H O R   I D E N T I T Y
+##*****************************************************************************
+##
+##	Initials	Name
+##	--------	-----------------------------------------------
+##	GLA			Glenn L. Austin
+##
+##*****************************************************************************
+##                      R E V I S I O N   H I S T O R Y
+##*****************************************************************************
+##
+##	  Date		Time	Author	Description
+##	--------	-----	------	---------------------------------------------
+##	08/19/89	10:37	GLA		Need to specify both upper and lowercase
+##								option names!
+##	08/19/89	09:53	GLA		Original version
+##
+##*****************************************************************************
+
+set exit 0
+set echo 0
+
+set getCurrent false
+set getMinimum false
+set getDefault false
+
+if ({#} == 1) && ("{1}" =~ /[Â-]?*/)
+	set getCurrent true
+	set getMinimum true
+	set getDefault true
+else
+	loop
+		if "{1}" =~ /-?+/			# Is this an option?
+		else
+			break
+		end
+		if "{1}" =~ /-[CMDcmd]/		# is this one of my options?
+			if "{1}" =~ /-[Cc]/			# Get current size
+				set getCurrent true
+			end
+			if "{1}" =~ /-[Mm]/			# Get minimum size
+				set getMinimum true
+			end
+			if "{1}" =~ /-[Dd]/			# Get default size
+				set getDefault true
+			end
+		else
+			echo "### Error:  Undefined option ¶"{1}¶"" >Dev:Console
+			exit 1
+		end
+		shift 1
+	end
+end
+
+if "{1} " == " "
+	echo "### Error:  No file specified!" >Dev:Console
+	exit 1
+end
+
+set file "{1}"
+
+files -t 'APPL' "{file}" ·Dev:Null
+if {status} != 0
+	echo "### Error:  {file} is not an application!" >Dev:Console
+	exit 2
+end
+
+derez -only 'SIZE' "{file}" "{RIncludes}"Types.r >"{MPW}"Tempfile ³Dev:Null
+
+set minSize 384
+set defSize 384
+set curSize 384
+
+open "{MPW}"Tempfile
+find ° "{MPW}"Tempfile
+if `position -l` == 1
+	echo "### Warning:  {file} does not have a Multifinder size!" >Dev:Console
+else
+	find ¥ "{MPW}"Tempfile
+	find /resource ¶'SIZE¶' ¶(-1/ "{MPW}"Tempfile
+	if {status} == 0			# found the MF default SIZE resource
+		find /[0-9]+,/ "{MPW}"Tempfile	# find default size
+		find Æ¤ "{MPW}"Tempfile			# get before the selection
+		find /[0-9]+/ "{MPW}"Tempfile
+		set defSize `catenate "{MPW}"Tempfile.¤`	# get the size in bytes
+		( evaluate defSize = {defSize} Ö 1024 ) · Dev:Null	# convert to K
+		set curSize {defSize}			# default is curSize = defSize
+		find /[0-9]+/ "{MPW}"Tempfile
+		set minSize `catenate "{MPW}"Tempfile.¤`	# get the size in bytes
+		( evaluate minSize = {minSize} Ö 1024 ) · Dev:Null	# convert to K
+	end
+	find ¥ "{MPW}"Tempfile
+	find /resource ¶'SIZE¶' ¶(0/ "{MPW}"Tempfile
+	if {status} == 0			# found the MF current SIZE resource
+		find /[0-9]+,/ "{MPW}"Tempfile	# find default size
+		find Æ¤ "{MPW}"Tempfile			# get before the selection
+		find /[0-9]+/ "{MPW}"Tempfile
+		set curSize `catenate "{MPW}"Tempfile.¤`	# get the size in bytes
+		( evaluate curSize = {curSize} Ö 1024 ) · Dev:Null	# convert to K
+	end
+end
+close -y "{MPW}"Tempfile
+delete -y "{MPW}"Tempfile
+
+set retVal ""
+if {getCurrent} == true
+	set retVal "{retVal} current={curSize}K"
+end
+if {getMinimum} == true
+	set retVal "{retVal} minimum={minSize}K"
+end
+if {getDefault} == true
+	set retVal "{retVal} default={defSize}K"
+end
+
+echo "{retVal}"
+
+exit

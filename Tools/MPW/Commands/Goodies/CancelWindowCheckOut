@@ -1,0 +1,94 @@
+#
+#	File:		CancelWindowCheckOut
+#
+#	Contains:	script to revert to an old copy of a checked-out window
+#
+#	Usage:		CancelWindowCheckOut window
+#
+#	Status:		CancelWindowCheckOut may return the following status values:
+#
+#					0		the window was reverted
+#					1		error
+#					2		the user canceled
+#
+#				CancelWindowCheckOut cancels the changes that have been made
+#				to a file in a window.
+#
+#	Written by:	Darin Adler and scott douglass
+#
+#	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <2>	 9/11/95	JOE		
+#		11/9/89		dba		twiddled relentlessly
+#
+#	To Do:
+#		a way to start over (get a new modifiable copy)
+#		a way to start over but make it a new branch
+#
+
+Set Exit 0
+
+# the following helps to debug until MPW sends echos to Dev:Console instead of Dev:StdErr
+
+If {Echo}
+	Set somewhere "·· '{Worksheet}'"
+Else
+	Set somewhere "· Dev:Null"
+End
+
+Begin
+
+	Set Window "{1}"
+
+	# get short name of window
+
+	If "{Window}" !~ /:*([Â:]+:*)*([Â:]+)¨1/
+		Alert "CanÕt parse window parameter."
+		Exit 1
+	End
+	Set Short "{¨1}"					# get short name for dialogs
+	Set Cant "Changes to Ò{Short}Ó canÕt be discarded"
+
+	# check what project the window belongs to
+
+	Set Info "`ProjectInfo "{Window}"`"
+	If "{Info}" !~ /ÅProject: (Åº)¨1     Checked out: Å/
+		Alert "{Cant} because it doesnÕt belong to a project."
+		Exit 1
+	End
+	Set Project "{¨1}"
+
+	# ensure that the window is checked out
+
+	# if MRO then just delete him and re-check out
+	If "{Info}" =~ /[Â,]+,[Â ¶t]+¶*Å/
+		Close -y "{Window}"
+		Delete "{Window}"
+		RemoveFromCheckedOutList "{Window}"
+		CheckOut -project "{Project}" "{Window}"
+		Open "{Window}"
+		Exit 0
+	End
+	
+	If "{Info}" !~ /[Â,]+,[Â ¶t]+¶+Å/
+		Alert "{Cant} because it wasnÕt checked out."
+		Exit 1
+	End
+
+	# check if the project is mounted
+
+	Set Info "`ProjectInfo -only -project "{Project}"; Set InfoStatus {Status}`"
+	If {InfoStatus}
+		Alert "{Cant} because the project Ò{Project}Ó is not mounted."
+		Exit 1
+	End
+
+	CheckOut -project "{Project}" -cancel "{Window}"
+	If {Status}
+		Alert "I confused: CheckOut -cancel failed!"
+		Exit 1
+	End
+
+End {somewhere}

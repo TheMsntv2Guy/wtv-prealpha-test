@@ -1,0 +1,107 @@
+NAME
+     rcmd - execute commands under remote shell, over MacTCP
+
+SYNOPSIS
+	rcmd [-n] [-u username] [-p password] -h host -c commandString
+	rcmd [-n] [-u username] [-p password] -h host -f commandFile [-s comFileInterpreter]
+
+AVAILABILITY
+	This command (rcmd) only runs as a tool under the Macintosh Programmer's
+	Workshopª.
+
+DESCRIPTION
+	With the first form of the command, rcmd connects to the specified host,
+	which starts /bin/sh, and passes commandString to the remote shell. With
+	the second form of the command rcmd connects to the specified host,
+	which starts either /bin/sh or comFileInterpreter, and passes the
+	contents of commandFile, one line at a time, to the remote shell.  In
+	both cases the standard output and standard error of the remote command(s)
+	is(are) returned to the local standard output.  cmd-. may be used to
+	interrupt rcmd at any time; the remainder of the output from the
+	remote host is discarded. rcmd terminates at the end of the remote
+	command(s).
+
+	Characters, on the command line, that are special to MPW, are interpreted
+	in MPW, unless surrounded by single quote (') characters, characters that
+	are special to remote shells are interpreted on the remote machine.
+
+	Host names must be in the MacTCP Hosts file, or must be resolvable by
+	the Domain Name Resolver, see your MacTCP manual for details.
+
+	In order to execute commands on the remote computer, you must supply the
+	correct password for the remote user account, or your local computer
+	must be found in the "/etc/hosts.equiv" file, or your local computer and/or
+	login name must be in the .rhosts file of the remote user account you wish
+	to execute commands from.
+
+	When the remote shell starts running, the current directory on the remote
+	host will be that of the user rcmd is running as.
+
+OPTIONS
+	-n
+		Don't convert newlines in output of remote command
+	-u username
+		login ID on remote host e.g. trk,x9j762,boris
+		{remoteUserName} must be set in environment if -u is not used
+	-u password
+		password for the remote user on remote host e.g. gollywog,lsmft,3mp#]'2
+		{password} must be set in environment if -p is not used
+	-h host
+		name of remote computer, as found in MacTCP's Hosts file
+	-c commandString
+		command to be executed on remote computer
+	-f commandFile
+		file of commands to be executed on remote computer
+	-s comFileInterpreter
+		program, on remote computer, to execute commands in commandFile
+		No comFileInterpreter, /bin/sh is run
+
+EXAMPLES
+	rcmd -u tom -p gaaawlee -h host1.teek.com -c 'ls -CF'
+
+FILES ON REMOTE
+     /etc/hosts
+     /etc/hosts.equiv
+     $HOME/.rhosts
+     /usr/hosts/*
+     /etc/passwd
+
+FILES ON LOCAL
+     "BootDisk:System Folder:Hosts"
+     {MPW}UserStartup
+
+SEE ALSO ON REMOTE
+     hosts(5), rhosts(5), hosts.equiv(5), rexecd(8)
+
+SEE ALSO ON LOCAL
+     MPW Reference Manual
+	 MacTCP Administrator's Guide
+
+NOTES
+	Because of the nature of stdio input in MPW, RCMD is not suitable for
+	running interactive commands (e.g. vi), as RSH would be between Unixª
+	computers. Use NCSA/Telnet if you wish to run interactive commands.
+	
+
+LEGAL NOTICE
+	rcmd is Copyright 1995 by Thomas R. Kimpton, I retain all rights.
+	rcmd (the MPWª tool) is freeware, NOT public domain. rcmd may not
+	be included in any collection of shareware or public domain software
+	without my express knowledge and permission. You may, however,
+	distribute it to your friends as long as it has not been modified
+	and you include this ReadMe.rcmd document in its original form.
+
+	rcmd is supplied as is.  Thomas R. Kimpton hereby disclaims all
+	warranties relating to this software, whether express or implied,
+	including without limitation any implied warranties of merchantability
+	or fitness for a particular purpose.  Thomas R. Kimpton will not be
+	liable for any special, incidental, consequential, indirect or similar
+	damages due to loss of data or any other reason, even if Thomas R.
+	Kimpton, or an agent of Thomas R. Kimpton has been advised of the
+	possibility of such damages.  In no event shall Thomas R. KimptonÕs
+	liability for any damages ever exceed the price paid for the license
+	to use the software, regardless of the form of the claim.  The person
+	using the software bears all risk as to the quality and performance
+	of the software.
+
+	phew!

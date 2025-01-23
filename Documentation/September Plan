@@ -1,0 +1,37 @@
+This is a brief description of the plan for September for the Browser, along
+with specific tasks and milestones.
+
+
+We are planning to achieve the following:
+	1. A stable, functional Browser running on the Mac.
+	2. A text-only version of the Browser running on the hardware.
+
+If we overachieve we can consider the following goal too:
+	3. A stable, functional Browser running on the hardware.
+
+	
+We have broken the system into 3 major pieces: Browser, Platform, and Tools.
+John and Chris have responsibility for the Browser, but will offload pieces
+as necessary.  Phil, Joe, and Bruce have responsibility for the platform,
+and will divide the work as follows:
+
+	Memory Management:		Phil
+	Graphics:				Bruce
+	TCP:					Joe
+	Debug:					Phil
+	Serial IO:				Joe
+	User Input:				Phil
+	Port:					Joe
+
+
+Lee and Phil will work on the tools.  The principal task is to get
+gdb on the Mac talking to the hardware.
+
+
+Here are the milestones:
+
+	Platform Interfaces defined:			9/18
+	Browser limping on Mac					9/22
+	Browser stable, extended				9/30
+	Tools fully functional					9/30
+	Text-only port							9/30

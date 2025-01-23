@@ -1,0 +1,25 @@
+Set file "{{1}}"
+
+If "{{file}}" =~ /[Â:]+/
+	Set file ``Directory``"{{file}}"
+Else if "{{file}}" =~ /:(Å)¨1/
+	Set file ``Directory``"{{¨1}}"
+End
+
+If "{{file}}" =~ /{WTV:}(Å)¨1/
+	Set relativePath "{{¨1}}"
+Else
+	Echo "## Macify: must have path name in {WTV:}"
+	Exit 1
+End
+
+MountUnix
+
+If "{UnixVolume:}" == ""
+	Set UnixVolume: "{UnixUser}:"
+End
+If "{UnixWTV:}" == ""
+	Set UnixWTV: "{UnixVolume:}WebTV:"
+End
+
+Catenate < "{UnixWTV:}{relativePath}" > "{file}"

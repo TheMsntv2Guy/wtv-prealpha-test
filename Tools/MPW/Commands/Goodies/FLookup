@@ -1,0 +1,11 @@
+# Lookup dir:
+# Fast read-only, directory-only version
+
+Set olddir "`Directory`"
+Set Exit 0
+Directory "{1}"
+Open -r
+Set xstatus {Status}
+Set Exit 1
+Directory {olddir}
+Exit {xstatus}

@@ -1,0 +1,66 @@
+Hardware Development
+The WebTV hardware will initially be designed and manufactured under the control of WNI.  Future
+versions will be manufactured by CE partners.
+
+The major goals of the hardware development are the following:
+		1. Short turns to support time to market requirements
+			The hardware has been designed so that it can be accomplished (with low risk) in the required time frame.  The hardware plan includes back off strategies to handle delays in development or acquisition.  We are using multi-source parts where possible, so as to avoid single points of delay from vendors.
+		2.  Support for low cost bill of materials
+		The basic configuration includes only 1 megabyte of RAM, which is the costliest component.  The ROM requirement is low as well.  This is made possible because the compositing technology of the Fido graphics chip drastically reduces the memory requirements for high quality display.
+		3.  Appropriate functionality
+		The hardware has the following functionality, in order to support the product requirements:
+                        - Modem
+                        - Composite and S-Video outputs
+                        - IR Input
+                        - Unique ID
+                        - on-board NVRAM
+                        - Keyboard Interface
+                        - CD-quality audio output
+                        - Expansion bus
+		4. High Quality
+		In general, the hardware team is taking a very structured approach to development, with a heavy emphasis on tools and testing.  The strategic piece of the WebTV hardware is the graphics technology, which will allow the device to display photographic quality images, with none of the traditional flicker problems associated with computer graphics.
+
+The release schedule of the WebTV hardware is as follows:
+                - Internal Development (IDev) Boards												Oct 95
+                - Trial Boards                          																			Jan 96
+                        - Simple frame buffer
+                        - MIPS 3081/3071/3051/3901 cpu
+                        - contains all feature minus compression
+                - Production Boards                 																		Apr 96
+                        - feature complete
+                - Cost-reduced, integrated version														2Q97
+These are current best esitimates, and may change as needs dictate.  They are designed to support the product schedule, which calls for trial hardware in February 1996 and production hardware in June 1996.
+
+System Software Development
+The WebTV client system software is designed to be a simple and elegant graphics terminal onto the internet.
+
+The major goals of the system software development are the following:
+		1. Basic web browser, designed for a TV interface
+		The software will have all of the basic technology and user interface required to browse any of the pages on the Worldwide Web, as well as the forms within them.  The interface will support and leverage the television environment.  The basic technology will be completed before additional features are added, to reduce risk in the schedule.
+		2.  An ultra-accessible user experience
+		The user experience will be made as simple as possible to avoid a barrier to use by the general consumer.  This will be accomplished by the efforts of an experienced user interface design team, and verified by an extensive user testing schedule, which culminates the produict trial phase.
+		3.  An extensible development architecture
+		One of the great problems with embedded system is that they require system software shipped in ROM, and thus cannot be upgraded in the field.  The WebTV architecture avoids this problem by providing a simple software substrate in the device ROM, and then moving most of the application-level functionality into the network.  This allows WNI to add functionality even for units deploed in the field.  The software will also support electronic version upgrades to itself, for low-level bug fixing and functionality.
+
+The release schedule of the WebTV system software is as follows:
+                - Full Browser Functionality																					October 31
+                - Browsing Applications																								November 30
+                - Feature Complete																											December 31
+                - Tuned for Trial																														January 31
+                - Golden Master																													 June
+                - Downsized release																									   2Q97 
+
+Network Software Development
+WebTV is the umbrella of services for its customers.  The network software supports this experience for the user.
+
+The major goals of the network software development are the following:
+		1.  Improve the internet experience
+		WebTV will support a “turn-key” experience for the user.  The network provides an automated means for registration, as well as the day-to-day support for existing users.  This support is coordinated with the client so that the user never need deal with the configuration problems that currently block access to the internet for most.
+		In addition, the WebTV proxy will use a variety of techniques to improve the performance of the internet.  Some of these techniques include caching, replication, and media conversion.  The proxy will also provide more information to the user, so that there are no unanticpated delays or missing functionality in the experience.
+		The network software will provide added value to the user by focusing content for her.  The software will support quided tours that support passive viewing for the user.  It will also track user profiles, so that appropriate content can be directed to the interested parties.  Similarly, the service tracks user location (obtained from ANI during registration) to provide the user with location-based information.
+		2.  Client functionality extended into the service
+		As mentioned above, this allows WebTV to increase in functionality, even after units have been deployed.  This will be accomplished by building the functionality using the same protocols and languages already required for web browssing.
+		3.  Launching pad in the net
+		WebTV will provide a home base in the network for each user.  This will allow the user a familar reference point when navigating around the web, which is more crucial for a user base that is not sophisticated in web navigation.  As well, WebTV will provide a way for the user to collect the information that is most important for her (with support from WebTV) for easy access.  The launching pad can be customized per user, leveraged by the user profile information and location information mentioned above.
+
+The network software team is currently completing its investigation phase.  The deliverable for this phase is a release schedule that is synchronized with the product ship schedule. 

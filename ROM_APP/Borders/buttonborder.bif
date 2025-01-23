@@ -1,0 +1,5 @@
+IMAGE file://ROM/Images/buttonborder.gif
+INNERBOUNDS  14, 14, 32, 26
+PADBOUNDS  13, 9, 13, 6
+DRAWCENTER
+SCALECENTER

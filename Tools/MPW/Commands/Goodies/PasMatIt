@@ -1,0 +1,26 @@
+# PasMatIt
+#
+#	Script to run pasmat on current selection
+#
+
+Set Exit 0
+
+# We only define this if it hasn't been done already
+If "{PasMatOptions}" == ""
+	# Equivalent Pascal directives are:
+	#{[a-,body+,h-,o=100,r+,rec+,t=4,u+,#+,j=20/57/0,n+]}
+	Set PasMatOptions "-entab -t 4 -a -body -h -n -o 100 -r -rec -u '-#' -n"
+End
+
+PasMat {PasMatOptions} <"{active}.¤" ¶
+	>"{ShellDirectory}pasmatText" ¶
+	³ "{ShellDirectory}pasmatErrs"
+Set Err {Status}
+If {Err} == 0
+	Catenate "{ShellDirectory}pasmatText" > "{active}.¤"
+Else
+	Alert < "{ShellDirectory}pasmatErrs"
+End
+Delete -y "{ShellDirectory}pasmatErrs" "{ShellDirectory}pasmatErrs" · Dev:Null
+
+Set Exit 1

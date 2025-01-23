@@ -1,0 +1,48 @@
+#
+#	File:		UpdateToLatest
+#
+#	Contains:	xxx put contents here xxx
+#
+#	Written by:	xxx put writers here xxx
+#
+#	Copyright:	© 1994 by Rocket Science Games, Inc., all rights reserved.
+#
+MountWebTVIfNeeded
+Set Exit 0
+Begin
+	If {#} ­ 1
+		Echo "### Usage - {0} file"
+		Exit 0
+	End
+	
+	#	Make sure the file exists
+	
+	If "" == "`Exists -f "{1}"`"
+		Echo "### {0} - File ¶"{1}¶" not found"
+		Exit 1
+	End
+	Set f "{1}"
+	If "{f}" =~ /(Å)¨1:(Å)¨2/
+		Set dir "{¨1}:"
+		Set f "{¨2}"
+	Else
+		Set dir `directory`
+		If "{dir}" =~ /(Å)¨1:/
+			Set dir "{¨1}:"
+		End
+	End
+	
+	Set path "{dir}{f}"
+	If "`projectinfo "{path}"`" =~ /ÅProject:[ ¶t]+([Â ¶t]+)¨1Å/
+		If "`mountproject -pp -r`" =~ /Å{¨1}Å/
+			If "`projectinfo -s "{path}"`" =~ /Å¶*Å/
+				Orphanfiles "{path}"
+			End
+			CheckOut -y -project {¨1} "{path}"
+		Else
+			Echo "### Project Ò{¨1}Ó is not mounted."
+		End
+	Else
+		Echo "### Unable to obtain project information."
+	End
+End	> Dev:StdErr

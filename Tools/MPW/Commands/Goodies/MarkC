@@ -1,0 +1,68 @@
+##*****************************************************************************
+##
+##  Project Name:	UserScripts
+##     File Name:	MarkC
+##
+##   Description:	Marks C routines in .c files.
+##
+##*****************************************************************************
+##                       A U T H O R   I D E N T I T Y
+##*****************************************************************************
+##
+##	Initials	Name
+##	--------	-----------------------------------------------
+##	GLA			Glenn L. Austin
+##	AGS			Andrew G. Shebanow
+##
+##*****************************************************************************
+##                      R E V I S I O N   H I S T O R Y
+##*****************************************************************************
+##
+##	  Date		Time	Author	Description
+##	--------	-----	------	---------------------------------------------
+##	09/11/89	11:00	AGS		Removed beep
+##	08/12/89	19:29	GLA		Add marking for C++
+##	07/21/89	12:21	GLA		Beep when I'm done...
+##	07/21/89	12:20	GLA		Check to see if the file really is a C
+##								file...
+##	07/21/89	11:58	GLA		Don't replace existing marks.
+##	07/21/89	11:55	GLA		Original version
+##
+##*****************************************************************************
+
+set exit 0
+
+if "{1} " == " "
+	echo "### {0} - Missing parameter!"
+	echo "### Syntax:  {0} filename"
+	exit 1
+end
+
+set fileName "{1}"
+
+if ("{fileName}" =~ /?+.[ch]/) || ("{fileName}" =~ /?+.cp/)
+else
+	confirm "{fileName} is not a standard C or C++ file.  Continue marking it?"
+	if {status} != 0
+		exit 2
+	end
+end
+
+target "{fileName}"
+
+# mark C++ method routines as well as C routines
+find ¥ "{fileName}"
+loop
+	find /¥(pascal[ ¶t]+)*([A-Za-z0-9_]+[ ¶t]+)*[A-Za-z0-9_:~]+¶(?*¶)[Â;]Ç1È/ "{fileName}"
+	if {status} != 0
+		break
+	end
+	find Æ¤ "{fileName}"
+	find /¥(pascal[ ¶t]+)*([A-Za-z0-9_]+[ ¶t]+)*/Æ:Æ/¶(?*¶)[Â;]Ç1È/ "{fileName}"
+	set markName `catenate "{fileName}".¤`
+	mark -n ¤ "{markName}" "{fileName}"
+end
+
+close "{fileName}"
+
+set exit 1

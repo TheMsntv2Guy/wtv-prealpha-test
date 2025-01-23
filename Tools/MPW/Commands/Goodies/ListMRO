@@ -1,0 +1,33 @@
+#
+#	File:		ListMRO
+#
+#	Contains:	List mod read only files in a directory
+#
+#	Written by:	Brian Topping
+#
+#	Copyright:	© 1994 by Catapult Entertainment, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <1>	 7/17/94	BET		first checked in
+#
+#	To Do:
+#
+
+set exit 0
+
+if {#} != 1
+	echo ¶#¶#¶# {0} -- Usage: {0} ¶{dir¶}
+	exit 1
+end
+
+for file in `files -f -r -s -t TEXT {1}`
+	if "{file}" =~ /Å.my/; continue; end
+	if "{file}" =~ /Å:\\Å/; continue; end
+	
+	IsModifyReadOnly "{file}"
+	if {status} == 1
+		echo "{file}"
+		AddToCheckedOutList "{file}"
+	end
+end

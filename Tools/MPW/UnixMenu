@@ -1,0 +1,16 @@
+DeleteMenu Unix ³ Dev:Null || Set status 0
+
+AddMenu Unix "Update Active Window from Unix"	'Macify "{{Active}}" ·· "{{Worksheet}}"'
+AddMenu Unix "Send Active Window to Unix/U"		'Unixify "{{Active}}" ·· "{{Worksheet}}"'
+AddMenu Unix -									''
+AddMenu Unix "Backup to Unix"					'Unixify "{{WTV:}}" ·· "{{Worksheet}}"'
+AddMenu Unix -									''
+AddMenu Unix "Retrieve App ROM"					'CopyROM -approm ·· "{{Worksheet}}"'
+AddMenu Unix "Retrieve Boot ROM"				'CopyROM -bootrom ·· "{{Worksheet}}"'
+AddMenu Unix "Retrieve UniROM"					'CopyROM -unirom ·· "{{Worksheet}}"'
+AddMenu Unix -									''
+AddMenu Unix "Retrieve non-debug App ROM"		'CopyROM -approm -nondebug ·· "{{Worksheet}}"'
+AddMenu Unix "Retrieve non-debug Boot ROM"		'CopyROM -bootrom -nondebug ·· "{{Worksheet}}"'
+AddMenu Unix "Retrieve non-debug UniROM"		'CopyROM -unirom -nondebug ·· "{{Worksheet}}"'
+AddMenu Unix -									''
+AddMenu Unix "Get BoxDump from Unix"			'CopyBoxDump ·· "{{Worksheet}}"'

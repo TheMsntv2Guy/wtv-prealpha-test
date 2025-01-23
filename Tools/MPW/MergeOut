@@ -1,0 +1,409 @@
+#	MergeOut is a script for checking out files that have been modify read-only
+#	or files that have been canceled. For each file, it does a real check-out
+#	and then does a merge and/or emits CompareFiles and Delete commands so the
+#	user can do the merge. Options:
+#
+#		-brief			leave off helpful comments on command lines that annoy Ludis
+#		-interleave		mix up CompareFiles and Delete commands in one list
+#		-keepMRO		donÕt do any new check outs; use ModifyReadOnly instead
+#		-moveMy			move any MyFiles to a separate folder before MergeOut
+#		-noAuto			don't do the merges automatically with Diff3
+#		-noMount		donÕt mount the General Magic system software project
+#		-noNewer		donÕt do a CheckOut -newer at the End
+#		-paranoid		always do CompareFiles, even If no one Else changed the file
+#		-quiet			supress messages except for CompareFiles and Delete commands
+
+Set caseSensitive 0
+
+Set autoMerge 1
+Set brief 0
+Set interleave 0
+Set keepMRO 0
+Set mount 1
+Set moveMy 0
+Set newer 1
+Set noisy 1
+Set paranoid 0
+Set differences 0
+Loop
+	If "{1}" =~ /¶-auto(Merge)Ç0,1È/
+		Echo "# Automatic merging is now the default. Use -noAuto to disable it." > Dev:StdErr; shift
+	Else If "{1}" =~ /¶-brief/
+		Set brief 1; Shift
+	Else If "{1}" =~ /¶-interleave/
+		Set interleave 1; Shift
+	Else If "{1}" =~ /¶-keepMRO/
+		Set keepMRO 1; Shift
+	Else If "{1}" =~ /¶-moveMy/
+		Set moveMy 1; Shift
+	Else If "{1}" =~ /¶-noAuto/
+		Set autoMerge 0; Shift
+	Else If "{1}" =~ /¶-noMount/
+		Set mount 0; Shift
+	Else If "{1}" =~ /¶-noNewer/
+		Set newer 0; Shift
+	Else If "{1}" =~ /¶-paranoid/
+		Set paranoid 1; Shift
+	Else If "{1}" =~ /¶-quiet/
+		Set noisy 0; Shift
+	Else If "{1}" =~ /¶-differences/
+		Set differences 1; Shift
+	Else
+		Break
+	End
+End
+
+If {mount}
+	MountWebTVIfNeeded ³ Dev:Null
+	Directory "{{WTV:}}"
+End
+
+If {differences}
+	Echo Differences > Differences
+End
+
+Set currentDirectory "``Directory``"
+Set needsDelete ""
+Set sawBuildDateFile 0
+
+ShowStateOfTheProject
+
+If {#} == 0
+	If {mount}
+		Set myFiles "`(Files -r -s -f "{{WTV:}}" | (Search /.my°/ ³ Dev:Null || Set Status 0)) || Set Status 0`"
+		If "{myFiles}" ­ ""
+			If {moveMy}
+				If "`Exists "{{WTV:}}MyFiles:"`" == ""
+					NewFolder "{{WTV:}}MyFiles:"
+					Move {myFiles} "{{WTV:}}MyFiles:"
+					Echo "# moved MyFiles into :MyFiles:"
+					Echo
+				Else
+					Set suffix `Date -n`
+					NewFolder "{{WTV:}}MyFiles{suffix}:"
+					Move {myFiles} "{{WTV:}}MyFiles{suffix}:"
+					Echo "# moved MyFiles into :MyFiles{suffix}:"
+					Echo
+				End
+			Else
+				Set confirmStatus 0
+				Confirm -t "Delete .my files?" ³ Dev:Null || Set confirmStatus {Status}
+
+				Close -a
+				If {confirmStatus} == 0
+					Delete {myFiles}
+				Else If {confirmStatus} == 5
+					Exit 0
+				End
+			End
+		End
+	End
+	Set files "``CheckedOutFiles -m``"
+Else
+	Set files "{{"Parameters"}}"
+	Set newer 0
+	If {usingVerifySources} == 1
+		Set keepMRO 1
+	End
+End
+
+Set renamedMergeOut 0
+for file in {files}
+	If "{{file}}" =~ /{{currentDirectory}}(Å)¨1/
+		Set file ":{{¨1}}"
+	Else If "{{file}}" !~ /Å:Å/
+		Set file ":{{file}}"
+	End
+
+	If "{{file}}" =~ /Å.Date/
+		Set sawBuildDateFile 1; Continue
+	Else If "{{file}}" =~ /ÅMergeOut/
+		If !{renamedMergeOut}
+			Set mergeOut "{{WTV:}}Tools:MPW:MergeOut"
+			Move -y "{{mergeOut}}" "{{mergeOut}}.running"
+			Duplicate "{{mergeOut}}.running" "{{mergeOut}}"
+			OrphanFiles "{{mergeOut}}.running"
+			Set renamedMergeOut 1
+		End
+	Else If "{{file}}" =~ /Å.my/
+		If {interleave}
+			Echo "Delete ¶"{{file}}¶" # leftover from earlier merge"
+		Else
+			Set needsDelete "{needsDelete} ¶"{{file}}¶""
+		End
+		Continue
+	End
+
+	Set isText 1; If "``Files -t TEXT "{{file}}"``" == ""; Set isText 0; End
+
+	If "``ProjectInfo "{{file}}" ³ Dev:Null || Set Status 0``" !~ /¶'Ç0,1È([Â,¶']+)¨3,([0-9][0-9a-z]*)¨1ÅProject: ([Â:]+º)¨2     Checked out:Å/
+		Echo "### CouldnÕt parse the project info of ¶"{{file}}¶"" > Dev:StdErr
+		Exit 1
+	End
+	Set modifiedVersion {¨1}; Set project "{{¨2}}"; Set leaf "{{¨3}}"
+
+	# rename the existing file with the suffix ".my"
+
+	Rename -c "{{file}}" "{{file}}.my" || Begin
+		Echo "CompareFiles ¶"{{file}}¶" ¶"{{file}}.my¶" # you already have a ¶"{{leaf}}.my¶" (merge?)"
+		Continue
+	End
+
+	# check out the file for modification
+
+	Set gotMRO 0
+	Set getMRO {keepMRO}
+	If !{keepMRO}
+		Set gotNew 1
+		CheckOut -m -project "{{project}}" "{{file}}" ³ Dev:Null || ¶
+			Set gotNew 0 && (Set blat "`files -f "{{file}}" ³ dev:null || ¶
+			Set status 0`";If {usingVerifySources} == 1 && "{blat}" != ""; AddToCheckedOutList "{blat}";End)
+		If {gotNew}; If "``Exists "{{file}}"``" == ""; Set gotNew 0; End; End
+		If !{gotNew}
+			Set reason "# couldnÕt check out ¶"{{file}}¶""
+			If "{{file}}" =~ /Å:([Â:]+)¨1/
+				Set info "``ProjectInfo -latest -project "{{project}}" "{{¨1}}" ³ Dev:Null || Set Status 0``"
+				If "{{info}}" =~ /[Â,]+,([0-9][0-9a-z]*)¨1ÅOwner: ([Â:]+)¨2     Checked out:Å/
+					If "{{¨2}}" == "{{User}}"
+						If {¨1} ­ {modifiedVersion}
+							Set reason "{{reason}} because you checked it out Elsewhere"
+						Else
+							Set reason ""
+						End
+					Else
+						Set reason "{{reason}} because {{¨2}} has it checked out"
+						If {autoMerge}
+							Set getMRO 1
+						End
+					End
+				End
+			End
+			If "{{reason}}" ­ ""
+				Echo "{{reason}}"
+			End
+			If !{getMRO}
+				Rename -y "{{file}}.my" "{{file}}"
+				Continue
+			End
+		End
+	End
+	If {getMRO}
+		Set gotMRO 1
+		CheckOut -project "{{project}}" "{{file}}" ³ Dev:Null || Set gotMRO 0
+		If {gotMRO}; If "``Exists "{{file}}"``" == ""; Set gotMRO 0; End; End
+		If !{gotMRO}
+			Rename -y "{{file}}.my" "{{file}}"
+			Echo "# couldnÕt check out ¶"{{file}}¶""
+			Continue
+		End
+		ExtraModifyReadOnly "`files -f "{{file}}"`"
+	End
+
+	# either merge automatically (no newer revision, or ".Date" suffix) or emit a CompareFiles and a Delete
+
+	If "``ProjectInfo "{{file}}" -s ³ Dev:Null || Set Status 0``" !~ /[Â,]+,([0-9][0-9a-z]*)¨1Å/
+		Echo "### CouldnÕt parse the project info of ¶"{{file}}¶"" > Dev:StdErr
+		Exit
+	End
+	Set checkedOutVersion {¨1}
+
+	If ({checkedOutVersion} == {modifiedVersion}) && !{paranoid}
+		# note: If we could notice being canceled here, we would want the TransferCKID even If we got an MRO version
+		If !{gotMRO}
+			TransferCkid "{{file}}" "{{file}}.my"
+		End
+		Rename -y "{{file}}.my" "{{file}}"
+		If (!{gotMRO}) && {noisy}
+			Echo "# no one Else touched ¶"{{file}}¶""
+		End
+	Else If {isText}
+		Set mergeNeeded 1
+		If {autoMerge}
+			# find common ancestor
+			Set commonAncestor ""
+			Set originalModified {modifiedVersion}
+			Set originalCheckedOut {checkedOutVersion}
+			Loop
+				# parse revision and branch numbers
+				Break If {modifiedVersion} !~ /([0-9]+)¨1([a-z]*)¨3(Å)¨5/
+				Break If {checkedOutVersion} !~ /([0-9]+)¨2([a-z]*)¨4(Å)¨6/
+
+				# pass appropriate revision number on
+				If {¨1} < {¨2}
+					Set commonAncestor {commonAncestor}{¨1}
+				Else
+					Set commonAncestor {commonAncestor}{¨2}
+				End
+
+				# stop If revisions are different
+				Break If {¨1}{¨3} ­ {¨2}{¨4}
+
+				# pass appropriate branch on
+				Set commonAncestor {commonAncestor}{¨3}
+
+				# Continue parsing
+				Set modifiedVersion {¨5}
+				Set checkedOutVersion {¨6}
+			End
+
+			# check out common ancestor, and use Diff3
+			Rename -y "{{file}}" "{{file}}.new"
+			Set gotOld 1
+			CheckOut -project "{{project}}" "{{file}},{commonAncestor}" ³ Dev:Null || Set gotOld 0
+			If {gotOld}
+				Rename -y "{{file}}" "{{file}}.old"
+
+				# call Diff3 to make 2 new files with easy merges done
+				Set diffFailed 0
+				Diff3 -m --easy-only "{{file}}.new" "{{file}}.old" "{{file}}.my" > "{{file}}" || Set diffFailed 1
+				Diff3 -m --easy-only "{{file}}.my" "{{file}}.old" "{{file}}.new" > "{{file}}..my" || Set diffFailed 1
+
+				Set deleteNewAndOld 0
+				If {diffFailed}
+					Delete -i "{{file}}.old" "{{file}}..my"
+					Rename -y "{{file}}.new" "{{file}}"
+					Echo "# auto-merge of ¶"{{file}}¶" failed"
+				Else
+					# check to see If auto-merge handled everything
+					Set equal 1
+					Equal -d -q "{{file}}" "{{file}}..my" || Set equal 0
+					If {equal}
+						Duplicate -y -r "{{file}}.new" "{{file}}"			# copy resource fork to preserve ckid, font, tabs (marks get messed up)
+						Set deleteNewAndOld 1
+						Delete "{{file}}..my"
+
+						If {noisy} && {usingVerifySources} != 1
+							Set principalsEqual 1
+							Equal -d -q "{{file}}" "{{file}}.my" || Set principalsEqual 0
+							If {principalsEqual}
+								Echo "# no changes for ¶"{{file}}¶""
+							Else
+								Echo "# merge of ¶"{{file}}¶" done automatically"
+							End
+						End
+						Set mergeNeeded 0
+					Else
+						# check to see If auto-merge did anything
+						Set equal 1
+						Equal -d -q "{{file}}" "{{file}}.new" || Set equal 0
+						If {equal}
+							Rename -y "{{file}}.new" "{{file}}"
+							Delete "{{file}}.old" "{{file}}..my"
+							# fall through to normal case
+						Else
+							Duplicate -y -r "{{file}}.new" "{{file}}"			# copy resource fork to preserve ckid, font, tabs (marks get messed up)
+							Duplicate -y -r "{{file}}.my" "{{file}}..my"		# copy resource fork to preserve ckid, font, tabs (marks get messed up)
+							Set deleteNewAndOld 1
+
+							If {brief}
+								Echo "CompareFiles ¶"{{file}}¶" ¶"{{file}}..my¶""
+							Else
+								Echo "CompareFiles ¶"{{file}}¶" ¶"{{file}}..my¶" # auto-merge done, additional merging needed"
+							End
+							If {interleave}
+								Echo "Delete ¶"{{file}}..my¶""
+							Else
+								Set needsDelete "{needsDelete} ¶"{{file}}..my¶""
+							End
+							Set mergeNeeded 0
+						End
+					End
+					If {usingVerifySources} == 1 && `Exists "{{file}}.new"` != ""
+						TransferCkID "{{file}}.new" "{{file}}"
+						ModifyReadOnly "{{file}}"
+						Echo "CheckWindowIn ¶"{{file}}¶" #merged local {originalModified} with remote {originalCheckedOut}"
+						Echo "CheckWindowIn ¶"{{file}}¶" #{originalCheckedOut}" >> "{boot}Temporary Items:commandList"
+					End
+				End
+				If {deleteNewAndOld}
+					If {differences}
+						begin
+							Echo "¶nbetween ¶"{{file}}.my¶" and ¶"{{file}}.old¶""
+							Diff "{{file}}.my" "{{file}}.old" || Set status 0
+						End >> Differences
+						If {interleave}
+							Echo "Delete ¶"{{file}}.old¶""
+						Else
+							Set needsDelete "{needsDelete} ¶"{{file}}.old¶""
+						End
+						Delete "{{file}}.new"
+					Else
+						Delete "{{file}}.new" "{{file}}.old"
+					End
+				End
+			Else
+				Rename -y "{{file}}.new" "{{file}}"
+				If {noisy}
+					Echo "# auto-merge not done, unable to check out ¶"{{file}},{commonAncestor}¶""
+				End
+			End
+		End
+		If {interleave}
+			Echo "Delete ¶"{{file}}.my¶""
+		Else
+			Set needsDelete "{{needsDelete}} ¶"{{file}}.my¶""
+		End
+		If {mergeNeeded}
+			If {brief}
+				Echo "CompareFiles ¶"{{file}}¶" ¶"{{file}}.my¶""
+			Else
+				Echo "CompareFiles ¶"{{file}}¶" ¶"{{file}}.my¶" # merging needed"
+			End
+		End
+	Else
+		Echo "# you will have to decide how to merge ¶"{{file}}¶" and ¶"{{file}}.my¶""
+	End
+End
+
+If {noisy}
+	# remind to check in build dates
+
+	If {sawBuildDateFile}
+		Echo
+		Echo "# donÕt forget to check in build dates after your other check-ins"
+	End
+
+	# emit delete commands
+
+	If {differences} or ("{{needsDelete}}" ­ "")
+		for file in {needsDelete}
+			Echo "Delete ¶"{{file}}¶""
+		End
+		If {differences}
+			Echo "Delete Differences"
+		End
+		Echo
+	End
+End
+
+# get new sources
+
+If {newer}
+	If {noisy}
+		Echo
+		Echo -n "### getting new sources on "; Date
+		Echo
+	End
+
+	# Set to main project, If we are in a subproject
+
+	If ``Project`` =~ /([Âº]+º)¨1Å/
+		Project "{{¨1}}"
+	End
+
+	If !{renamedMergeOut}
+		Set mergeOut "{{WTV:}}Tools:MPW:MergeOut"
+		Move -y "{{mergeOut}}" "{{mergeOut}}.running"
+		Duplicate "{{mergeOut}}.running" "{{mergeOut}}"
+		OrphanFiles "{{mergeOut}}.running"
+	End
+
+	CheckOut -r -newer -p
+End
+
+# open differences window
+
+If {differences}
+	Target Differences
+End
+

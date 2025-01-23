@@ -1,0 +1,12 @@
+# simple script to compare text of two directories
+#
+# Usage CompareDirText Dir1 Dir2
+
+set oldDir "`Directory`"
+cd "{1}"
+
+for i in `files -t TEXT`
+	compare -b -l -n -t "{i}" "{2}{i}" || Set Status 0
+end
+
+cd {oldDir}

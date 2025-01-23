@@ -1,0 +1,376 @@
+  "{WTV:}Boot:Boot.c" # (OBSOLETE) 	 <
+  "{WTV:}Boot:idcrt0.s" # (OBSOLETE) 	 <
+  "{WTV:}Boot:TestBoot.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:ANVStorage.s" # (OBSOLETE) 	 <
+  "{WTV:}Box:BootHWAudio.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:BoxInterrupts.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:CNVStorage.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:Interrupts.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:Interrupts.s" # (OBSOLETE) 	 <
+  "{WTV:}Box:IRRegs.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:NVStorage.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:NVStorage.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:NVStorage.s" # (OBSOLETE) 	 <
+  "{WTV:}Box:Persistence.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:Persistence.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:SerialPriv.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:stanford.c" # (OBSOLETE) 	 <
+  "{WTV:}Box:Toolbox:SerialPriv.h" # (OBSOLETE) 	 <
+  "{WTV:}Box:Toolbox:ToolboxSerial.c" # (OBSOLETE) 	 <
+  "{WTV:}BuildROM" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Crypto:encode.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Crypto:sha.h" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Crypto:sha1dgst.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Crypto:sha_locl.h" # (OBSOLETE) 	 <
+  "{WTV:}Communications:DataStream.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:HTTP.h" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Login.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Notifications.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:SecureSocket.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:TCPStream.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:TCPStream.h" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Tellyscript:artemis_14153290511.scr" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Tellyscript:artemis_14153290511.tok" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Tellyscript:artemis_18006138199.tok" # (OBSOLETE) 	 <
+  "{WTV:}Communications:Tellyscript:artemis_3290511.scr" # (OBSOLETE) 	 <
+  "{WTV:}Communications:UResource.c" # (OBSOLETE) 	 <
+  "{WTV:}Communications:WebProtocol.c" # (OBSOLETE) 	 <
+> "{WTV:}Content:MIDI:all.html" 	  
+> "{WTV:}Content:MIDI:B- jukebox3.mid" 	  
+> "{WTV:}Content:MIDI:B-jukebox 1.2.mid" 	  
+> "{WTV:}Content:MIDI:B-Jukebox2.mid" 	  
+> "{WTV:}Content:MIDI:B-Log On.mid" 	  
+> "{WTV:}Content:MIDI:B-Splash v.2.mid" 	  
+> "{WTV:}Content:MIDI:M-Dismiss Error Win.mid" 	  
+> "{WTV:}Content:MIDI:M-Long Win Scrl dn.mid" 	  
+> "{WTV:}Content:MIDI:M-Long Win Scrl up.mid" 	  
+> "{WTV:}Content:MIDI:M-Make Link Window.mid" 	  
+> "{WTV:}Content:MIDI:M-Med Win Scrl dn.mid" 	  
+> "{WTV:}Content:MIDI:M-Med Win Scrl up.mid" 	  
+> "{WTV:}Content:MIDI:M-Modem Dialup.mid" 	  
+> "{WTV:}Content:MIDI:M-New Mail.mid" 	  
+> "{WTV:}Content:MIDI:M-Option Win Scl Dn.mid" 	  
+> "{WTV:}Content:MIDI:M-Option Window Scroll Up.mid" 	  
+> "{WTV:}Content:MIDI:M-Page Back.mid" 	  
+> "{WTV:}Content:MIDI:M-Page Scroll Sound.mid" 	  
+> "{WTV:}Content:MIDI:M-Save Away.mid" 	  
+> "{WTV:}Content:MIDI:M-Scroll Limit.mid" 	  
+> "{WTV:}Content:MIDI:M-Select Pop-Up.mid" 	  
+> "{WTV:}Content:MIDI:M-Short Win Scrl dn.mid" 	  
+> "{WTV:}Content:MIDI:M-Short Win Scrl up.mid" 	  
+> "{WTV:}Content:MIDI:M-Soft Error.mid" 	  
+> "{WTV:}Content:MIDI:M-Submit-Search II.mid" 	  
+> "{WTV:}Content:MIDI:M-Type Sound.mid" 	  
+> "{WTV:}Content:MIDI:M-¥old¥ Goto Window.mid" 	  
+> "{WTV:}Content:MIDI:M-¥old¥ Submit-Search.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox1.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox2.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox3.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox4.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox5.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox6.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox7.mid" 	  
+> "{WTV:}Content:MIDI:P-jukebox8.mid" 	  
+  "{WTV:}Content:Remotes.PICT" # (OBSOLETE) 	 <
+  "{WTV:}Content:Startup.gif" # (OBSOLETE) 	 <
+  "{WTV:}Content:Startup.html" # (OBSOLETE) 	 <
+  "{WTV:}Documentation:Code Conventions" # (OBSOLETE) 	 <
+  "{WTV:}Documentation:WebTVª HTML Support" # (OBSOLETE) 	 <
+  "{WTV:}Documentation:WebTVª HTML Support.txt" # (OBSOLETE) 	 <
+  "{WTV:}GeneralMIDISamples" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Canvas.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:charToGlyph.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoBitmap.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoColor.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoCompatibility.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoEdit.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoFont.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoLine.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoMac.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoMapping.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoMath.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoRamp.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoRectangle.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoSim.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:fidoText.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:sineTableFile.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Fido:yList.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:GIF.h" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:Image.c" # (OBSOLETE) 	 <
+  "{WTV:}Graphics:JPEG:jpeg.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:Forms.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:HTML.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:HTML.h" # (OBSOLETE) 	 <
+  "{WTV:}HTML:HTMLParse.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:HTMLStream.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:HTMLTables.h" # (OBSOLETE) 	 <
+  "{WTV:}HTML:Image.c.bad" # (OBSOLETE) 	 <
+  "{WTV:}HTML:InputItem.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:RichText.c" # (OBSOLETE) 	 <
+  "{WTV:}HTML:Tables.c" # (OBSOLETE) 	 <
+  "{WTV:}Input:InputHandling.c" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Basic.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Canvas.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ContentViewer.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:DataStream.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Feed.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:FileManager.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:FileProtocol.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Forms.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:HTML.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:HTMLParse.c" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:HTMLWindow.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Login.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:MacTCP.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:MemoryLayout.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Metrowerks:Headers.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Metrowerks:Headers.pch" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:OldControl.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Ornament.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ResourceCache.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:RichText.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:StoreProtocol.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:SystemMenu.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Tables.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxDebug.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxGraphics.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxMemory.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxSerial.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxTCP.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxTextRender.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:ToolboxUserInput.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:TVToolbox.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:UResource.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:UserInterface.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:View.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Viewable.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:WebProtocol.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:WebTVSystem.h" # (OBSOLETE) 	 <
+  "{WTV:}Interfaces:Window.h" # (OBSOLETE) 	 <
+  "{WTV:}IsModifyReadonly" # (OBSOLETE) 	 <
+> "{WTV:}NewProjectorFiles" 	  
+> "{WTV:}OldChangeLog" 	  
+  "{WTV:}ROM:About.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:connect.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:csw.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:csw.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:csw.ncl" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Dolphin.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Dolphin.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Donald.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Donald.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Globes.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Goofy.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Goofy.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Goofy2.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Goofy2.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Magic.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Mermaid.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Mermaid.cel" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:MultiImage.ani" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Animations:Startup.ani" # (OBSOLETE) 	 <
+> "{WTV:}ROM:AudioScope.html" 	  
+  "{WTV:}ROM:Basics.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:box.syms" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Connect.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Disney.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Favorite.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Osaka_20" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_12" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_14" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_16" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_18" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_20" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_22" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_24" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_26" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_28" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_30" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_32" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_34" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_36" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_38" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Fonts:Palatino_40" # (OBSOLETE) 	 <
+  "{WTV:}ROM:General.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_293" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_353" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_374" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_392" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_690" # (OBSOLETE) 	 <
+  "{WTV:}ROM:GMPatches:SND_815" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Go.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ActiveSelection.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Alert.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:altavista.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Banner.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Brick.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:buttonborder.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:City.jpg" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Clouds.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Concrete.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:connecting.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ControlDrawer.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:csw.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Dolphin.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Donald.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:FavoriteBar.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:FavoriteIcon.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Favorites.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.0.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.1.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.10.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.11.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.2.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.3.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.4.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.5.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.6.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.7.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.8.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Globes:globe.9.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Goofy.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Goofy2.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:GotoIcon.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:GrayParchment.jpg" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ImageCursor1.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ImageCursor2.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ImageCursor3.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Keyboard.gif" # (OBSOLETE) 	 <
+> "{WTV:}ROM:Images:Keyboard3.gif" 	  
+  "{WTV:}ROM:Images:MailIcon.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Mermaid.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:ControlsButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:FindButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:GotoButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:InfoButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:PrefsButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:SaveButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:SendButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Options:WebTVButton.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:PanelBorder.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Paper.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:philips4.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:PointingHand.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:RecentIcon.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:road_test.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ruleborder.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ScrollDownArrow.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:ScrollUpArrow.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Selection.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Startup.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Startup2.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Startup3.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:Startup4.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:StartupIcon.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:statusbackground.bad" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:SystemMenu.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:SystemMenu2.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:TextField.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:WeatherMap.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:webcrawler.gif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Images:YellowGlow.bif" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Introduction.html" # (OBSOLETE) 	 <
+> "{WTV:}ROM:Keyboard.html" 	  
+> "{WTV:}ROM:Keyboard3.html" 	  
+  "{WTV:}ROM:LocationFinder.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:lum.yuv" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Mail.html" # (OBSOLETE) 	 <
+> "{WTV:}ROM:NumericKeypad.html" 	  
+  "{WTV:}ROM:Palatino_18" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_20" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_22" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_24" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_26" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_28" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_30" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_32" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_34" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_36" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_38" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Palatino_40" # (OBSOLETE) 	 <
+> "{WTV:}ROM:PhoneSetup2.html" 	  
+  "{WTV:}ROM:Recent.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:SampleAlert.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Axel-F.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Bohemian.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Logon.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Psyko.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:StarTrek.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:SweetDreams.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Theme1.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Theme2.mid" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Sounds:Wind.snd" # (OBSOLETE) 	 <
+  "{WTV:}ROM:SystemMenu.html" # (OBSOLETE) 	 <
+> "{WTV:}ROM:table" 	  
+  "{WTV:}ROM:Text:artemis_14153290511.scr" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Text:artemis_18006138199.scr" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Text:artemis_3290511.scr" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Usability.html" # (OBSOLETE) 	 <
+  "{WTV:}ROM:Weather.html" # (OBSOLETE) 	 <
+  "{WTV:}Romify" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:DisplayWindow.c" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:MemorySeismograph.c.backup" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:PageWalker.c" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:PageWalker.h" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:Preferences.c" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:Settings.c" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:SimulatedPage.c" # (OBSOLETE) 	 <
+  "{WTV:}Simulator:SimulatorWindow.c.bad" # (OBSOLETE) 	 <
+  "{WTV:}SocketLib68k¹" # (OBSOLETE) 	 <
+  "{WTV:}Sound:MIDI.c" # (OBSOLETE) 	 <
+  "{WTV:}Storage:FileProtocol.c" # (OBSOLETE) 	 <
+  "{WTV:}Storage:MemoryCheckpointing.h" # (OBSOLETE) 	 <
+  "{WTV:}Storage:ResourceCache.c" # (OBSOLETE) 	 <
+  "{WTV:}Storage:StoreProtocol.c" # (OBSOLETE) 	 <
+  "{WTV:}Storage:WebTVSystem:WebTVSystem.c" # (OBSOLETE) 	 <
+  "{WTV:}Text:HText.c" # (OBSOLETE) 	 <
+  "{WTV:}Text:HTFont.h" # (OBSOLETE) 	 <
+  "{WTV:}Text:HTStyle.c" # (OBSOLETE) 	 <
+  "{WTV:}Text:HTStyleData.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:BuildTools" # (OBSOLETE) 	 <
+  "{WTV:}Tools:BuildWTV" # (OBSOLETE) 	 <
+  "{WTV:}Tools:Dos2Mac" # (OBSOLETE) 	 <
+  "{WTV:}Tools:FastDoIt" # (OBSOLETE) 	 <
+  "{WTV:}Tools:Mac2Dos" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MountWebTV" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Commands:Goodies:CheckedOutFiles" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:brom.Makefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:BuildROM.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:BuildROMMakefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:cplus-dem.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:demangle.h" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:LookupSymbol.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:LookupSymbol.make" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:lus.Makefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:Romify.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:romify.Makefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:RomifyMakefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:snarf.Makefile" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:SnarfSyms.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:SnarfSyms.make" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:Symbols.h" # (OBSOLETE) 	 <
+  "{WTV:}Tools:MPW:Source:uromify.c" # (OBSOLETE) 	 <
+  "{WTV:}Tools:RebuildWTV" # (OBSOLETE) 	 <
+  "{WTV:}Tools:UserStartup¥WebTV" # (OBSOLETE) 	 <
+  "{WTV:}Tools:WebMenu" # (OBSOLETE) 	 <
+  "{WTV:}Tools:WebTVStartup" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:badbadcontentview.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:BadContentView.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:ContentViewer.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:HTMLWindow.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:HTMLWindow.h" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:Ornament.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:Selection.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:SystemMenu.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:View.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:Window.c" # (OBSOLETE) 	 <
+  "{WTV:}UserInterface:Window.h" # (OBSOLETE) 	 <
+  "{WTV:}Utilities:Feed.c" # (OBSOLETE) 	 <
+  "{WTV:}Utilities:Feed.h" # (OBSOLETE) 	 <
+  "{WTV:}Utilities:List.h" # (OBSOLETE) 	 <
+  "{WTV:}Utilities:Memory.c" # (OBSOLETE) 	 <
+  "{WTV:}Utilities:Queue.h" # (OBSOLETE) 	 <
+  "{WTV:}View:Viewable.c" # (OBSOLETE) 	 <
+  "{WTV:}WebTV68k¹" # (OBSOLETE) 	 <
+  "{WTV:}WWW68k¹" # (OBSOLETE) 	 <
+> 	  

@@ -1,0 +1,3 @@
+IMAGE file://ROM/Images/alert.gif
+INNERBOUNDS  8, 8, 52, 52
+NOFILTER

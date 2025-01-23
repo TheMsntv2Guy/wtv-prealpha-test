@@ -1,0 +1,3 @@
+CheckWindowIn "{WTV:}Box:BoxDebugger.c"	 #local: 57*; remote: 57
+CheckWindowIn "{WTV:}Box:HWAudio.c"	 #local: 9*; remote: 9
+CheckWindowIn "{WTV:}System:System.c"	 #local: 227*; remote: 227

@@ -1,0 +1,55 @@
+#
+# SetProjector		Andrew Shebanow					6/28/88
+#
+# Modification History:
+#
+#	2/6/89(AGS)		Added code to execute ProjInit script
+#	1/24/89(AGS)	Changed 'cd' command to 'Directory',
+#					added check for no mounted projects.
+#	6/30/88(DJB)	Changed from using replace on files
+#					to using Evaluate
+#	7/8/88(AGS)		Always get current list of mounted projects
+#	7/16/88(AGS)	Modified to use new MountProject commands to get
+#					mounted project list. Much faster, and cleaner.
+#
+# Script to set a project as the current project.
+#
+# Note that you must use Execute to run this script
+# if you want BuildMenu to know about your new build
+# target.
+#
+
+# save exit status, since we are executing at global scope
+Set OldExit {Exit}
+Set Exit 0
+
+# Get list of mounted projects
+Set ProjectNameList "`MountProject -pp -s -r | Sort -l`"
+
+# Set up project specific items
+Set ProjName NIL
+
+# Make sure we have at least one project mounted
+If "{ProjectNameList}" == ""
+	Alert "Cannot set project: no projects are mounted."
+	# restore previous state of {Exit}
+	Set Exit {OldExit}
+	Exit 0
+End
+
+Set ProjName `GetListItem -r 16 -s -d {ProjectNameList} -m "Choose a project"` > Dev:Null ³ Dev:Null
+Export ProjName
+if "{ProjName}" != NIL
+
+	# set the current project
+	Execute SetProject
+	
+	# Extract the Build Name and set it
+	( Evaluate "{ProjName}" =~ /([a-zA-Z0-9_. ]+¶º)*([Â¶º]+)¨1¶º/ ) · Dev:Null
+	Set Program "{¨1}"
+	Export Program
+
+End
+
+# restore previous state of {Exit}
+Set Exit {OldExit}

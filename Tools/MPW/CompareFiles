@@ -1,0 +1,140 @@
+# Until this works correctly 
+#{MPW}Scripts:CompareFiles {{Parameters}}
+#Exit 0
+
+Set CaseSensitive 0
+
+If "{CompareFilesTileRectangle}" =~ /([0-9]+)®1[ ]*,[ ]*([0-9]+)®2[ ]*,[ ]*([0-9]+)®3[ ]*,[ ]*([0-9]+)®4[ ]*/
+	Set Top {®1}
+	Set Left {®2}
+	Set Bottom {®3}
+	Set Right {®4}
+Else If "{CompareFilesTileRectangle}" == ""
+	Set Left 7										# default the left edge of the windows
+	If "{1}" =~ /-Kong/ || "{1}" =~ /-TwoPage/		# Apple Two-Page Monochrome Monitor
+		Set CompareFilesTileRectangle "0, 5, 749, 1148"
+		Set Bottom 750
+		Set Right 1138
+		Shift 1
+	else if "{1}" =~ /-SkyHawk/ || "{1}" =~ /-Portrait/	# Apple Macintosh Portrait Display
+		Set CompareFilesTileRectangle "0, 5, 749, 635"
+		Set Bottom 750
+		Set Right 626
+		Shift 1
+	else if "{1}" == "-16"							# Apple 16" screen
+		Set CompareFilesTileRectangle "0, 5, 482, 828"
+		Set Bottom 483
+		Set Right 819
+		Shift 1
+	else if "{1}" =~ /-13/							# MacII screen
+		Set CompareFilesTileRectangle "0, 5, 344, 635"
+		Set Bottom 345
+		Set Right 626
+		Shift 1
+	else if "{1}" =~ /-LC/							# LC 12" RGB screen
+		Set CompareFilesTileRectangle "0, 3, 240, 510"
+		Set Bottom 241
+		Set Right 500
+		Shift 1
+	else if "{1}" == "-9"							# Mac+ and MacSE screen
+		Set CompareFilesTileRectangle "0, 3, 198, 510"
+		Set Bottom 199
+		Set Right 500
+		Shift 1
+	else if "{1}" == "-b" || "{1}" == "-B"			# user specified size
+		Evaluate Right = {2} - 5
+		Evaluate Bottom = {3} - 140
+		Set CompareFilesTileRectangle "0,5,{Bottom},{Right}"
+		Evaluate Bottom = {Bottom} + 1
+		Evaluate Right = {Right} - 9
+		Shift 3
+	else if "{1}" == "-r" || "{1}" == "-R"			# custom user-specified rect
+		(Evaluate "{2}" =~ /(≈)®1,(≈)®2,(≈)®3,(≈)®4/) >Dev:Null
+		Set Top "{®1}"
+		Set Left "{®2}"
+		Set Bottom "{®3}"
+		Set Right "{®4}"
+		Evaluate Bottom = {Bottom} - 120
+		Set CompareFilesTileRectangle "{Top}, {Left}, {Bottom}, {Right}"
+		Evaluate Bottom = {Bottom} + 1
+		Evaluate Left = {Left} + 2
+		Evaluate Right = {Right} - {Left} - 2
+		Shift 2
+	else											# default
+		Set CompareFilesTileRectangle "0, 5, 582, 980"
+		Set Bottom 583
+		Set Right 971
+	end
+End
+
+if {#} ≠ 2
+	Echo "### CompareFiles - Incorrect order, or missing or illegal option"
+	Echo "# Usage - CompareFiles [-13 | -Portrait | -TwoPage] oldFile newFile"
+	Exit 1
+end >Dev:StdErr
+
+Set CompareStatus 0
+# Old file comparison : Compare
+# Compare -g 3 -b -m "{{1}}" "{{2}}" > "{ShellDirectory}"Compare_File || Set CompareStatus {Status}
+
+# New file comparison : Diff
+"{{WTV:}}"Tools:MPW:Diff -b --unified=0 "{{1}}" "{{2}}" > "{ShellDirectory}"Compare_File || Set CompareStatus {Status}
+
+if {CompareStatus} == 0
+
+	Echo "### files are equal: {1} - {2}"
+
+# else if {CompareStatus} == 2					# files don’t match (for Compare) - set everything up
+else if {CompareStatus} == 1					# files don’t match (for Diff) - set everything up
+	Set CompareStatus 2							# make Diff’s {Status} compatible with Compare’s
+# Old fixup for when we used compare
+#	StreamEdit "{{ShellDirectory}}"Compare_File -o "{{ShellDirectory}}"Compare_File ∂
+#		-e '/•[ ∂t]*File (≈)®1; Line (≈)®2; File (≈)®3; Line (≈)®4/ Change "	Find "®2" "®1"; Find "®4" "®3'
+
+# new fixup for Diff
+	StreamEdit -d -s "{{WTV:}}"Tools:MPW:FixDiff.sed "{{ShellDirectory}}"Compare_File -o "{{ShellDirectory}}"Compare_File
+
+	Open "{{ShellDirectory}}"Compare_File
+	Find ∞ "{{ShellDirectory}}"Compare_File
+	Set NothingMatches 1
+	Find \•∂*∂*∂* Nothing seems to match ∂*∂*∂*\ "{{ShellDirectory}}"Compare_File || Set NothingMatches 0
+	If {NothingMatches}
+		Echo "### nothing matches: {1} - {2}"
+		Close -n "{{ShellDirectory}}"Compare_File
+		Exit 0
+	End
+
+	Set windowOne "``Files -f -q "{{1}}"``"			# get full pathnames
+	Set windowTwo "``Files -f -q "{{2}}"``"
+	Set windowThree "{{ShellDirectory}}Compare_File"
+
+	Unset Close1 Close2								# remember if either file is already open
+	Set openWindows " ``Windows`` "
+	If "{{openWindows}}" !~ /≈ ∂'«0,1»"{{windowOne}}"∂'«0,1» ≈/; Open "{{windowOne}}"; Set Close1 1; End
+	If "{{openWindows}}" !~ /≈ ∂'«0,1»"{{windowTwo}}"∂'«0,1» ≈/; Open "{{windowTwo}}"; Set Close2 1; End
+
+	Begin											# create end script
+		MoveWindow "{{windowOne}}"; SizeWindow "{{windowOne}}"
+		If {Close1}; Quote Close "{{windowOne}}"; End
+		MoveWindow "{{windowTwo}}"; SizeWindow "{{windowTwo}}"
+		If {Close2}; Quote Close "{{windowTwo}}"; End
+	End > "{{ShellDirectory}}Compare_State"
+
+	TileWindows -v -r "{CompareFilesTileRectangle}" "{{windowOne}}" "{{windowTwo}}"
+	Open -t "{{ShellDirectory}}"Compare_File
+	MoveWindow {Left} {Bottom} "{ShellDirectory}"Compare_File
+	SizeWindow {Right} 140 "{ShellDirectory}"Compare_File
+
+	DeleteMenu Compare ≥ dev:null || Set Status 0
+	AddMenu Compare "Find Next Change/0"	"CompareFiles—NextChange"
+	AddMenu	Compare "(-"					""
+	AddMenu Compare "Copy Selection »»/1"	"Catenate ∂"{{windowOne}}∂".§ > ∂"{{windowTwo}}∂".§; CompareFiles—NextChange"
+	AddMenu Compare "«« Copy Selection/2"	"Catenate ∂"{{windowTwo}}∂".§ > ∂"{{windowOne}}∂".§; CompareFiles—NextChange"
+	AddMenu	Compare "(--"					""
+	AddMenu	Compare "Done"					"CompareFiles—Quit"
+
+	CompareFiles—NextChange
+
+end
+
+Exit {CompareStatus}

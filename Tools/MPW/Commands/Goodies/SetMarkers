@@ -1,0 +1,45 @@
+#--------------------------------------------------------------------------------------------------
+#					S E T M A R K E R S			24.5.89
+#
+# To set marks for a unit UMyUnit assumed to be in files UMyUnit.p, UMyUnit.inc1.p,...
+# Simply select the directory containing the unit and execute 
+#							SetMarkers UMyUnit
+#--------------------------------------------------------------------------------------------------
+
+# Use procnames to build mark commands for procedure/function names in file {1}.marks
+procnames {1}.p -o -m > {1}.marks
+
+# Now add marks for the object declarations in the interface part
+open {1}.p -t
+open {1}.marks -t
+# Position at start of interface file
+find ¥ {1}.p
+# Skip first 2 lines of current marks
+find 2Æ {1}.marks
+set CaseSensitive 0
+Set Exit 0
+loop
+	# Position at start of a line containing "??????=?????OBJECT"
+	find Æ/¥(?+=[ ¶t]*OBJECT)/ {1}.p
+	# Break if end of file
+	if {status} != 0
+		Break
+	end
+	# Find the name of the object in the line
+	find /[ ¶t]*/Æ:/[A-Z0-9_]+/ {1}.p
+	# Copy it to the clipboard
+	copy ¤ {1}.p
+	# Build a Mark command for the object name
+	replace ¤ 'Mark -y /¥([ ¶t]*' {1}.marks
+	paste ¤ {1}.marks
+	replace ¤ ')?*OBJECTÅ/ "' {1}.marks
+	paste ¤ {1}.marks
+	replace ¤ '"'¶n {1}.marks
+end
+Set Exit 1
+close {1}.p
+close {1}.marks -y
+# Apply the marks
+{1}.marks
+close -a
+delete {1}.marks

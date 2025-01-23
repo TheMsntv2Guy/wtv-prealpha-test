@@ -1,0 +1,7 @@
+Loop
+	Set _status 0
+	(Duplicate {"Parameters"} || Set _status {status}) · "{TempFolder}"SafeDuplicateLog
+	Break If "`StreamEdit -e '/OS error -36/ print;¥/Å/ delete' "{TempFolder}"SafeDuplicateLog ³ dev:null`" == ""
+End
+Catenate "{TempFolder}"SafeDuplicateLog > dev:stderr
+Exit {_status}

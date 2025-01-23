@@ -1,0 +1,80 @@
+#	Compare the supplied file with the last revision of in the project
+#	If the file is unchanged, compare against the previous revision
+#	If the file is MROÕed or checked out, compare against the virgin version
+#
+
+If {#} < 1
+	Echo "## CompareRev syntax:¶n#¶tCompareRev filename [-rev number]" ; Exit 1
+End
+
+Set againstRevision 0
+Set specificRevision 0
+
+Loop
+	Break If {#} == 0
+	If "{1}" =~ /-rev/
+		Shift
+		Set againstRevision {1}
+		Set specificRevision 0
+	Else
+		Set window "{{1}}"
+	End
+	Shift
+End
+
+If "{{window}}" == ""
+	Echo "# CompareRev syntax:¶n#¶tCompareRev filename [-rev number]" ; Exit 1
+End
+
+# get short name and directory of window
+
+if "{{window}}" !~ /(:*([Â:]+:*)*)¨2([Â:]+)¨1/; Alert "CompareRev canÕt parse file parameter."; exit 1; end
+set dir "{{¨2}}"
+set short "{{¨1}}";
+
+set info "``ProjectInfo "{{window}}" ³ Dev:Null || set Status 0``"
+if "{{info}}" !~ /[Â,]+,([0-9.a-z]+)¨1([+*]Ç0,1È)¨2ÅProject: ([Â:]+º)¨3     Checked out:Å/
+	Echo "## {0}: the file ¶"{{window}}¶" doesnÕt belong to any project" ; Exit 1
+end
+set windowRevision "{{¨1}}"
+set windowCO "{{¨2}}"
+set project "{{¨3}}"
+
+If {againstRevision} == 0
+	If ("x{{windowCO}}" == "x*") || ("x{{windowCO}}" == "x+")
+		Set againstRevision {windowRevision}
+	Else
+		Set againstRevision `Evaluate {windowRevision}-1`
+	End
+End
+
+# now that we know what versions to check against each other, look to see if the revert file
+# exists and if itÕs the right version number...
+If ``Exists {dir}\\{short} != ""``
+	set info "``ProjectInfo "{{dir}}\\{{short}}" ³ Dev:Null || set Status 0``"
+	if "{{info}}" !~ /[Â,]+,([0-9.a-z]+)¨1Å/; Alert "CanÕt parse ProjectInfo Ò{info}Ó."; Exit 1; end
+	set useRevertFile ``evaluate "{{¨1}}"=="{{againstRevision}}"``
+End
+
+If {useRevertFile}
+	duplicate -y "{{dir}}\\{{short}}" "{{dir}}{{short}},{{againstRevision}}"
+Else
+	Set CRTempFolder "{{TempFolder}}_CompareFolder_"
+	NewFolder "{{CRTempFolder}}" · dev:null || Set Status 0
+	Set checkoutStatus 0
+	Checkout -d "{{CRTempFolder}}" -project "{{project}}" "{{short}},{{againstRevision}}" || Set checkoutStatus {Status}
+	If {checkoutStatus} == 0
+		Move -y "{{CRTempFolder}}:{{short}}" "{{dir}}{{short}},{{againstRevision}}"
+	End
+	Delete -y "{{CRTempFolder}}"
+	Exit 1 If {checkoutStatus}
+End
+
+Set MyStatus 0
+CompareFiles "{{dir}}{{short}}" "{{dir}}{{short}},{{againstRevision}}" · dev:null || Set MyStatus {Status}
+If {MyStatus} == 2
+	Echo Delete ¶""{{dir}}{{short}},{{againstRevision}}"¶" >> "{ShellDirectory}Compare_State"
+Else If {MyStatus} == 0
+	Alert "Revisions match."
+	Delete "{{dir}}{{short}},{{againstRevision}}"
+End

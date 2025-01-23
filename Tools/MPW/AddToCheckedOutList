@@ -1,0 +1,15 @@
+for file in {parameters}
+	If `Exists "{{file}}"` == ""
+		Echo "# error in AddToCheckedOutList: Ò{file}Ó doesnÕt exist!"
+		Exit 1
+	End
+	
+	If "{file}" =~ /:(Å)¨1/; Set file "{WTV:}{¨1}"; End
+	If "{file}" !~ /{WTV:}(([Â:]+:*)*[Â:]+)¨1/;  Echo "Cannot parse {file}"; Exit 1; End
+	Set shortPathMinusColon "{{¨1}}"
+
+	Echo ":{shortPathMinusColon}" >> "{{WTV:}}"CheckedOutList || Exit 1
+	Sort -unique -l -o "{{WTV:}}"CheckedOutList "{{WTV:}}"CheckedOutList
+End
+
+

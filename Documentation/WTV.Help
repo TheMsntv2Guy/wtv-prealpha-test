@@ -1,0 +1,331 @@
+This is a summary of WebTV MPW build commands
+
+	HelpWTV Variables		# summary of the standard WebTV shell variables
+	HelpWTV Tools			# summary of the non-standard build tools
+
+-   
+Variables
+	To see the current value, enter a command such as Echo {<var name>}
+	
+	Variables defined by the WebTV MPW build system:
+	
+	Echo {WTV:}				# full pathname of WebTV main folder
+	Echo {WTV.o:}			# full pathname of WebTV objects and temp files folder
+	Echo {WTVMenu}			# name of WebTV build and configuration menu
+
+-
+Tools
+	We use the following Metrowerks tools, running under MPW.
+	To see Help summaries, Enter a command such as
+	
+	HelpWTV MWC68K			# Metrowerks C compiler for 68K
+	HelpWTV MWLink68K		# Metorwerks Linker for 68K
+	HelpWTV CFront			# C++ -> C tool
+	HelpWTV CPlus			# Script to run C++
+
+-
+MWC68K			# Metrowerks C/C++ compiler for Motorola 680x0
+MWC68K [options…] [file]
+	-a4						# use a4 for global data accesses
+	-a6						# generate a6 stack frames (defaults on)
+    -align power            # specify PowerPC alignment for data structures
+    -align mac68k           # specify 68K alignment for data structures
+    -align mac68k4byte      # specify 68K 4 byte alignment for data structures
+    -align array[members]   # align members of arrays (default off)
+	-ansi off				# default
+	-ansi on|relaxed		# nonstandard keywords not excepted
+	-ansi strict			# strictly enforce ansi rules.
+    -appleext on | off		# allow apple's keywords (defaults to on)
+	-ARM on | off			# check code for ARM conformance
+    -b                      # put string constants into code and generate PC-relative references
+                            #   for function addresses
+    -b2                     # implies '-b' above, and allows string constants to be overlaid
+    -c                      # syntax check only, don't create object file
+	-check precomp[flags]   # check precompiler flags
+    -d name                 # define a preprocessing symbol. Equivalent to #define name 1.
+    -d name=value           # define a preprocessing symbol. Equivalent to #define name value.
+	-d0						# return pointers in register D0
+ 	-dialect c				# treat source as C
+    -dialect cplus          # treat source as C++
+	-directdestruction		# destroy locals with direct destructor call
+	-dsize 64|80			# sets the double type to be "double" (64) or "SANE extended" (80)
+    -dump filename    		# precompile only, write precompiled header to filename
+	-e						# preprocess only. print results on standard output.
+    -enum int               # use int-sized enumeration types
+    -enum min               # use minimum-sized enumeration types
+	-force_active			# marks all routines to not be striped by the linker.
+    -i directory            # search for include files in directory.
+    -intsize 2|4            # select 2-byte or 4-byte ints; default is 4 68K Only
+	-inline on|all|none|off	# turn inlining on and off (all=on and none=off)
+    -inline static			# create inlines as static functions
+	-jm						# generates a warning and invokes -mpw_pointers
+    -load filename			# load a precompiled header (or prefix a text file)
+    -dsize 64|80			# sets the size of doubles (default 64).
+    -mapcr					# (defaults on) treat '\n' and '\r' exactly like MPW
+	-maxerrors number		# limit errors to number.
+    -mbg ch8                # v2.0 compatible macsbug symbols
+    -mbg off                # no macsbug symbols in the code 
+    -mbg on|full            # full macsbug symbols
+    -mc68020                # generate MC68020 code 
+    -mc68349                # generate MC68349 code 
+	-mc68881                # generate MC68881 code for arithmetic operations
+    -model farCode|         # generate load-time relocatable 32-bit references for
+        farData|far         #   code, data, or both
+    -model nearCode|        # generate 16-bit references for code, data, or both 
+        nearData|near       #   (the default)
+    -model codesmart        # generate 32-bit or 16-bit references whichever is better
+	-model nearstrings|		# put strings constants into near or far global space
+		farstrings			# 
+	-model nearvtables|		# put vTables into near or far global space
+		farvtables			# 
+	-mpwc					# use MPW calling conventions (defaults off).
+ 	-mpw_pointers			# relax rules for pointers of the same basic type of the same size (char & unsigned char...)
+    -msext on | off			# allow Microsofts's c++ extensions (defaults to off)
+	-noa6					# do not generate a6 stack frames (defaults on)
+    -nomapcr				# for unix® compatiblity '\n' == linefeed, '\r' == return
+    -nosyspath              # treat <> like "" in #include directives
+	-notonce				# allow multiple copies of header files
+    -o filename             # write object code to filename or directory
+	-once					# only read include files once.
+    -opt off                # suppress all optimizations
+	-opt option,option		# -opt options can be a list of the items below (-opt all,nopeep).
+    -opt [no]global         # enable global optimization and register allocation
+    -opt [no]peep           # enable peephole optimization
+    -opt size               # optimize for size
+    -opt speed              # optimize for speed (default)
+    -p                      # write progress information to diagnostic
+    -precompile filename    # precompile only, write precompiled header to filename
+    -prefix filename        # automatically include filename before source file
+    -profile on|off         # enable/disable calls to profiler; default is "off"
+    -proto strict		    # strict prototype checking
+    -proto auto			    # treated like strict?
+    -proto ignoreoldstyle   # ignore oldstyle prototypes
+    -r[equireprotos]        # require function prototypes
+	-s name					# put a #pragma segment at the start of the file
+	-sb name				# start a new segment named name (use "" for no name)
+    -strict on|off			# strict enforcement of source language dialect
+	-str[ings] dontreuse	# don't reuse string constants
+	-str[ings] pool			# pool strings into a single data object
+    -sym on|off             # enable/disable symbolic debugging information; default is "off"
+    -sym full				# this is the same as -sym on (for PPCC compatiblity)
+    -sym fullpath           # write symbolic debugging information to .SYM file,
+                            #    equivalent to -sym on but includes
+                            #    full path names for source files
+	-trigraphs on|off       # enable recognition of trigraphs; default is "off"
+	-w[arnings] opt1,opt2	# -w options can be a list of the items below.
+        off			        # turn off all warnings
+        on			        # turn on warnings (except iserror)
+        full		        # same as "all" (except iserror)
+        all			        # turn on all warnings
+        [no]pragmas	        # warn on illegal pragmas
+        [no]emptydecl	    # warn on empty declarations
+        [no]possible	    # warn on possible errors
+        [no]unusedvar	    # warn on unused variables
+        [no]unusedarg	    # warn on unused arguments
+        [no]extracomma	    # warn on extra commas
+        [no]extended	    # even more possible problems
+		iserror				# treat warnings as errors.
+-
+MWLink68K		# Metrowerks Linker for Motorola 680x0
+	-application			# this is the default
+	-c creator				# set output file creator; default is '????'
+	-coderesource			# builds a code resource
+	-csym OSType			# sets creator for SYM file.
+	-custom					# create a code resource with a custom header on it
+	-d						# no duplicate warnings
+	-da						# create a desk accessory
+	-drvr					# create a driver
+	-dead on|off			# strip out unused modules (defaults on)
+							# note: can't be turned on for -xm sharedLibrary or -xm library.
+    -fastlink on|off        # enable/disable faster linking; default is "off"
+                            #    (faster linking uses more memory)
+    -intsize 2|4            # sets value of runtime variable __4byteints__
+							# 1=4 byte ints 0=2 byte ints
+	-library				# generate a library
+	-map filename			# Put link map in specified filename
+	-mapgm filename			# Create an MPW style linkmap
+    -merge on|off           # currently not supported; all output is merged into output 
+    						#    file if file exists; new file is created if file doesn't exist
+	-model near|far			# sets whether linker puts jump table in far or near global space
+	-mpwtool				# Generate a MPW Tool
+    -msg keyword[,…]        # message options
+        [no]dup             #   (suppress) warnings about duplicate symbols
+        [no]multiple        #   (suppress) multiple undefined symbol reports
+        [no]warn            #   (suppress) warning messages
+	-o filename				# specify output filename
+	-osym filename			# symbolic file (default objectfilename.SYM)
+	-p						# progress information
+    -ra [seg]=attr[,attr…]  # set segment resource attributes:
+        $xx (or) nnn        #   a hex or decimal attribute you figure out
+        resSysHeap          #   or a comma-seperated list of resource
+        resPurgeable        #    attributes by name
+        resLocked           #   
+        resProtected        #
+        resPreload          #
+    -rt type=id             # set resource type and id 	(implies -xm coderesource)
+	-rsrcfar				# generates support for far or smart code or data in code resources
+							#    -rsrcfar, -rsrcmulti, and -rsrcvirfuncs are equivalent
+	-rsrcflags list			# set the flags on the generated resource
+		system				# this can also be done by using the
+		purgeable			# -ra =attr[,attr]
+		locked				# 
+		protected			#    this feature is only works with the first
+		preload				# 	 segment of a code resource
+	-rsrcmulti				# create a multi-segment code resource
+	-rsrcname name			# name of code resource
+	-rsrcsegtype type		# set a multisegment code resource's 'other' resource type; 
+							#    default is first 3 chars of restype + 'c'
+	-rsrcvirfuncs			# generates support for virtual functions in code resources
+							#    -rsrcfar, -rsrcmulti, and -rsrcvirfuncs are equivalent
+	-s name					# break segment (start a new code segment)
+	-sb	name				# break segments, causes next file to be in a new segment
+							#    (-s is a synonym for -sb)
+    -sg newSeg[=old[,old…]]	# merge old segments into new segment
+	-single					# link a single segment
+    -sn oldseg=newSeg		# merge old segment into new segment
+    -sym off                # don't write symbolic debugging information
+    -sym on                 # write symbolic debugging information to .SYM file
+    -sym fullpath           # write symbolic debugging information to .SYM file,
+                            #    equivalent to -sym on but includes
+                            #    full path names for source files
+	-sym full				# -sym full is treated the same as -sym on
+	-sym tdb				# linker support for Jasik's debugger && -sym fullpath
+    -t type                 # set output file type; default is 'APPL'
+	-tdb					# linker support for Jasik's debugger but without .SYM file
+	-w						# warnings off
+	-xm a[pplication]		# generate a application
+	-xm c[oderesource]		# generate a code resource.
+	-xm e[xecutable]		# generate a application
+	-xm l[ibrary]			# generate a library
+	-xm m[pwtool]			# generate a mpw tool
+	-xm gm					# like application but no main/no data/no xref in segments
+-
+CFront [option…] [file…] < file > intermediate output ≥ progress
+	-a						# force ANSI-style intermediate C code (default)
+	-a0						# force K&R-style (pre-ANSI) intermediate C code
+	-a1						# force ANSI-style intermediate C code (default)
+	-c						# intermediate code to standard output; no object file
+	-d name                 # equivalent to: #define name 1
+    -d name=string          # equivalent to: #define name string
+	-dump filename			# save state of C++ compilation in filename
+	-dumpc filename			# save state of C++ compilation in filename (compressed)
+	-e                      # write preprocessor results to output
+    -e2                     # implies '-e' above, and strips comments
+    -elems881               # generate MC68881 code for transcendentals
+	-f filename				# act as if input comes from named file when it actually is from stdin 
+	-i directory            # search for includes in directory
+    -k directory            # create load/dump files in directory
+	-l						# in C output generate #line nn directives as #nn
+	-l0						# in C output generate no #line nn directives at all
+	-load filename			# load saved C++ compilation state from filename
+	-mark fcts|types|data|	# create MPW markers for the specified items in file being compiler
+		globals
+	-mark all				# create MPW markers for all of the above
+	-maxerrors <n>			# specify that CFront abort after reporting <n> errors (default 12)
+	-mbg ch8				# v2.0 compatible macsbug symbols
+	-mbg off				# no macsbug symbols in the code (link/unlk only if necessary)
+	-mbg on|full			# full macsbug symbols
+	-mbg <n>				# macsbug symbols to length <n> (<n> can be 0..255)
+	-mc68020                # generate MC68020 code 
+    -mc68881                # generate MC68881 code for arithmetic operations
+	-mf						# use MultiFinder memory if there is not enough MPW memory
+	-model near|far			# use 32-bit addresses for global code and data (model far) or A5 references (model near) -- "near" is default
+	-mtbl0					# suppress output of method tables for Object Pascal classes
+	-mtbl1					# force output of method tables for Object Pascal classes
+    -p                      # write progress information to diagnostic
+    -s segment              # generate code in segment
+	-sym off				# no SADE records
+	-sym on|full			# full SADE records; can modify with [,nolines] [,notypes] [,novars]
+    -u name                 # equivalent to: #undef name
+	-vtbl0					# suppress output of virtual tables for ordinary classes
+	-vtbl1					# force output of virtual tables for ordinary classes
+    -w                      # suppress warnings
+	-w1						# generate additional warnings from CFront
+	-w2						# generate maximum warnings from CFront and the C compiler
+    -y directory            # create temporary files in directory
+	-z0						# force 'inline' functions to be non-inline
+	-z3						# suppress name encoding of local vars and struct members (default)
+	-z4						# encode names of local vars and struct members
+	-z5						# don't strip unused static objects that have constructors or destructors
+	-z6						# force enums always to be int variables
+	-z7						# relax requirement on static class member initialization
+	-z15					# optimize nested inline constructor-allocator code
+	-z17					# allow inline expansion of functions of any size
+	
+	Note: CFront does not generate object files.  To compile a C++ program, use the CPlus command.
+
+-
+CPlus [option…] [file…] < file > intermediate output ≥ progress
+	-a						# force ANSI-style intermediate C code (default)
+	-a0						# force K&R-style (pre-ANSI) intermediate C code
+	-a1						# force ANSI-style intermediate C code (default)
+	-b						# passed thru to C compiler (put string constants into code and generate PC-relative references)
+	-b2 					# passed thru to C compiler (implies '-b' above, and allows string constants to be overlaid)
+	-b3 					# passed thru to C compiler (overlaid string constants in code--but not PC-relative refs.)
+	-c						# intermediate code to standard output; no object file
+	-comp name options		# use a different C compiler in "name" and give it "options"
+	-d name                 # equivalent to: #define name 1
+    -d name=string          # equivalent to: #define name string
+	-dump filename			# save state of C++ compilation in filename
+	-dumpc filename			# save state of C++ compilation in filename (compressed)
+	-e                      # write preprocessor results to output
+    -e2                     # implies '-e' above, and strips comments
+    -elems881               # generate MC68881 code for transcendentals
+	-f filename				# act as if input comes from named file when it actually is from stdin 
+    -f1                     # send text version of C code to C compiler (no token stream)
+    -f2                     # send token stream of C code to C compiler (default)
+	-i directory            # search for includes in directory
+    -k directory            # create load/dump files in directory
+	-l						# in C output generate #line nn directives as #nn
+	-l0						# in C output generate no #line nn directives at all
+	-load filename			# load saved C++ compilation state from filename
+    -m                      # passed to C compiler: generate 32-bit references for data
+	-mark fcts|types|data|	# create MPW markers for the specified items in file being compiled
+		globals
+	-mark all				# create MPW markers for all of the above
+	-maxerrors <n>			# specify that CFront abort after reporting <n> errors (default 12)
+	-mbg ch8				# v2.0 compatible macsbug symbols
+	-mbg off				# no macsbug symbols in the code (link/unlk only if necessary)
+	-mbg on|full			# full macsbug symbols
+	-mbg <n>				# macsbug symbols to length <n> (<n> can be 0..255)
+	-mc68020                # generate MC68020 code 
+    -mc68881                # generate MC68881 code for arithmetic operations
+	-mf						# use MultiFinder memory if there is not enough MPW memory
+	-model near|far			# use 32-bit addresses for global code and data (model far) or A5 references (model near) -- "near" is default
+	-mtbl0					# suppress output of method tables for Object Pascal classes
+	-mtbl1					# force output of method tables for Object Pascal classes
+    -n                      # passed to C compiler: turn pointer assignment incompatibility errors into warnings
+    -o objname              # generate code in file or directory objname
+    -opt off                # passed to C compiler: don't apply code optimizations
+    -opt on | full          # passed to C compiler: choose level of code optimization (on is default); 
+                            #   can modify with [,nopeep] [,nocse] 
+                            #   (no peephole, no common subexpression)
+    -p                      # write progress information to diagnostic
+	-patch					# use AT&T's "patch" mechanism for static constructors (use with -comp)
+    -s segment              # generate code in segment
+	-sym off				# no SADE records
+	-sym on|full			# full SADE records; can modify with [,nolines] [,notypes] [,novars]
+    -t                      # passed to C compiler: write compilation time to diagnostic
+	-trace on				# passed to C compiler: generate tracing code--calls to %_EP and %_BP
+	-trace off				# passed to C compiler: generate no tracing code (default)
+	-trace always			# passed to C compiler: always generate tracing code--calls to %_EP and %_BP
+	-trace never			# passed to C compiler: never generate tracing code (default)
+    -u name                 # equivalent to: #undef name
+	-vtbl0					# suppress output of virtual tables for ordinary classes
+	-vtbl1					# force output of virtual tables for ordinary classes
+    -w                      # suppress warnings
+	-w1						# generate additional warnings from CFront
+	-w2						# generate maximum warnings from CFront and the C compiler
+	-w3						# passed through to C compiler (supresses "unused" warnings)
+    -warnings on|off|full   # passed to C compiler: set warning level; "on" is the default
+	-x filename				# generate C code for a different processor, using size and alignment info in filename
+    -y directory            # create temporary files in directory
+	-z0						# force 'inline' functions to be non-inline
+	-z3						# suppress name encoding of local vars and struct members (default)
+	-z4						# encode names of local vars and struct members
+	-z5						# don't strip unused static objects that have constructors or destructors
+	-z6						# force enums always to be int variables
+	-z7						# relax requirement on static class member initialization
+	-z15					# optimize nested inline constructor-allocator code
+	-z17					# allow inline expansion of functions of any size
+-

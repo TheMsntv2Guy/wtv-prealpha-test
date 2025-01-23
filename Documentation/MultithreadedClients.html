@@ -1,0 +1,224 @@
+<HTML>
+<HEAD>
+<TITLE>Multithreaded Clients</TITLE>
+</HEAD>
+
+<BODY>
+
+<A HREF="../../../"><IMG ALT="WWW"
+SRC="../../../Icons/WWW/WWW48x.gif"></A> <A
+HREF="../../Status.html"><IMG ALT="Lib"
+SRC="../../../Icons/WWW/Lib48x.gif"></A> <A
+HREF="Implementation.html"><IMG ALT="LibGuide"
+SRC="../../../Icons/WWW/Spec48x.gif"></A>
+
+<H1>Multithreaded Clients</H1>
+
+<HR>
+
+This section describes the design and implementation of the
+multithreaded, interruptable I/O <A
+HREF="../../../Protocols/HTTP/HTTP2.html">HTTP</A> Client as it is
+implemented in the <A HREF="../../Status.html"> World-Wide Web Library of
+Common Code</A>. The section is an extension to the description of the
+<A HREF="HTTPFeatures.html">HTTP Client</A> and is divided into the
+following sections: <P>
+
+<OL>
+<LI> <A HREF="#introduction">Introduction</A>
+<LI> <A HREF="#platform">Platform Independent Implementation</A>
+<LI> <A HREF="#modes">Modes of Operation</A>
+<LI> <A HREF="#datastructures">Control Flow</A>
+</OL>
+
+<A NAME="introduction"><H2>Introduction</H2></A>
+
+In a single-process, singlethreaded environment all requests to,
+e.g., the I/O interface blocks any further progress in the process.
+Any combination of a multiprocess or multithreaded implementation of
+the library makes provision for the user of the client application to
+request several independent documents at the same time without getting
+blocked by slow I/O operations. As a World-Wide Web client is expected
+to use much of the execution time doing I/O operation such as
+"connect" and "read", a high degree of optimization can be obtained if
+multiple threads can run at the same time.<P>
+
+Threads provide a light-weight technique for obtaining an environment
+with a multiple set of execution points. A thread is a smaller unit
+compared to a process in that it is a single, sequential flow of
+control within a process. As mentioned above, when creating a new
+process much of the environment does never change and can therefore be
+reused. Threads takes the full consequence of this and creates an
+environment with multiple execution points within the same
+process. Hence threads provide a more lightweight solution than
+process forking and this is a part of the reason for their
+implementation in the Library of Common Code.
+
+<P><A NAME="multistackthread"><IMG SRC="MultiStackThread.gif"></A><P>
+
+
+<A NAME="platform"><H2>Platform Independent Implementation</H2></A>
+
+The major concern in the design has been to make an implementation
+that is as platform independent as possible. This means that it has
+not been possible to use traditional thread packages like DECthreads
+which contain a code library with a complete set of thread handling
+routines and a consistent user interface. IEEE has publicized the
+POSIX standard 1003.4 for multithreaded programming but even this
+will eventually limit the portability of the code so that it will not
+be usable on small platforms like PCs.<P>
+
+Instead the multithreaded functionality of the HTTP client has been
+designed to be used in a single-processor, singlethreaded,
+environment as illustrated in the figure.
+
+<P><IMG SRC="SingleStackThread.gif"> <P>
+
+The difference between this technique and "traditional" threads as <A
+HREF="#multistackthread">illustrated above</A> is that all information
+about a thread is stored in a data object which lives throughout the
+lifetime of the thread. This implies that the following rules must be
+kept regarding memory management: <P>
+
+<UL> 
+
+<LI> Global variables can be used only if they at all time are
+independent of the current state of the active thread.
+
+<LI> Automatic variables can be used only if they are initialized on
+every entry to the function and stay state independent of the current
+thread throughout their lifetime.
+
+<LI> All information necessary for completing a thread must be kept in
+an autonomous data object that is passed round the control flow via the
+stack.
+
+</UL>
+
+These rules makes it possible to animate a multithreaded environment
+using only one stack without any portability problems as the
+implementation is done in plain C on top of the Internet TCP API.
+
+
+<A NAME="modes"><H2>Modes of Operation</H2></A>
+
+In order to keep the functionality of the HTTP Client as general as
+possible, three different modes of operation are implemented. It must
+be pointed out that all applications can and are encouraged to use the
+<CODE>active mode</CODE>! <P>
+
+<DL>
+<DT> Base Mode
+
+<DD> This mode is strictly singlethreaded and is what the library is
+today, that is version 2.16pre2 (and 2.17 (unreleased, August 94).
+The difference between this mode and the other two is basically that
+all sockets are made blocking instead of non-blocking. The HTTP client
+itself is the same as for the other modes and is basically a state
+machine as described in the section on the <A
+HREF="HTTPFeatures.html">Implementation of the HTTP Client</A>. The
+mode is preserve compatibility with clients that use a singlethreaded
+approach. This is also the mode used for the <A
+HREF="../../../Daemon/Proxies/Proxies.html">CERN Proxy server</A>
+using forking.  Currently this mode does not provide interruptable I/O
+as this is a integral part of the event loop.
+
+<DT> <A NAME="active">Active Mode</A>
+
+<DD> In this mode the event loop (select-function) is placed in the
+library. This is the easist way to get the multithreaded functionality
+running. The mode can either be used by character based applications
+with the keyboard as only user input, or if can be used by GUI
+applications where the application register which sockets to look for
+user events (mouse etc.). A different handler can be assigned for each
+socket registered for user events. The user events have highest
+priority in the event loop so that network I/O only is done when no
+user events are pending. This guarantees a smooth operation on GUI
+applications. A detailed description on how to use this mode is given
+in <A HREF="../../Implementation/HTEvent.html">Library Event
+Module</A>.
+
+<DT> <A NAME="passive">Passive mode</A>
+
+<DD> This is the mode that requires the most advanced client, for
+example, a GUI client.  On every HTTP request from the client, the
+library initiates the connection and as soon as it is ready for
+reading or writing, it returns an updated list of active socket
+descriptors used in the library to the client. When the client sees
+that a socket is ready for action or it has been interrupted, it calls
+a library socket-handler passing the socket number and what has to be
+done. Then the socket handler finds the corresponding request and
+executes the read, write or interrupt. As soon as the thread has to
+access the network again, the socket handler stops and returns the
+execution to the client. <P>
+
+</DL>
+
+
+<A NAME="#datastructures"><H2>Data Structures</H2></A>
+
+The basic data structure for all requests to the library regardless of
+the <A HREF="../../../Addressing/URL/4_1_Schemes.html">access
+scheme</A> used is the <A
+HREF="../../Implementation/HTAccess.html#z1"> HTRequest
+structure</A>. This structure was introduced in the 2.15 release of
+the library, but was a completely flat data model in the first
+version. In version 2.16 and later, the request structure has turned
+into a hierarchical data model in order to establish more clean
+interfaces between the data structures in the library.<P>
+
+As no automatic or global variables are available in this
+implementation model every thread has to be state dependent and must
+contain all necessary information in a separate data object. In order
+to make a homogeneous interface to the HTRequest structure the new
+protocol specific data structure <A
+HREF="../../Implementation/HTAccess.html#HTNetInfo">HTNetInfo</A> has
+been defined. <P>
+
+The definition of this data object is highly object oriented as every
+protocol module in practice can define a sub class of the HTNetInfo
+structure in order to add information necessary for completing a
+thread. Again this is all done in plain C in order to maintain a high
+degree of portability.
+
+<A NAME="control"><H2>Control Flow</H2></A>
+
+A consequence of having multiple threads in the library is that the
+control flow changes to be an event driven flow where any action is
+initiated by an event either caused by the user or the network
+interface. The current implementation provides an allmost transparent
+change in the client interface to the Library. The control flow as
+illustrated in the <A HREF="Library.gif">control flow diagram</A> is
+basically. In the case of an active mode implementation, an event-loop
+has been added to the flow as illustrated below:
+
+<P><IMG SRC="Internal.gif"><P>
+
+If a protocol is not registered for non-blocking I/O, the only
+difference is that there will be no call-back functions to the client
+while serving the request.
+
+The event loop is designed using event driven call back functions. As
+indicated in the figure below, the event loop handles two kinds of
+call back functions: the ones that are internal library functions such
+as the loading function in the <A
+HREF="../Guide/Protocol.html">protocol modules</A>, and the ones that
+require an action taken by the client application.
+
+<P><IMG SRC="EventLoop.gif"><P>
+
+<H2>Interrupting a HTTP Request</H2>
+
+When interrupting a network I/O operation, the application registers a
+socket as interrupted and it will then be assigned the highest
+priority among the registered sockets pending for network I/O (user
+events still have <EM>the</EM> highest priority!) <P>
+
+<HR>
+
+<ADDRESS><A HREF="../../../People.html#Frystyk">Henrik Frystyk</A>,
+frystyk@info.cern.ch, November 1994 </ADDRESS>
+
+</BODY>
+</HTML>
+

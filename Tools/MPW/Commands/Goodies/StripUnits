@@ -1,0 +1,47 @@
+#	StripUnits - Remove the ckid resource from a list of files.
+#
+#	Usage:	StripUnits filesÉ
+#
+#	StripUnits removes the unit resource (if it exists) from a
+#	list of files. 
+#
+#	© Apple Computer, Inc. 1988
+#	All rights reserved.
+
+Set Exit 0
+	
+#	Check the parameters
+
+If {#} == 0
+	Echo "### Usage - {0} filesÉ" > dev:stderr
+	Exit 1
+End
+
+	
+For name in {"parameters"}
+	Begin
+		If "`Exists -f "{name}"`" != ""
+			Set path `Files -f "{name}"`
+			Set wind 0
+			For i in `Windows`
+				If "{path}" == "{i}"
+					Set wind 1
+					Break
+				End
+			End
+			Echo "Delete 'unit';" | Rez -a -o "{name}"
+			If {wind}
+				If "{path}" == "{active}"
+					Close "{name}"
+					Open "{name}"
+				Else
+					Close "{name}"
+					Target "{name}"
+				End
+			End
+		Else
+			Echo "### {0}" - File "'{name}'" does not exist. > dev:stderr
+			Exit 2
+		End
+	End
+End 

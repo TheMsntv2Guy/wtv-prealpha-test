@@ -1,0 +1,61 @@
+Hardware:
+	Top level goals:
+		- Time to market/Eliminate Risk
+			- Backup plans
+			- Fast chip turns
+			- Multi-sourceing
+		- Low cost: small RAM, ROM footprint
+			- Use technology to save money (e.g. Fido graphics asic)
+		- Functionality
+			- IR Input
+			- Various video outputs
+			- Supports advanced user experience
+			- Telecom
+			- Expansion bus
+		- Quality
+			- No Flicker
+			- Clean images
+
+	Release Schedule
+		- IDev Development Boards	Oct 23
+		- Trial Boards				1st week Dec
+			- Simple frame buffer
+			- MIPS 3081 cpu
+		- Production Boards			Feb 96
+		- Cost-reduced version		2Q97
+
+Client System Software:  A simple and elegant terminal onto the internet
+	Top level goals
+		- Basic web browser, adapted for TV interface
+		- User experience provides a new level of accessibility
+		- Simple and small substrate, which can support
+		  development in network, *even after client deployment*.
+		  
+	Release Schedule
+		- October 31: Full Browser Functionality
+		- November 31: Browsing Applications
+		- December 31: Feature Complete
+		- January 31:  Tuned for Trial
+		- June:  Golden Master
+		- 2Q97:  Downsized release
+
+Service:  We are the umbrella of services for our customers
+	Top level goals
+		- Improve internet experience
+			- Turnkey experience
+			- Performance
+			- Focusing of content for user
+				- guided tours
+				- user profiling
+				- location-based services
+		- Client functionality extended into service
+			- Supports other system goals
+				- low cost client
+				- time to market
+				- upgradeability
+		- Launching pad in the net
+
+		
+***Note:  This outline does not include the plan for content.
+Much of the content could be partitioned into the client
+or server work.

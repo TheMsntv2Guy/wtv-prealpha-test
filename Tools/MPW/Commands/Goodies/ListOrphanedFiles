@@ -1,0 +1,37 @@
+#
+#	File:		ListOrphanedFiles
+#
+#	Contains:	List files that are not in the project (excluding obvious directories
+#				like buildresults)
+#
+#	Written by:	Chas. Spillar and Ted Cohn
+#
+#	Copyright:	© 1994 by RasterOps, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <1>	  7/9/94	HEC		first checked in
+#
+#
+
+Echo "# `Date -a` ----- Listing Orphaned files."
+
+files -r -o -d -f | ¶
+	sort > "{Boot}__LODirList"
+
+for curdir in `catenate "{Boot}__LODirList"`
+	echo "# "{curdir}	
+	for file in `files "{curdir}" -s -f`
+		projectinfo "{file}" -s -latest > "{Boot}__LOprojectinfo"
+		if "`catenate "{Boot}__LOprojectinfo"`" == ""
+			if "{file}" !~ /Å.o/ and "{file}" !~ /Å.lst/
+				echo File ¶"{file}¶"¶;Line ¥¶!0 "# is not in the project."
+			end
+		end
+	end
+end
+
+delete "{Boot}__LODirList"
+delete "{Boot}__LOprojectinfo"
+
+Echo "# `Date -a` ----- End List."

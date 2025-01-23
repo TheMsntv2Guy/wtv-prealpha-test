@@ -1,0 +1,8 @@
+# This file needs to be copied to your MPW folder
+
+# Change this line to point to your main source folder
+Set WTV: "{SourceRoot}"; Export WTV:
+Set Goodies "{SourceRoot}Tools:MPW:Commands:Goodies:"
+
+# All the startup scripting goes in here
+Execute "{{WTV:}}Tools:MPW:WebTVStartup"

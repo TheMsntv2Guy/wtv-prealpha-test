@@ -1,0 +1,8 @@
+Set Exit 0
+Begin
+
+	Close -n "{TemporaryFile}"
+	Delete -i "{TemporaryFile}"
+
+End ³Dev:Null
+Set Exit 1

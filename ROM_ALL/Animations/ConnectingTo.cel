@@ -1,0 +1,21 @@
+#### START THE ANIMATING ROAD
+
+IMAGE = file://ROM/Images/ConnectingTo.gif
+
+FRAME r1 = 0 0 42 351
+FRAME r2 = 42 0 84 351
+FRAME r3 = 84 0 126 351
+
+PERIOD = 10
+
+FRAME r3
+    ADVANCE = 0 -2
+
+FRAME r3
+    DISSOLVE = 10
+    ADVANCE = 0 0
+
+PERIOD = 100
+
+FRAME r3
+    ADVANCE = 0 0

@@ -1,0 +1,88 @@
+#
+#	File:	MetroworksBuild - fire off Metrowerks WebTV projects
+#	Date:	4/18/96
+#
+#	Copyright General Magic, Inc. 1995  All rights reserved.
+#
+#	DISCRIPTION:
+#		This is a simple wrapper script for an AppleScriptª application
+#		that sends all the right events to Metrowerks to get it to do
+#		what you want
+#
+
+# globals
+	SET	gScriptName				'MetroworksBuild'
+	SET gLogPileDirectory		"{Boot}misc:logpile:";
+	SET gCleanOption			0;
+	SET gRunOption				0;
+	SET gAllOption				0;
+	SET gAppleScriptOptions		"";
+	SET gAppleScript			"Build WebTV script";
+	SET gProjectsToBuild		"";
+	
+	SET helpMessage 'ECHO "## Usage: MetroworksBuild [options] [projects]¶n ¶
+				-help                Print this message ¶n ¶
+				-clean               Remove Binaries before build ¶n ¶
+				-run                 After build, run the WebTV simulator ¶n ¶
+				-all                 Build all the Metrowerks projects in the WebTV directory ¶n ¶
+					¶n ¶
+		  Example: ¶n ¶
+				MetroworksBuild  WebTV¹PPC                # bring the PPC WebTV project up to date ¶n ¶
+				MetroworksBuild -clean  WebTV¹PPCNoDebug  # remove binaries and build the PPC non-debug WebTV project ¶n ¶
+				" '
+
+LOOP
+	Break IF {#} == 0
+
+	IF "{1}" =~ /¶-help/
+		{helpmessage}
+		exit 2;
+	
+	ELSE IF "{1}" =~ /¶-clean/
+		SET gCleanOption 1;
+	
+	ELSE IF "{1}" =~ /¶-run/
+		SET gRunOption 1;
+	
+	ELSE IF "{1}" =~ /¶-all/
+		SET gAllOption 1;
+	
+	ELSE IF "{1}" =~ /¶-Å/
+		ECHO "### {gScriptName}: ERROR: unknown flag: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+
+	ELSE
+		SET gProjectsToBuild "{gProjectsToBuild} {1}";
+		
+	END
+	SHIFT
+END
+
+IF ( "{gProjectsToBuild}" == "" )
+	SET gProjectsToBuild "WebTV¹PPC";   # default project to build
+END
+
+IF ( {gCleanOption} )
+	echo " " > "{WTV:}.o:clean";
+	set gAppleScriptOptions "{gAppleScriptOptions}  "{WTV:}.o:clean""
+END	
+
+IF ( {gRunOption} )
+	echo " " > "{WTV:}.o:run";
+	set gAppleScriptOptions "{gAppleScriptOptions}  "{WTV:}.o:run""
+END	
+
+IF ( {gAllOption} )
+	echo " " > "{WTV:}.o:all";
+	set gAppleScriptOptions "{gAppleScriptOptions}  "{WTV:}.o:all""
+END	
+
+
+# Do the nasty...
+IF ( {gAllOption} ) # if all specified, ignore all the passed in projects...
+	"{{WTV:}}Tools:{gAppleScript}" {gAppleScriptOptions}
+	#Echo "{gAppleScript} {gAppleScriptOptions}"
+ELSE
+	"{{WTV:}}Tools:{gAppleScript}" {gAppleScriptOptions} {gProjectsToBuild}
+END

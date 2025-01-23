@@ -1,0 +1,60 @@
+#
+#	File:	BumpBuildNumber - a script to bump up the daily build number
+#	Date:	4/18/96
+#
+#	Copyright Artemis Research, Inc. 1996  All rights reserved.
+#
+#
+
+	SET gScriptName				"BumpBuildNumber";
+	SET gBuildNumberFile		"{SystemFolder}Preferences:MPW:WEBTV.Build.Number";
+	SET gSetOption				0;
+	SET gShowOption				0;
+	SET gBuildNumber			0;
+	
+	SET helpMessage 'ECHO "## Usage: DailyBuild [options] ¶n ¶
+				-help                Print this message ¶n ¶
+				-show                Show the current build number to this number ¶n ¶
+				-set=#               Set the build number to this number ¶n ¶
+				" '
+
+LOOP
+	Break IF {#} == 0
+
+	IF "{1}" =~ /¶-help/
+		{helpmessage}
+		exit 2;
+	
+	ELSE IF "{1}" =~ /-set=(Å)¨1/
+		SET gBuildNumber "{{¨1}}";
+		SET gSetOption   1;
+	
+	ELSE IF "{1}" =~ /-showÅ/
+		SET gShowOption   1;
+	
+	ELSE
+		ECHO "### {gScriptName}: ERROR: unknown flag: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+		
+	END
+	SHIFT
+END
+
+if ( !{gSetOption} )
+	if ( !`Exists "{gBuildNumberFile}"` )
+		echo "### ERROR: {gBuildNumberFile} file did not exists!!!" 
+		echo "### ERROR: one will be created reseting version at 1"
+		echo "0" > "{gBuildNumberFile}"
+	end	
+	
+	set gBuildNumber `Evaluate ¶`cat "{gBuildNumberFile}"¶` + 1`
+end
+
+if ( !{gShowOption} )
+	echo "{gBuildNumber}" > "{gBuildNumberFile}"
+end
+
+echo -n "¶n#¶n#¶n# The new build number is: "
+cat "{gBuildNumberFile}"
+echo "#¶n#¶n"

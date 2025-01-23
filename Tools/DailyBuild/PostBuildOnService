@@ -1,0 +1,31 @@
+
+	set gBuildNumberFile		"{SystemFolder}Preferences:MPW:WEBTV.Build.Number";
+	set gUser 					'production'
+	set gPassword				'production'
+	set gUnixhost1 				'testament'
+	set gUnixhost2 				'testimony'
+	set gBuildNumber			""`cat "{gBuildNumberFile}"`;
+
+# make the new directory
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost1}" -c "rm -rf build{gBuildNumber}; mkdir build{gBuildNumber}";
+
+# Create a new unirom (with no symbols...
+	catenate "{WTV:}.o:debug:bootrom" "{WTV:}.o:debug:approm.code.o" > "{WTV:}.o:debug:unirom.stripped"
+	setfile -t '????' -c '????' "{WTV:}.o:debug:unirom.stripped"
+
+# copy the rom image over...
+	rcp "{WTV:}.o:debug:unirom.stripped" "{gUnixhost1}@¶/usr¶/home¶/{gUser}¶/build{gBuildNumber}¶/unirom" -n -u "{gUser}"
+
+# make the new directory
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost1}" -c "cd build{gBuildNumber}; genrom -a 0xbfc00000 -o 256K unirom part ";
+
+# move it to the right place
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost1}" -c "rm ¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00/* ";
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost1}" -c "cd build{gBuildNumber}; cp part*.rom rominfo.txt ¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00";
+
+# move it to the right place on the second host
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost2}" -c "rm ¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00/* ";
+	rcmd -u {gUser} -p "{gPassword}" -h "{gUnixhost2}" -c "cd ¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00; rcp {gUnixhost1}:¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00¶/part*.rom .;  rcp {gUnixhost1}:¶/usr¶/home¶/{gUser}¶/arcadia¶/content¶/flashromd¶/content¶/artemis-prototype-00¶/version-00¶/rominfo.txt .; ";
+
+# cleanup...
+	rm -y "{WTV:}.o:debug:unirom.stripped"

@@ -1,0 +1,273 @@
+#
+#	File:		AddHeader
+#
+#	Contains:	xxx put contents here xxx
+#
+#	Written by:	Shannon Holland
+#
+#	Copyright:	© 1994 by Catapult Entertainment, Inc., all rights reserved.
+#
+#	Change History (most recent first):
+#
+#		 <1>	 9/11/95	JOE		first checked in
+#		 <2>	 6/20/94	SAH		Added .68k suffix.
+#
+#	To Do:
+#
+
+#******************************************************************************
+#*
+#*  Project Name:	UserScripts
+#*     File Name:	AddHeader
+#*        Author:	Glenn L. Austin
+#*          Date:	June 28, 1989
+#*
+#*   Description:	Adds a header, or gets a new header
+#*
+#******************************************************************************
+#*                       A U T H O R   I D E N T I T Y
+#******************************************************************************
+#*
+#*	Initials	Name
+#*	--------	-----------------------------------------------
+#*	GLA			Glenn L. Austin
+#*
+#******************************************************************************
+#*                      R E V I S I O N   H I S T O R Y
+#******************************************************************************
+#*
+#*	  Date		Time	Author	Description
+#*	--------	-----	------	---------------------------------------------
+##	07/10/89	12:02	GLA		Uses a tempfile to speed up (by about an
+##								order of magnitude) creation of a new header,
+##								since it never has to redraw the window until
+##								the entire header has been built and
+##								inserted.
+##	07/05/89	08:55	GLA		Revised test for passed filename to test for
+##								an empty parameter.  Also revised code to
+##								accept cancel as a valid escape from the
+##								program.
+##	07/04/89	13:30	GLA		Added author identification section to the
+##								header information.
+#*	06/28/89	??:??	GLA		Original version
+#*
+#******************************************************************************
+
+set echo 0
+
+if "{1} " == " "
+	set theFile "{Active}"
+else
+	set theFile	"{1}"
+end
+
+( evaluate "{theFile}" =~ /Å:([A-Za-z0-9 ]+)¨3:(Å.([A-Za-z68]*)¨1)¨2/ ) · Dev:Null
+set theType "{¨1}"
+set projName "{¨3}"
+set fileName "{¨2}"
+unset ¨1 ¨2 ¨3
+if "{projName} " == " "
+	( evaluate "{theFile}" =~ /Å:([A-Za-z0-9 ]+)¨3:([A-Za-z0-9 ]+)¨2/ ) · Dev:Null
+	set projName "{¨3}"
+	set fileName "{¨2}"
+	unset ¨2 ¨3
+end
+
+if "{theType}" =~ /[chris]/
+	set cmntSt	'/*'
+	set cmntEn	'*/'
+	set cmntLin	'**'
+else if "{theType}" == "p"
+	set cmntSt	'{*'
+	set cmntEn	'*}'
+	set cmntLin	'**'
+else if "{theType}" == "a"
+	set cmntSt	';*'
+	set cmntEn	'**'
+	set cmntLin	';*'
+else if "{theType}" == "cp"
+	set cmntSt	'//'
+	set cmntEn	'**'
+	set cmntLin	'//'
+else if "{theType}" == "68k"
+	set cmntSt	';'
+	set cmntEn	';'
+	set cmntLin	';'
+else
+	set cmntSt	'##'
+	set cmntEn	'**'
+	set cmntLin	'##'
+end
+
+( evaluate `date -d -s` =~ /([0-9]+)¨1¶/([0-9]+)¨2¶/([0-9]+)¨3/ ) · Dev:Null
+set m {¨1}
+set d {¨2}
+set y {¨3}
+unset ¨1 ¨2 ¨3
+if {m} < 10
+	set m "0{m}"
+end
+if {d} < 10
+	set d "0{d}"
+end
+set dat "{m}¶/{d}¶/{y}"
+unset m d y
+
+( evaluate "`date -t`" =~ /([0-9]+)¨1¶:([0-9]+)¨2¶:([0-9]+)¨3 (?)¨4?*/ ) > Dev:Null
+if "{¨4}" == "P"
+	if {¨1} != 12
+		( evaluate h = {¨1} + 12 ) · Dev:Null
+	else
+		set h {¨1}
+	end
+else
+	if {¨1} == 12
+		set h 0
+	else
+		set h {¨1}
+	end
+end
+set m {¨2}
+unset ¨1 ¨2 ¨3 ¨4
+if {h} < 10
+	set h "0{h}"
+end
+set tim "{h}:{m}"
+unset h m
+
+if "{user} " == " "
+	set Initials "Unk"
+	set userName "Unknown author"
+else
+	set Initials ""
+	for f in {user}
+		( evaluate "{f}" =~ /(?)¨1?*/ ) > Dev:Null
+		set Initials "{Initials}{¨1}"
+		unset ¨1
+	end
+	set userName "{user}"
+	unset ¨1 ¨2 ¨3 ¨4
+end
+
+mark ¤ "===TEMP===" "{theFile}"
+find ¥ "{theFile}"
+
+set exit 0
+
+find /¶t--------¶t-----¶t------¶t---------------------------------------------¶n/Æ "{theFile}"
+if {status} != 0
+	set descr "`request -d "What it does..." "Enter the description of ¶"{fileName}¶""`"
+	if "{descr} " == " "
+		set exit 1
+		
+		find "===TEMP===" "{theFile}"
+		unmark "===TEMP===" "{theFile}"
+
+		exit 1
+	end
+	set description ""
+	loop
+		( evaluate "{descr}" =~ /(?Ç45,55È)¨1(?*)¨2/ ) >Dev:Null
+		if "{¨2} " == " "
+			unset ¨1 ¨2
+			if "{description} " != " "
+				set description "{description}¶n{cmntLin}¶t¶t¶t¶t¶t{descr}"
+			else
+				set description "{descr}"
+			end
+			break
+		end
+		unset ¨1 ¨2
+		( evaluate "{descr}" =~ /(?Ç45,55È)¨1 (?*)¨2/ ) > Dev:Null
+		if "{description} " != " "
+			set description "{description}¶n{cmntLin}¶t¶t¶t¶t¶t{¨1}"
+		else
+			set description "{¨1}"
+		end
+		set descr "{¨2}"
+		unset ¨1 ¨2
+		if "{descr} " == " "
+			break
+		end
+	end
+	unset descr
+	find ¥ "{theFile}"
+	echo "{cmntSt}"'*****************************************************************************' >"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}"'  Project Name:'"¶t{projName}" >>"{MPW}tempFile"
+	echo "{cmntLin}"'     File Name:'"¶t{fileName}" >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}"'   Description:'"¶t{description}" >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}*****************************************************************************" >>"{MPW}tempFile"
+	echo "{cmntLin}                       A U T H O R   I D E N T I T Y" >>"{MPW}tempFile"
+	echo "{cmntLin}*****************************************************************************" >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}¶tInitials¶tName" >>"{MPW}tempFile"
+	echo "{cmntLin}¶t--------¶t-----------------------------------------------" >>"{MPW}tempFile"
+	echo "{cmntLin}¶t{Initials}¶t¶t¶t{userName}" >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}"'*****************************************************************************' >>"{MPW}tempFile"
+	echo "{cmntLin}"'                      R E V I S I O N   H I S T O R Y' >>"{MPW}tempFile"
+	echo "{cmntLin}"'*****************************************************************************' >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}¶t  Date¶t¶tTime¶tAuthor¶tDescription" >>"{MPW}tempFile"
+	echo "{cmntLin}¶t--------¶t-----¶t------¶t---------------------------------------------" >>"{MPW}tempFile"
+	echo "{cmntLin}¶t{dat}¶t{tim}¶t{Initials}¶t¶tOriginal version" >>"{MPW}tempFile"
+	echo "{cmntLin}" >>"{MPW}tempFile"
+	echo "{cmntLin}"'***************************************************************************'"{cmntEn}" >>"{MPW}tempFile"
+	echo "" >>"{MPW}tempFile"
+	catenate "{MPW}tempFile" >"{theFile}".¤
+	delete "{MPW}tempFile"
+else
+	set descr "`request -d "What you are doing..." "Enter the revision info for ¶"{fileName}¶""`"
+	if "{descr} " == " "
+		set exit 1
+		
+		find "===TEMP===" "{theFile}"
+		unmark "===TEMP===" "{theFile}"
+
+		exit 1
+	end
+	set description ""
+	loop
+		( evaluate "{descr}" =~ /(?Ç35,45È)¨1(?*)¨2/ ) >Dev:Null
+		if "{¨2} " == " "
+			unset ¨1 ¨2
+			if "{description} " != " "
+				set description "{description}¶n{cmntLin}¶t¶t¶t¶t¶t¶t¶t¶t{descr}"
+			else
+				set description "{descr}"
+			end
+			break
+		end
+		unset ¨1 ¨2
+		( evaluate "{descr}" =~ /(?Ç35,45È)¨1 (?*)¨2/ ) > Dev:Null
+		if "{description} " != " "
+			set description "{description}¶n{cmntLin}¶t¶t¶t¶t¶t¶t¶t¶t{¨1}"
+		else
+			set description "{¨1}"
+		end
+		set descr "{¨2}"
+		unset ¨1 ¨2
+		if "{descr} " == " "
+			break
+		end
+	end
+	unset descr
+	echo "{cmntLin}¶t{dat}¶t{tim}¶t{Initials}¶t¶t{description}" >>"{theFile}".¤
+	find ¥ "{theFile}"
+	find /¶t{Initials}¶t¶t¶t{userName}/ "{theFile}"
+	if {status} != 0
+		find /¶t--------¶t-----------------------------------------------¶n/Æ "{theFile}"
+		echo "{cmntLin}¶t{Initials}¶t¶t¶t{userName}" >>"{theFile}".¤
+	end
+end
+unset description
+
+set exit 1
+
+find "===TEMP===" "{theFile}"
+unmark "===TEMP===" "{theFile}"
+
+exit 0

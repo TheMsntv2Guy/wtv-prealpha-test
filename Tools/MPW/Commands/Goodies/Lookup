@@ -1,0 +1,47 @@
+#	Lookup - open file using standard file
+#
+#	Usage:
+#		Lookup [-w] [directory]
+#
+#	Lookup opens a file that the user selects using standard file.
+#	The optional directory parameter specifies the initial directory
+#	displayed in the standard file dialog. The default directory
+#	is saved and restored, so that the next time standard file is
+#	used it will refer to the original default directory.
+#
+#	Addmenu can to used to provide menu items for opening files
+#	in specific directories.  For example:
+#
+#		AddMenu Lookup '{AIncludes}' ¶
+#			'Lookup "{AIncludes}" > Dev:Null ³ Dev:Null'
+#
+#
+#	Copyright Apple Computer, Inc. 1988
+#	All rights reserved.
+
+Set Exit 0									# don't exit early
+
+Set RdWrPerm  "-r"							# by default open READ-ONLY
+Set Directory :								# default value for directory
+Set Directory `Directory` ·Dev:Null			# save the directory
+
+GetKeys O									# If option key, use RdWrPerm
+If {Status}
+	Set RdWrPerm  ""
+End
+
+If "{1}" == "-w"							# is it readwrite parameter
+	Set RdWrPerm  ""						
+	If "{2}" ­ ""
+		Directory "{2}"						#	set the directory
+	End
+Else If "{1}" ­ ""							# if a parameter was specified
+	Directory "{1}"							#	set the directory
+End
+
+Open {RdWrPerm} ·Dev:Null					# open the file
+Set OpenStatus {Status}						# remember the status
+
+Directory "{Directory}"						# restore the original directory
+
+Exit {OpenStatus}							# exit with status from Open

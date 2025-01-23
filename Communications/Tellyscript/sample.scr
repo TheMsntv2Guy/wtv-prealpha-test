@@ -1,0 +1,23 @@
+/* sample script to test language -- aer 8/17/89 */
+
+main()
+{
+	printf("Test Script 1.0");
+
+	setdtr(1);
+	delay(60);
+
+	sendstr("AT\r");
+	if (waitfor("OK", 2, 60))
+		printf("got OK!");
+	else
+		printf("TIMEOUT waiting for OK");
+
+	printf("chars waiting = %d", countpending());
+	flush();
+	printf("chars waiting = %d", countpending());
+
+	delay(500);
+	beep();
+	setdtr(0);
+}

@@ -1,0 +1,7 @@
+Set echo 0
+
+Set previousDate "``Files -x m "{{WTV:}}Tools:MPW:MountCommands" ³ Dev:Null || Set Status 0``"
+CheckOut -project TeletouchºBuildº -notouch MountCommands ³ Dev:Null || Set Status 0
+If "{{previousDate}}" ­ "``Files -x m "{{WTV:}}Tools:MPW:MountCommands" ³ Dev:Null || Set Status 0``"
+	"FastDoIt" "{{WTV:}}Tools:MPW:MountCommands" || Set Status 0
+End

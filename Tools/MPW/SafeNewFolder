@@ -1,0 +1,15 @@
+# Designed to work around incompatibilities between cap and MPW.
+Set echo 0
+
+If "`Exists -d "{{1}}"`" != ""; Exit 0; End
+
+If "{{1}}" !~ /(Å:)¨1([Â:]+)¨2:/
+	Echo "### Cannot parse ¶"{{1}}¶""
+	Exit 1
+End
+Set pathName: "{¨1}"
+Set leafName "{¨2}"
+
+NewFolder "{{TempFolder}}"NewSafeFolder: ³ Dev:Null || Set status 0
+Move -y "{{TempFolder}}"NewSafeFolder: "{{pathName:}}"
+Rename -y "{{pathName:}}"NewSafeFolder: "{{leafName}}"

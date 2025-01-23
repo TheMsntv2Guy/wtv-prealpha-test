@@ -1,0 +1,8 @@
+Set echo 0
+Set inFile {WTV.o:}foo.c
+If "{3}" =~ /(Å)¨1.cc.o.New/
+	Set inFile {¨1}.cfront.c
+End
+
+CFront -l0 -mtbl0 -w3 -z3 -c -y "{CPlusScratch}" -d GCC {Parameters} > {inFile}
+gc -Dpascal=" " -c {inFile} -o {3}

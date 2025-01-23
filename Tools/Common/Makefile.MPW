@@ -1,0 +1,58 @@
+CHeaderOptions	=	 -i {MPW}Interfaces:CIncludes: -i {WTV:}Interfaces: -i {WTV:}Storage:
+CDefinitions	=	-d WEBTV -d DEBUG -d PRERELEASE ¶
+					-d FOR_MAC -d `Echo {User} | Translate ' '`
+COptions		=	{CDefinitions} {CHeaderOptions} -b2 -r -mc68020
+CC				=	C	
+Linker			= 	Link
+
+SnarfObjects	= 	{WTV.o:}SnarfSyms.c.o 	¶
+					{WTV.o:}cplus-dem.c.o
+
+LookupSymbolObjects = 	{WTV.o:}LookupSymbol.c.o 	
+
+ToolFiles = {WTV.o:}SnarfSyms {WTV.o:}LookupSymbol {WTV.o:}BuildROM {WTV.o:}Romify
+
+ToolLibraries = ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{CLibraries}"StdCLib.o ¶
+		"{Libraries}"Interface.o ¶
+		"{Libraries}"ToolLibs.o ¶
+
+all Ä {ToolFiles}
+
+
+{WTV.o:}SnarfSyms					ÄÄ {SnarfObjects}
+	{Linker} -w -t MPST -c 'MPS ' {SnarfObjects} {ToolLibraries} -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}SnarfSyms.c.o				Ä SnarfSyms.c
+	{CC} {COptions} -o {Targ}.New SnarfSyms.c
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}cplus-dem.c.o				Ä cplus-dem.c
+	{CC} {COptions} -o {Targ}.New cplus-dem.c
+		Rename -y {Targ}.New {Targ}
+
+
+	
+{WTV.o:}LookupSymbol					ÄÄ {LookupSymbolObjects}
+	{Linker} -w -t MPST -c 'MPS ' {LookupSymbolObjects} {ToolLibraries} -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}LookupSymbol.c.o				Ä LookupSymbol.c
+	{CC} {COptions} -o {Targ}.New LookupSymbol.c
+		Rename -y {Targ}.New {Targ}
+
+	
+{WTV.o:}BuildROM					ÄÄ {WTV.o:}BuildROM.c.o
+	{Linker} -w -t MPST -c 'MPS ' {WTV.o:}BuildROM.c.o {ToolLibraries} "{CLibraries}"CSANELib.o "{CLibraries}"Math.o -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}BuildROM.c.o				Ä BuildROM.c
+	{CC} {COptions} -o {Targ}.New BuildROM.c
+		Rename -y {Targ}.New {Targ}
+
+{WTV.o:}Romify					ÄÄ {WTV.o:}Romify.c.o
+	{Linker} -w -t MPST -c 'MPS ' {WTV.o:}Romify.c.o {ToolLibraries} -o {Targ}.New
+		Rename -y {Targ}.New {Targ}
+{WTV.o:}Romify.c.o				Ä Romify.c
+	{CC} {COptions} -o {Targ}.New Romify.c
+		Rename -y {Targ}.New {Targ}
+

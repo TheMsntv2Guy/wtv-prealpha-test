@@ -1,0 +1,19 @@
+# Reduce the overhead for doing this by just looking at the ProjectInfo.
+# This should improve (ever so slightly) this script’s performance on a busy
+# network or when using AppleTalk Remote Access.
+
+if "``ProjectInfo -s -newer -project WebTV∫ StateOfTheProject ≥ Dev:Null || Set Status 0``"
+	CheckOut -project WebTV∫ -open "StateOfTheProject" ≥ Dev:Null || Set Status 0
+end
+
+If "{{ShowChangeLog}}X" ≠ "X"
+	if "``ProjectInfo -s -newer -project WebTV∫ ChangeLog ≥ Dev:Null || Set Status 0``"
+		CheckOut -project WebTV∫ -open "ChangeLog" ≥ Dev:Null || Set Status 0
+	end
+End
+
+If "{{ShowToDo}}X" ≠ "X"
+	if "``ProjectInfo -s -newer -project WebTV∫Documentation∫ ToDo ≥ Dev:Null || Set Status 0``"
+		CheckOut -project WebTV∫Documentation∫ -open "ToDo" ≥ Dev:Null || Set Status 0
+	end
+End

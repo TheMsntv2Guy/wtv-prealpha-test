@@ -1,0 +1,28 @@
+#
+# The Lookup Menu
+#
+
+AddMenu Lookup 'Lookup/L' 'Lookup "{Lookup}" · Dev:Null &&¶
+	( Evaluate "{Active}" =~ /(([Â:]*:)+)¨1[Â:]*/ ) ·Dev:Null &&¶
+	Set Lookup "{¨1}"'
+AddMenu Lookup 'Lookup RW/Â' 'Lookup -w "{Lookup}" · Dev:Null &&¶
+	( Evaluate "{Active}" =~ /(([Â:]*:)+)¨1[Â:]*/ ) ·Dev:Null &&¶
+	Set Lookup "{¨1}"'
+AddMenu Lookup (- ' '
+For Lookup in '{MAPInterfaces}' '{MACIncludes}' '{MALibraries}' '{MARIncludes}' '{MAExamples}'
+	AddMenu Lookup "Lookup {Lookup}" 'Lookup "'"{Lookup}"'" · Dev:Null &&¶
+	( Evaluate "{Active}" =~ /(([Â:]*:)+)¨1[Â:]*/ ) ·Dev:Null &&¶
+	Set Lookup "{¨1}"'
+End
+AddMenu Lookup (- ' '
+For Lookup in '{CIncludes}' '{PInterfaces}' '{AIncludes}' '{RIncludes}'
+	AddMenu Lookup "Lookup {Lookup}" 'Lookup "'"{Lookup}"'" · Dev:Null &&¶
+	( Evaluate "{Active}" =~ /(([Â:]*:)+)¨1[Â:]*/ ) ·Dev:Null &&¶
+	Set Lookup "{¨1}"'
+End
+AddMenu Lookup (- ' '
+For Lookup in '{MPW}Scripts:' '{MPW}'
+	AddMenu Lookup "Lookup {Lookup}" 'Lookup "'"{Lookup}"'" · Dev:Null && ¶
+	( Evaluate "{Active}" =~ /(([Â:]*:)+)¨1[Â:]*/ ) · Dev:Null && ¶
+	Set Lookup "{¨1}"'
+End

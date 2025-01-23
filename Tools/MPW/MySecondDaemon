@@ -1,0 +1,161 @@
+# Run this when you go home in the morning.
+Set echo 0
+
+# Special hack to get daemon options onto command line
+If !{recurseFlag}
+	Set recurseFlag 1; Export recurseFlag; {0} {Parameters} {MySecondDaemonOptions}
+	Exit {Status}
+End
+
+Set progressFlag 1
+Set inDaemon 1; Export inDaemon	# For build scripts to use
+Set caseSensitive 0
+
+Set nextDate 0
+Set normalDelta		`Evaluate 4*60*60`	# Normally, try every four hours
+Set noMountDelta	`Evaluate 10*60`	# if volume gone, be persistent
+Set delta			{normalDelta}
+Set triedAlready	0
+
+Set forEmbedded		0
+Set forMac			1
+Set keepMROFlag		0
+Set constantly		0
+Set noCheckout		0
+Set once			0
+Set hasLog			0
+Set scarecrow		0
+
+Set daemonDownloadOptions	""
+
+Loop
+	Break If {#} == 0
+	If "{1}" =~ /¶-p/
+		Set progressFlag 1; Shift
+	Else If "{1}" =~ /¶-noProgress/
+		Set progressFlag 0; Shift
+	Else If "{1}" =~ /¶-download/
+		Set daemonDownloadOptions "-download"; Shift
+	Else If "{1}" =~ /¶-forEmbedded/
+		Set forEmbedded 1; Shift
+	Else If "{1}" =~ /¶-keepMRO/
+		Set keepMROFlag 1; Shift
+	Else If "{1}" =~ /¶-often/
+		Set normalDelta `Evaluate 1*60*60`; Shift
+	Else If "{1}" =~ /¶-constantly/
+		Set constantly 1; Shift
+	Else If "{1}" =~ /¶-noCheckout/
+		Set noCheckout 1; Shift
+	Else If "{1}" =~ /¶-once/
+		Set once 1; Shift
+	Else If "{1}" =~ /¶-showlog/
+		Set hasLog 1; Shift
+	Else If "{1}" =~ /¶-scarecrow/
+		Set scarecrow 1; Shift
+	Else
+		Echo "# MySecondDaemon: unknown option: {1}" > Dev:StdErr
+		Exit 1
+	End
+End
+
+If {scarecrow}
+	Echo "Testing in progress.¶nPlease do not touch¶nthis configuration!" > "Daemon Warning"
+	Open "Daemon Warning"
+	SizeWindow 420 190 "Daemon Warning"
+	Format -f Times -s 48 "Daemon Warning"
+	Find 1:3 "Daemon Warning"
+	Save "Daemon Warning"
+End
+
+If {hasLog}
+	Open -n "{{WTV.o:}}DaemonLog"
+	Set outFile "{{Active}}"
+Else
+	Set outFile "Dev:StdOut"
+End
+
+Begin
+	If {progressFlag} ; Echo "# Starting {0} at `Date`" ; End
+
+	Loop
+		Set curDate `Date -n`
+		If {triedAlready} && !{constantly}
+			Set nextDate `Evaluate {delta} + {curDate}`
+			If {progressFlag}
+				Echo -n "# Next build at "; Date -c {nextDate}
+			End
+
+			If {progressFlag}
+				Echo "# Running idle..."
+				Idle -p -until {nextDate} || Set status 0
+				Echo -n "# Finished idling at "; Date -t
+			Else
+				Idle -until {nextDate} || Set status 0
+			End
+			Set hasWaitTil 1
+			Which WaitTil · Dev:Null || Set hasWaitTil 0
+			If {hasWaitTil}
+				WaitTil "`Date -t -c {nextDate}`" ³ Dev:Null || Set status 0
+			Else
+				If {progressFlag} ; Echo "# (WaitTil tool missing; using internal commands)" ; End
+				Loop; Break If `Date -n` > {nextDate}; End
+			End
+			If {progressFlag}; Echo -n "# Finished waiting at "; Date -t; End
+		End
+
+		Set delta {normalDelta}
+		Set triedAlready 1
+	
+		(Execute DaemonEachLoopSettings || Set status 0) ³ Dev:Null
+
+		If {noCheckout} == 0
+			If {progressFlag}; Echo "# Mounting project at `Date`"; End
+			MountWebTV || (Set delta {noMountDelta}; Continue)
+			Checkin -close || Set Status 0
+			Project WebTVº
+
+			If {progressFlag}; Echo "# Updating me at `Date`"; End
+			Set pathName "`Which {{0}}`"
+			Rename -y "{{pathName}}" "{{0}}".old ³ Dev:Null || Set status 0		# rename the running version of me
+			Checkout -project WebTVºToolsºMPWº "{{pathName}}" ³ Dev:Null || (Rename -y "{{pathName}}.old" "{{0}}"; Set delta {noMountDelta}; Continue)
+
+			# if there is an alias for me then I can quit to restart the new me
+			If "`Alias MySecondDaemon ³ Dev:Null || Set status 0`" != ""
+				If "`Equal -d "{{pathName}}" "{{pathName}}".old ³ Dev:Null || Set status 0`" != ""
+					If {progressFlag}; Echo "#    Restarting new version of me at `Date`"; End
+					Exit 0
+				Else
+					If {progressFlag}; Echo "#    New revisions match at `Date`"; End
+					Rename -y "{{pathName}}.old" "{{0}}" ³ Dev:Null || Set status 0
+				End
+			End
+
+			If {progressFlag}; Echo "# Checking out new files at `Date`"; End
+			If {keepMROFlag}
+				Mergeout -keepMRO -moveMy
+			Else
+				Checkout -newer -r -p || (Set delta {noMountDelta}; Continue)
+			End
+			DeleteObsolete || Set status 0
+		End
+
+		If {forMac}
+			If {progressFlag}; Echo "# Building for Mac at `Date`"; End
+			BuildWTV build || Set status 0
+			If {progressFlag}; Echo "# Done at `Date -t`"; End
+			If {hasLog}; Save "{{outFile}}"; FlushVol "{{outFile}}"; End
+		End			
+
+		If {forEmbedded}
+			If {progressFlag}; Echo "# Building for Embedded at `Date`"; End
+			BuildWTV -embedded || Set status 0
+			If {progressFlag}; Echo "# Done at `Date -t`"; End
+			If {hasLog}; Save "{{outFile}}"; FlushVol "{{outFile}}"; End
+		End			
+
+		If {noCheckout} || {once}
+			Echo "## done building; using Exit 1 to stop outer loop"
+			Exit 1
+		End
+	End
+End · "{{outFile}}"

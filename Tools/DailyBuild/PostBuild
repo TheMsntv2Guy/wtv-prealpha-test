@@ -1,0 +1,108 @@
+#
+#	File:	PostBuild - posts a build the server
+#	Date:	4/18/96
+#
+#	Copyright Artemis Research, Inc. 1996  All rights reserved.
+#
+#
+Set CaseSensitive 0; # for options
+
+	SET gScriptName				"PostBuild";
+	SET gRootDestenation		"MacServer:Releases:"
+	SET gLogPileDirectory		"{Boot}misc:logpile:";
+	SET gBuildNumberFile		"{SystemFolder}Preferences:MPW:WEBTV.Build.Number";
+	SET gBuildNumber			""`cat "{gBuildNumberFile}"`;
+	SET gOverriteOption			0;
+	SET gProgressOption			1;
+	
+	SET helpMessage 'ECHO "## Usage: DailyBuild [options] ∂n ∂
+				-help                Print this message ∂n ∂
+				-overwrite           Overrites an existing build with the same name ∂n ∂
+				-noProgress          if set, the script will not echo progress info ∂n ∂
+				" '
+
+LOOP
+	Break IF {#} == 0
+
+	IF "{1}" =~ /∂-help/
+		{helpmessage}
+		exit 2;
+	
+	ELSE IF "{1}" =~ /-overwrite/
+		SET gOverriteOption 1;
+	
+	ELSE IF "{1}" =~ /-NoProgress/
+		SET gProgressOption 0;
+	
+	ELSE
+		ECHO "### {gScriptName}: ERROR: unknown flag: ∂'{1}∂'"
+		{helpmessage}
+		exit 2;
+		
+	END
+	SHIFT
+END
+
+if ( {gProgressOption} )
+	set gCopyOptions " -p ";
+else
+	set gCopyOptions "";
+end
+
+# make sure the server is mounted
+if ( ! `Exists "MacServer:"` )
+	Choose -u ed -askpw Artemis:MacServer:MacServer
+end
+
+
+# Decide what to call the build
+set destination "{gRootDestenation}Build {gBuildNumber}:";
+
+# check
+if ( `Exists -d "{destination}"` )
+	if ( {gOverriteOption} )
+		rm -y "{destination}";
+	else
+		echo "#∂n# Doh!  That build ({destination}) already exists.... try again (with the -overwrite option).∂n#∂n";
+		exit 2;
+	end
+end
+
+newfolder "{destination}";
+SetPrivilege "{destination}" -d Oge -f Oge -m Oge;
+
+SET StartTime `Date -n`
+ECHO "#∂n# {gScriptName} Starting… `Date -s`";
+echo "# Posting build to ∂"{destination}∂"...∂n#";
+
+# Now copy the pieces out...
+cp {gCopyOptions} "{WTV:}External Builds:" "{destination}"
+cp {gCopyOptions} "{WTV:}Internal Builds:" "{destination}"
+
+# Now remove the preferences file...
+if ( "`Exists "{destination}External Builds:Simulator:WTV Preferences"`" )	
+	rm -p -y "{destination}External Builds:Simulator:WTV Preferences"
+end;
+if ( "`Exists "{destination}Internal Builds:Simulator:WTV Preferences"`" )	
+	rm -p -y "{destination}Internal Builds:Simulator:WTV Preferences"
+end;
+
+
+NewFolder "{destination}Misc:"
+cp {gCopyOptions} "{WTV:}"ChangeLog  "{destination}Misc:"
+for eachfile in `files -f {gLogPileDirectory}≈.{gBuildNumber}.≈.log`
+	cp {gCopyOptions} "{eachfile}"  "{destination}Misc:"
+end;
+
+SetPrivilege -r "{destination}" -d OGE -f OGE -m Oge;
+
+SET EndTime `Date -n`; 
+SET TotalTime `Evaluate {EndTime} - {StartTime}`; 
+SET Temp `Evaluate {TotalTime} ÷ 60`;
+SET Seconds `Evaluate {TotalTime} MOD 60`; 
+SET Hours `Evaluate {Temp} ÷ 60`; 
+SET Minutes `Evaluate {Temp} MOD 60`;
+IF ("{Seconds}" < 10); SET Seconds "0{Seconds}"; END; 
+IF ("{Minutes}" < 10); SET Minutes "0{Minutes}"; END; 
+IF ("{Hours}" < 10); SET Hours "0{Hours}"; END;
+ECHO "∂n# The total time was {Hours}:{Minutes}:{Seconds}.∂n#∂n#"

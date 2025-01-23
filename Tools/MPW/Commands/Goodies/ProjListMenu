@@ -1,0 +1,13 @@
+Set Exit 0
+DeleteMenu ProjList ³ Dev:Null > Dev:Null
+
+Set ProjectNameList "`MountProject -pp -s -r | Sort -l`"
+
+for i in {ProjectNameList}
+	AddMenu ProjList "{i}" "Set ProjName ¶"{i}¶"; ¶
+		Execute SetProject; ¶
+		( Evaluate "{i}" =~ /([a-zA-Z0-9_. ]+¶º)*([Â¶º]+)¨1¶º/ ) · Dev:Null; ¶
+		Set Program ¶"¶{¨1¶}¶""
+end
+
+Set Exit 1

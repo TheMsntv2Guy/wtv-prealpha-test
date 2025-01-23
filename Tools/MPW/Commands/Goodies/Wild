@@ -1,0 +1,39 @@
+#	Wild - single wild card command interpreter
+#
+#	Command line:  Wild command source destination
+#	Example:	Wild Rename =.TEXT =
+#
+#	Parameters:
+#	{1} = command
+#	{2} = srcfilespec
+#	{3} = destfilespec
+
+If {#} < 3
+	Echo "# {0} - Not enough parameters were specified."
+	Exit
+End
+If {#} > 3
+	Echo "# {0} - Too many parameters were specified."
+	Exit
+End
+If "{2}" !~ /Å=Å/
+	Echo "# {0} - No = was specified in the source file name."
+	Exit
+End
+If "{3}" !~ /Å=Å/
+	Echo "# {0} - No = was specified in the destination file name."
+	Exit
+End
+
+( Evaluate "{2}" =~ /(Å)¨1=(Å)¨2/ ) > dev:null
+Set sourcePre "{¨1}"
+Set sourcePost "{¨2}"
+
+( Evaluate "{3}" =~ /(Å)¨1=(Å)¨2/ ) > dev:null
+Set destPre "{¨1}"
+Set destPost "{¨2}"
+
+For name In "{sourcePre}"Å"{sourcePost}"
+	( Evaluate "{name}" =~ /{sourcePre}(Å)¨1{sourcePost}/ ) > dev:null
+	{1} "{name}" "{destPre}{¨1}{destPost}"
+End

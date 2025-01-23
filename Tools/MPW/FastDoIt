@@ -1,0 +1,29 @@
+#
+#	FastDoIt Ñ derived from the Apple DoIt, but faster
+#
+#	Usage: FastDoIt cmdFile [-again]		# execute each line in the <cmdFile>
+#				-again   						# start at the line containing the current selection
+#
+
+Open "{{1}}" || Exit "{Status}"			# open command file
+
+If "{{2}}" =~ /-again/
+	Find Æ¤ "{{1}}"							# start from where we left off
+Else
+	Find ¥ "{{1}}"									# or start at the top of the file
+End
+
+Loop													# loop through commands in the file
+	Set _Status 0
+	Find /¥/:/[Â¶¶]°/ "{{1}}" || Break		# select a command
+	Execute "{{1}}".¤ || Set _Status "{Status}"
+	Break If "{_Status}"
+End
+
+If "{_Status}"
+	Open "{{1}}"
+	Open "{{Worksheet}}"
+	Exit "{_Status}"
+End
+
+Close -y "{{1}}" ³ Dev:Null					# close command file

@@ -1,0 +1,124 @@
+Set echo 0
+Set file "{{1}}"
+
+If "{{file}}" =~ /[Â:]+/
+	Set file ``Directory``"{{file}}"
+Else if "{{file}}" =~ /:(Å)¨1/
+	Set file ``Directory``"{{¨1}}"
+End
+
+If "{{file}}" =~ /{WTV:}(Å)¨1/
+	Set relativePath "{{¨1}}"
+Else
+	Echo "## Unixify: must have path name starting with {WTV:}"
+	Exit 1
+End
+
+
+If "{UnixVolume:}" == ""
+	Set UnixVolume: "{UnixUser}:"
+End
+If "{UnixWTV:}" == ""
+	Set UnixWTV: "{UnixVolume:}WebTV:"
+End
+
+If !`exists "{UnixVolume:}"`
+	MountUnix
+End
+
+If "{file}" =~ /{{WTV:}}/
+	Directory "{{WTV:}}"
+	duplicate -y "{{WTV:}}"Tools:MPW:SafeNewFolder "{MPW}Scripts:"
+	duplicate -y "{{WTV:}}"Tools:MPW:SafeDuplicate "{MPW}Scripts:"
+	Set exceptionList ¶
+	"`Exists ¶
+		:.o: ¶
+		:Content: ¶
+		:Documentation: ¶
+		':External Builds:' ¶
+		':Internal Builds:' ¶
+		:Simulator: ¶
+		:Temporary: ¶
+		:Tools:MPW: ¶
+		:Tools:GooberTerm: ¶
+		:Tools:PerfDumpToKScope: ¶
+		:Tools:WebIncludesTest¹: ¶
+		:Tools:TelnetMacros: ¶
+		:Tools:DailyBuild: ¶
+		':Tools:Script Editor' ¶
+		':Tools:KScope' ¶
+		':Tools:Build WebTV script' ¶
+		ka9q¹IDT-PPC ¶
+		WebTV¹ ¶
+		WebTV¹IDT-MIPS ¶
+		WebTV¹IDT-PPC ¶
+		WebTV¹PPC ¶
+		WebTV¹PPCNoDebug ¶
+		WebTV-Warrior ¶
+		WebTV-Warrior.xSYM ¶
+		"WebTV Preferences"	¶
+ 		BoxMakefile ¶
+		ChangeLog ¶
+		CheckedOutList ¶
+		OldChangeLog ¶
+		StartDeveloping ¶
+		StateOfTheProject ¶
+		Backup.doit ¶
+		ChangeLogOld ¶
+		'ROM Store' ¶
+		:ROM:Fonts:Geneva_12 ¶
+		:ROM:Fonts:Geneva_14 ¶
+		:ROM:Fonts:Geneva_16 ¶
+		:ROM:Fonts:Geneva_18 ¶
+		:ROM:Fonts:Geneva_20 ¶
+		:ROM:Fonts:Geneva_22 ¶
+		:ROM:Fonts:Geneva_24 ¶
+		:ROM:Fonts:Geneva_26 ¶
+		:ROM:Fonts:Geneva_28 ¶
+		:ROM:Fonts:Geneva_30 ¶
+		:ROM:Fonts:Geneva_32 ¶
+		:ROM:Fonts:Geneva_34 ¶
+		:ROM:Fonts:Geneva_36 ¶
+		:ROM:Fonts:Geneva_38 ¶
+		:ROM:Fonts:Geneva_40 ¶
+		:ROM:Fonts:Helvetica_30 ¶
+		:ROM:Fonts:Helvetica_34 ¶
+		:ROM:Fonts:Helvetica_38 ¶
+		:ROM:Fonts:Monaco_30 ¶
+		:ROM:Fonts:Monaco_34 ¶
+		:ROM:Fonts:Monaco_38 ¶
+		:ROM:Fonts:Osaka_12 ¶
+		:ROM:Fonts:Osaka_16 ¶
+		:ROM:Fonts:Osaka_28 ¶
+		`"
+	
+	# Create directories first, since -c option for Backup is broken
+	If 1
+		For folder: In `Files -r -f : | Search /:[¶']*°/ | Sort -unique`
+			If "{{folder:}}" == "{{WTV:}}"; Continue; End
+			If "{{folder:}}" !~ /[¶']*{{WTV:}}(Å:)¨1[¶']*/
+				Echo "### Cannot parse {folder:}"
+				Exit 1
+			End
+			Set folder: "{¨1}"
+			SafeNewFolder "{UnixWTV:}{{folder:}}" ³ Dev:Null || Set status 0
+		End
+	End
+	
+	# create backup commands, then filter unneeded files from it
+	Backup -a -c -r -from : -to "{UnixWTV:}" > Backup.doit || Set status 0
+	File Backup.doit
+	For file in {exceptionList}
+		Find ¥ Backup.doit && Clear -c ° /¥Å{{file}}Å¶n/ Backup.doit || set status 0
+	End
+	Find ¥ Backup.doit && Clear -c ° /¥Å\Å¶n/ Backup.doit || set status 0
+	Find ¥ Backup.doit && Replace -c ° /¥Duplicate/ "SafeDuplicate -d" Backup.doit || set status 0
+
+	Find ¥ Backup.doit
+	Save Backup.doit
+	FastDoIt Backup.doit
+#	Delete Backup.doit
+Else
+	Save "{file}"
+	SafeDuplicate -d -y "{file}" "{UnixWTV:}{relativePath}"
+End

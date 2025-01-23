@@ -1,0 +1,249 @@
+This document reflects the responsibilities for each of the software team members
+for the WebTV system software pieces.  
+
+The software is split into two major pieces of functionality: Application and Platform.
+The Platform code is low-level system software dealing with hardware control, memory,
+processor management, etc.  It is written primarily in C.  Portions of it are dependent
+on the specifics of the embedded hardware.
+
+The application is platform-independent; it is built against the well defined program
+interfaces defined by the Platform.  The app is written in C++ as a set of cooperating
+classes.
+
+This document defines the software at the next level of granularity.  We have defined
+each of the major platform and application pieces, and the person reponsible for them
+(or TBD).  We have mapped these pieces againt the release schedule, in order to provide
+a place to map out the evolution of the individual pieces over time.
+
+We are currently focused on the October 31 release.
+
+
+Application Area			Person			Priority		Status						Oct 31				Nov 31				Dec 31				Jan 31
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+JPEG/GIF					bruce			High			Needs refinement			Working				Done				????				????
+																											Progressive JPEG
+
+HTML Additions				bruce			Low				Not Started					????				????				????				????
+
+Other Media					bruce			Low				Not Started					????				????				????				????
+
+Flicker Management			bruce			Medium			Not Started					Initial tuning		Framework in place	Done				????
+																						for text: convolve
+																						in RGB -> YUV conversion
+																						
+Menu						chris			High			Working Version				Working Version		----				Final Look & Feel	Tested & Tuned
+
+Bookmarks					chris			High			Just Beginning				Separate page goes	Fully Functional	Final Look & Feel	Tested & Tuned
+																						to recent,favorite	Recent & Favorite
+																											
+On-Page Navigation			chris			High			Working Version				Better looking,		Final Version		----				Tested & Tuned
+																						persistent selection
+																						
+Forms						chris			High			Not Started					Text & Buttons		All Form Items		Final Look & Feel	Tested & Tuned
+																						working				working
+
+URL Text Entry				chris			High			Not Started					Working Version		----				Final Look & Feel	Tested & Tuned
+
+Between Page Navigation		chris			High			Working Version				Working Version		With transitions	Final Look & Feel	Tested & Tuned
+
+Sound Policy				chris			Medium			Not Started					----				Designed			Implemented			Tested & Tuned
+
+Status						chris			Medium			Not Started					Indication of		Fully Functional	Final Look & Feel	Tested & Tuned
+																						Traveling, % done
+																						
+ImageMap Nav.				chris			Medium			Not Started					Simple maps			Designed			Final Look & Feel	Tested & Tuned
+
+Error Reporting				chris			Medium			Not Started					Designed			Implemented			Final Look & Feel	Tested & Tuned
+
+Startup Screen				chris			Medium			Not Started					Integrated w/		Better Look			Final Look & Feel	Tested & Tuned
+																						artwork
+																						
+Borders						chris			Medium			Not Started					Usable for controls	Final Functionally	----				Tested & Tuned
+
+Transitions					chris			Medium			Not Started					----				Small Set			Larger Set			Tested & Tuned
+
+Notification				chris			Low				Not Started					----				Designed			Implemented			Tested & Tuned
+
+Soft Keyboard				chris			Low				Not Started					----				Working version		Final Look & Feel	Tested & Tuned
+
+Preferences					chris			Low				Not Started					----				Designed			Implemented			Tested & Tuned
+
+Tour Mode					chris			Low				Not Started					----				Designed			Implemented			Tested & Tuned
+																																with final look
+
+View System					john			High			Just Beginning				Working version		Supports pagination	Tuned				Tested	
+																											
+HTTP						john			High			Works, needs cleanup		Cleaned up, Does	Done				Tuned				Tested
+																						versioning, location
+																						
+HTML Parsing				john			High			Works, needs additional		Recognizes all		Implements all		Tuned				Tested
+															tags and cleanup			tags, Catalogs		tags
+																						unknown tags
+																						
+HTML Layout					john			High			Needs additional			----				Handles all tags	Tuned				Tested
+															functionality									and attributes
+
+URL Management				john			High			Scattered throughout		Cleaned up,			Done				Tuned				Tested
+																						Integrated
+																						
+Input Dispatcher			john			High			Stable						Cleaned up			Done				Tuned				Tested
+
+Utility Classes				john			High			Works, needs cleanup		Cleaned up			Done				Tuned				Tested
+
+Tables						john			Medium			Not implemented				Simple				Works				Final layout		Tuned, Tested
+
+Registration				john			Medium			Not started					Not started			Designed			Implemented			Tuned
+
+Lame Scheduler				john			Medium			Scattered throughout		Designed			Done				Tuned				Tested
+
+Help						john			Low				Not started					----				Designed			Implemented			Tuned
+
+User Profiling				john			Low				Not started					----				Collecting data		Tuned				Tested
+
+Multiple Personalities		john			Low				Not started					----				Designed			Implemented			Tuned
+
+Form Element Look			keith			High			Underway					Buttons and			All Form			Final Look			----
+																						Text Fields			Elements
+
+Status Look					keith			High			Not started					First cut			????				????				????
+
+WebTV Logo					keith			High			Underway					First cut			????				????				????
+
+Selection Highlighting		keith			High			Underway					First cut			????				????				????
+
+Startup Screen Look			keith			High			Underway					First cut			????				????				????
+
+Fonts						keith			High			Started						Superset			Designed			Tuned				Usability tested
+
+Horizonal Rules				keith			Medium			Not started					----				????				????				????	
+
+ImageMap Selection Look		keith			Medium			Underway					First cut			????				????				????
+
+Web Server Content			keith			Medium			Underway					Initial structure	????				????				????
+
+Applications Look			keith			Medium			Not started					----				????				????				????
+
+Table Borders				keith			Medium			Not started					----				????				????				????
+
+Error Handling				phil			Medium			Moved to platform	 		Platform indep		Done				Done				Tested
+															independent error
+															framework
+
+Resource Mgt.				phil			High			Investigating current use	Simple Caching		Read ahead,			Tuned				Tested
+																						cgi framework		Final Policy
+																						push storage to server
+																						
+Simulator					phil			Medium			Stable, adding				Supports bringup,	Fully factored,		Done				Tested
+															functionality				Identical memory	Basic code removed
+																						model
+																						
+Connection Mgr.				rick			Medium			Mac-specific code,			Full understanding	Fully functional	Optimized			Tested
+															Non-standard socket library																Supports native TCP
+																																					Supports PIG transport
+
+PIG App. Protocol			rick			High			Investigating				Analysis of HTTP,	Functional,			Done, Decision		Tested
+																						Proposal for better	Proven for future	on whether to
+																						protocol			protocols			remove HTTP
+																						
+Print/Fax					rick			Low				Not Started					----				Proposal for		Implemented			Done, Tested
+																											UI, API
+																											
+Security					TBD				????			????						????				????				????				????
+
+Child Protection			TBD				????			????						????				????				????				????
+
+Email						lee				Medium			Prototype HTML generation	Internal use		Beautified			Feature complete	Tested
+															for mail reading			(including)			Configuration defined
+															
+News						TBD				????			????						????				????				????				????
+
+Chat						TBD				????			????						????				????				????				????
+
+Secure Page Entry			TBD				????			????						????				????				????				????
+
+Stock Ticker				TBD				????			????						????				????				????				????
+
+Clock						TBD				????			????						????				????				????				????
+
+
+Platform Area				Person			Priority		Status						Oct 31				Nov 31				Dec 31				Jan 31
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Graphics					bruce			High			Partial interface in place.  Lame native		Solid & native		Done				????
+															Implementation is QuickDraw. implementation.
+																							- objects w/ alpha
+																							- scroll effect:
+																								- 2x buffering
+																								- overlapped blit
+															
+Fido Mgr					bruce			Low				Not Started					nothing				nothing				????				????
+
+Boot/Shutdown				joe				High			Boot framework complete.	Mostly Done			Refine				Refine				Refine
+															Orderly shutdown to come.
+															
+IR Rev						joe				High			Framework complete.			Done				Tested				Tested				Tested
+
+Serial						joe				High			Complete.					Done				Tested				Tested				Tested
+
+Modem Ctl					joe				High			Not started.				Done				Tested				Tested				Tested
+
+Std Display Ctrl			joe				High			Framework complete.			Done				Tested				Tested				Tested
+
+Keyboard					joe				Medium			Framework complete.			----				Done				Tested				Tested
+
+Exception Processing		joe				High			Early version working.		Done				Tested				Tested				Tested
+
+ROM Storage					joe				High			Not started.				----				Done				Tested				Tested
+
+C++ Runtime					joe				High++			C runtime complete.			Done				Tested				Tested				Tested
+															Investigating ++ additions.
+
+ANSI Support				joe				Hi, as needed	Functions used by current	Done				Tested				Tested				Tested
+															code base complete.
+															(printf, some string ops)
+
+Debug Support				joe				High			Debug printf complete.		----				Basic Framework		Refine				Refine
+															Remote debug not started.
+
+Expansion Bus				joe				Low/High		Low on the implementation	----				Basic Framework		Refine				Refine
+															side, High on the consideration
+															side.  Conceptual framework
+															reasonably well underway.
+	
+Patching Support			joe				High			No coding started.			----				Basic Framework		Refine				Refine
+															Early design work started.
+
+SS#/Random Mgr				joe				Medium			Framework for SS# complete.	Done				Tested				Tested				Tested
+															Random function implemented
+															using 3081 RANDOM register.
+
+Video Digitizer				joe				Low				Nothing really.				----				----				----				----
+															This, coupled with some RAM,
+															will be used to flesh out the
+															Expansion Bus SW interface.
+
+Audio Support				joe				High			No coding started.			----				Basic Framework		Refine				Refine
+															Early design work started.
+
+Timing Services				joe				High			System ticks complete.		Done				Tested/Refine		Tested				Tested
+															Extensions for VBLs and
+															general user function
+															calling to come.
+
+Error Tracking				joe				High			Not started.				----				Basic Framework		Refine				Refine
+
+Smart Card					john			Low				Not started					Defined				Designed			Refine				Refine
+
+Malloc						phil			High			Almost complete				Coalescing			Done				Tested				Tested
+
+Caching Store				phil		    High			Investigating current use,	Native implem.		Final interface		Tuned				Tested
+															New interace w/ handle
+															implementation
+
+Utilities					phil			Medium			Ad hoc set of utilities		Native implem.		Done				Pruned				Tested
+
+TCP Stack					rick/joe		High			MacTCP on Mac				TCP Stack acquired,	Fully functional,	Done, Tested		Tested
+															ka9q/slip on device			brought up on board	final interface
+															
+Compression					TBD				????			????						????				????				????				????

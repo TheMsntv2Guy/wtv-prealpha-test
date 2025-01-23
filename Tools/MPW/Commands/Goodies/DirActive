@@ -1,0 +1,9 @@
+# DirActive		Andrew Shebanow		12/4/88
+#
+# This simplistic little script gets the name of the active window,
+# and sets the directory to its folder.
+
+Set Exit 0
+If "{Active}" =~ /(Å)¨1:Å/
+	Directory "{¨1}:"
+End

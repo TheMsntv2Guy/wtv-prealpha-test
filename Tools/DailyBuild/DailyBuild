@@ -1,0 +1,469 @@
+#
+#	File:	DailyBuild - a script that gets called once a day to do an automatic build
+#	Date:	4/18/96
+#
+#	Copyright Artemis Research, Inc. 1996  All rights reserved.
+#
+#
+#  Everything should be built twice, once for internal, debug builds, and again for external non-debug builds
+#
+
+Set CaseSensitive 0;		# for options case insensitivity
+
+	SET gScriptName				"DailyBuld";
+#	SET gBumpBuildNumber		1;
+	SET gBuildNumberFile		"{SystemFolder}Preferences:MPW:WEBTV.Build.Number";
+	SET gLogPileDirectory		"{Boot}misc:logpile:";
+	SET gBuildLogFile			"";
+	SET gMWBuildErrorFile1		"{WTV:}WebTV¹PPC.Error.log";
+	SET gMWBuildErrorFile2		"{WTV:}WebTV¹PPCNoDebug.Error.log";
+	SET gBuildNumber			0;
+	SET gOverrideBuildNumber	0;
+	SET gExternalOption			1;
+	SET gInternalOption			1;
+	SET gSimulatorBuildOption	1;
+	SET gBoxROMBuildOption		1;
+	SET gNoCheckoutOption		0;
+	SET gCopyOptions			"-p -y";
+	SET gSoftwarePhase			"Beta 2"
+	SET gCleanOption			0;
+	SET mwbOptions				"";
+	
+	SET helpMessage 'ECHO "## Usage: DailyBuild [options] ¶n ¶
+				-help                Print this message ¶n ¶
+				-clean               Rebuild everything (clean build) ¶n ¶
+				-NoCheckout          Do not checkout newer sources before build ¶n ¶
+				-NoExternal          Do not build a version of the software (ROM and Simulator) that points to production services ¶n ¶
+				-NoInternal          Do not build a version of the software (ROM and Simulator) that points to test services ¶n ¶
+				-NoSimulatorBuild    Do not build the Simulator ¶n ¶
+				-NoBoxROMBuild       Do not build the ROM ¶n ¶
+				-build=#             Override the build number (normally gets it from the build number file). ¶n ¶
+				-phase=#             Set the phase, currently defaults to ¶"{gSoftwarePhase}¶". ¶n ¶
+				" '
+
+LOOP
+	Break IF {#} == 0
+
+	IF "{1}" =~ /¶-help/
+		{helpmessage}
+		exit 2;
+	
+	ELSE IF "{1}" =~ /¶-clean/
+		SET gCleanOption 1;
+	
+	ELSE IF "{1}" =~ /¶-NoCheckout/
+		SET gNoCheckoutOption 1;
+	
+	ELSE IF "{1}" =~ /¶-noexternal/
+		SET gExternalOption 0;
+	
+	ELSE IF "{1}" =~ /¶-nointernal/
+		SET gInternalOption 0;
+	
+	ELSE IF "{1}" =~ /¶-NoSimulatorBuild/ || "{1}" =~ /¶-NoSimBuild/
+		SET gSimulatorBuildOption 0;
+	
+	ELSE IF "{1}" =~ /¶-NoROMBuild/ || "{1}" =~ /¶-NoBoxROMBuild/ || "{1}" =~ /¶-NoBoxBuild/
+		SET gBoxROMBuildOption 0;
+	
+	ELSE IF "{1}" =~ /¶-build=(Å)¨1/
+		SET gOverrideBuildNumber "{{¨1}};
+	
+	ELSE IF "{1}" =~ /¶-phase=(Å)¨1/
+		SET gSoftwarePhase "{{¨1}};
+	
+	#ELSE IF "{1}" =~ /¶-NoBump/
+	#	SET gBumpBuildNumber 0;
+	#
+	ELSE
+		ECHO "### {gScriptName}: ERROR: unknown flag: ¶'{1}¶'"
+		{helpmessage}
+		exit 2;
+		
+	END
+	SHIFT
+END
+
+#
+# This automatic build number bumping wasn't working very well, so
+#	I moved it to a separate script -- BumpBuildNumber.
+#
+#if ( {gBumpBuildNumber} )
+#	if ( !`Exists "{gBuildNumberFile}"` )
+#		echo "### ERROR: {gBuildNumberFile} file did not exists!!!" 
+#		echo "### ERROR: one will be created reseting version at 1"
+#		echo "0" > "{gBuildNumberFile}"
+#	end	
+#	
+#	set gBuildNumber `Evaluate ¶`cat "{gBuildNumberFile}"¶` + 1`
+#	echo "{gBuildNumber}" > "{gBuildNumberFile}"
+#end
+if ( {gOverrideBuildNumber} )
+	set gBuildNumber "{gOverrideBuildNumber}";
+else
+	set gBuildNumber ""`cat "{gBuildNumberFile}"`;
+end
+
+
+set exit 0;
+NewFolder "{gLogPileDirectory}" · dev:null || set status 0
+
+SET gBuildLogFile			"{gLogPileDirectory}Build.{gBuildNumber}.`date -n`.log";
+ECHO "" > "{gBuildLogFile}";
+rm "{gMWBuildErrorFile1}" · dev:null || set status 0;  # clear out the metrowerks build errors
+rm "{gMWBuildErrorFile2}" · dev:null || set status 0;  # clear out the metrowerks build errors
+open "{gBuildLogFile}"
+SizeWindow 894 374 "{gBuildLogFile}"
+MoveWindow 36 21 "{gBuildLogFile}"
+
+SET StartTime `Date -n`
+ECHO "#" ·· "{{gBuildLogFile}}";
+ECHO "# {gScriptName} StartingÉ `Date -s`" ·· "{{gBuildLogFile}}";
+ECHO "#" ·· "{{gBuildLogFile}}";
+
+
+#set password `CoolRequest -private -hide "Enter your unix password"`
+set password 'cocah1';
+#MountUnix ·· "{{gBuildLogFile}}"
+Choose -u ed -pw "{password}" Artemis:homeless:ed ·· "{{gBuildLogFile}}";
+Choose -u ed -pw "{password}" Artemis:MacServer:MacServer ·· "{{gBuildLogFile}}";
+UnMountProject -a · dev:null || set Status 0;
+MountProject "MacServer:Source:WebTV:" ·· "{{gBuildLogFile}}";
+CheckoutDir -r "Skunk:WebTV:" ·· "{{gBuildLogFile}}";
+
+
+if ( !{gNoCheckoutOption} )
+	ECHO "# Checkout log..." ·· "{{gBuildLogFile}}";
+	# remove these guys, so they get checked out again (so we don't use old versions)
+	rm -y -p "{WTV:}Interfaces:BuildControl.h"  "{WTV:}Interfaces:SystemVersion.h"  ·· "{{gBuildLogFile}}";
+	Checkout -p -r -newer ·· "{{gBuildLogFile}}";
+else
+	ECHO "# Skipping checkout process (overridden on command line)..." ·· "{{gBuildLogFile}}";
+	ECHO "# Just checking out the BuildControl.h SystemVersion.h " ·· "{{gBuildLogFile}}";
+	rm -y -p "{WTV:}Interfaces:BuildControl.h"  "{WTV:}Interfaces:SystemVersion.h"  ·· "{{gBuildLogFile}}";
+	Checkout -project "WebTVºInterfacesº" -p BuildControl.h SystemVersion.h ·· "{{gBuildLogFile}}";
+end
+
+
+# update SystemVersion.h...
+	ECHO "#" ·· "{{gBuildLogFile}}";
+	ECHO "# Updating SystemVersion.h with build {gBuildNumber}..." ·· "{{gBuildLogFile}}";
+	ECHO "#" ·· "{{gBuildLogFile}}";
+	echo "#define kSoftwarePhase	¶"{gSoftwarePhase} (Internal) ¶"" > "{WTV:}Interfaces:SystemVersion.h.Internal";
+	echo "#define kSoftwareBuild ¶" (build {gBuildNumber})¶"" >> "{WTV:}Interfaces:SystemVersion.h.Internal";
+	echo "#define kSoftwareBuildNumber {gBuildNumber}" >> "{WTV:}Interfaces:SystemVersion.h.Internal";
+	echo "#define kSoftwarePhase	¶"{gSoftwarePhase}¶"" > "{WTV:}Interfaces:SystemVersion.h.External";
+	echo "#define kSoftwareBuild ¶" (build {gBuildNumber})¶"" >> "{WTV:}Interfaces:SystemVersion.h.External";
+	echo "#define kSoftwareBuildNumber {gBuildNumber}" >> "{WTV:}Interfaces:SystemVersion.h.External";
+
+# setup BuildControl.h...
+	ECHO "#" ·· "{{gBuildLogFile}}";
+	ECHO "# Updating BuildControl.h for external build..." ·· "{{gBuildLogFile}}";
+	ECHO "#" ·· "{{gBuildLogFile}}";
+	cp -p -d -y "{WTV:}Interfaces:BuildControl.h" "{WTV:}Interfaces:BuildControl.h.Internal" ·· "{{gBuildLogFile}}";
+	echo "#define EXTERNAL_BUILD" >  "{WTV:}Interfaces:BuildControl.h.External"
+	cat  "{WTV:}Interfaces:BuildControl.h" >>  "{WTV:}Interfaces:BuildControl.h.External" 
+
+# send sources over to unix...
+	if ( {gBoxROMBuildOption} )
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		ECHO "# Unixify log..." ·· "{{gBuildLogFile}}";
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		cd "{WTV:}";
+		Unixify "{{WTV:}}"
+	end 
+	
+# Build a new ROM Store...
+	if ( {gSimulatorBuildOption} )
+		begin;
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Creating new ROM Store..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			Directory "{{WTV:}}ROM:";
+			Romify -p=1 -romtop=BFE00000 : > "{{WTV:}}ROM Store.New" || Directory "{{WTV:}}";
+			Directory "{{WTV:}}";
+			Rename -y "{{WTV:}}ROM Store.New" "{{WTV:}}ROM Store"
+		end ·· "{{gBuildLogFile}}";
+	end
+
+##
+## Internal build.....
+##
+	if ( {gInternalOption} )
+		cd "{WTV:}";
+	
+		cp -p -d -y "{WTV:}Interfaces:SystemVersion.h.Internal" "{WTV:}Interfaces:SystemVersion.h" ·· "{{gBuildLogFile}}";
+		setfile -m "11/19/95 11:05:00 AM" -c "11/19/95 11:05:00 AM" "{WTV:}Interfaces:SystemVersion.h" ·· "{{gBuildLogFile}}";
+		cp -p -d -y "{WTV:}Interfaces:BuildControl.h.Internal" "{WTV:}Interfaces:BuildControl.h" ·· "{{gBuildLogFile}}";
+		setfile -m "11/19/95 11:05:00 AM" -c "11/19/95 11:05:00 AM" "{WTV:}Interfaces:BuildControl.h" ·· "{{gBuildLogFile}}";
+		setfile -m . "{WTV:}System:SystemVersion.c" ·· "{{gBuildLogFile}}";
+		if ( {gCleanOption} )
+			Set mwbOptions " -clean ";
+		else
+			Set mwbOptions "";
+		end;
+		if ( {gSimulatorBuildOption} )
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Fire off Metrowerks build (log later)..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			MetrowerksBuild {mwbOptions} WebTV¹PPC ·· "{{gBuildLogFile}}"; 
+		else
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Skipping Metrowerks build due to command line option!!!" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+		end
+		
+		# set up directives for the build....
+		if ( {gBoxROMBuildOption} )
+			Set build_directives "OFFICIAL_BUILD=1 ";
+			if ( {gCleanOption} )
+				ECHO "#" ·· "{{gBuildLogFile}}";
+				ECHO "# Doing a make clean..." ·· "{{gBuildLogFile}}";
+				ECHO "#" ·· "{{gBuildLogFile}}";
+				rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; gmake {build_directives} cleanall;" ·· "{{gBuildLogFile}}";
+			end;
+			rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; cp -p ./Interfaces/SystemVersion.h.Internal ./Interfaces/SystemVersion.h;" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Internal unirom ROM buld..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; gmake {build_directives} unirom;" ·· "{{gBuildLogFile}}";
+			
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Copying ROM images back from UNIX..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			rm -y "{WTV:}".o:debug:;
+			NewFolder "{WTV:}".o:debug:
+			cp {gCopyOptions} "ed:WebTV:objects:app:result:approm.o" "{WTV:}".o:debug:approm  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:app:result:approm.code.o" "{WTV:}".o:debug:approm.code.o  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:boot:result:bootrom.o" "{WTV:}".o:debug:bootrom  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:unirom:result:unirom.o" "{WTV:}".o:debug:unirom  ·· "{{gBuildLogFile}}";
+		else
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Skipping ROM build due to command line option!!!" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+		end
+
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		ECHO "# Waiting for the metrowerks builds to finish" ·· "{{gBuildLogFile}}";
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		if ( {gSimulatorBuildOption} )
+			Loop
+				break if ( `Exists "{gMWBuildErrorFile1}"` )
+				wait -nosound for 00:00:15;
+			end
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Metrowerks error log ({gMWBuildErrorFile1})..." ·· "{{gBuildLogFile}}";
+			ECHO "# start:" ·· "{{gBuildLogFile}}";
+			cat "{gMWBuildErrorFile1}" ·· "{{gBuildLogFile}}";
+			ECHO "# end." ·· "{{gBuildLogFile}}";
+			mv -y "{gMWBuildErrorFile1}" "{gLogPileDirectory}debug.log.`date -n`.internal";
+		end
+	# save off the builds
+		begin;
+			ECHO "#"
+			ECHO "# Saving off ROM images..."
+			ECHO "#"
+		
+			set destination "{WTV:}Internal Builds:"
+			if ( {gCleanOption} )
+				Delete -i -p -y  "{destination}"
+				NewFolder "{destination}"
+			end;
+			if ( {gSimulatorBuildOption} )
+				Delete -y "{destination}Simulator:"
+				NewFolder "{destination}Simulator:"
+				cp {gCopyOptions} "{WTV:}"WebTV-Warrior.xSYM  "{destination}Simulator:"
+				cp {gCopyOptions} "{WTV:}"WebTV-Warrior  "{destination}Simulator:"
+				cp {gCopyOptions} "{WTV:}ROM Store"  "{destination}Simulator:"
+			end;
+			
+			if ( {gBoxROMBuildOption} )
+				Delete -y "{destination}ROM:"
+				NewFolder "{destination}ROM:"
+				cp {gCopyOptions} "{WTV:}".o:debug:approm  "{destination}ROM:"
+				cp {gCopyOptions} "{WTV:}".o:debug:approm.code.o  "{destination}ROM:"
+				cp {gCopyOptions} "{WTV:}".o:debug:bootrom  "{destination}ROM:"
+				cp {gCopyOptions} "{WTV:}".o:debug:unirom  "{destination}ROM:"
+				cp {gCopyOptions} "{WTV:}"Tools:GooberTerm:GooberTerm  "{destination}ROM:"
+			end;
+		end ·· "{{gBuildLogFile}}";
+	
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		ECHO "# Adding vers 1 resources to internal builds..." ·· "{{gBuildLogFile}}";
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		Begin;
+		echo "#include ¶"SysTypes.r¶"";
+			echo "";
+			echo "resource 'vers' (1, purgeable) ¶{";
+			echo "	0x1,";
+			echo "	0x00,";
+			echo "	alpha,";
+			echo "	0x{gBuildNumber},";
+			echo "	verUS,";
+			echo "	¶"1.0 {gSoftwarePhase} internal (build {gBuildNumber})¶",";
+			echo "	¶"1.0 {gSoftwarePhase} internal (build {gBuildNumber}), Copyright ©1995-96 Artemis Research, Inc.¶"";
+			echo "¶};";
+		end > "{{WTV:}}Tools:DailyBuild:Vers1.r"
+		
+		for eachfile in `files -r -f -o -s "{destination}"`
+			Rez -a -i "{RIncludes}" "{{WTV:}}Tools:DailyBuild:Vers1.r" -o "{eachfile}" ·· "{{gBuildLogFile}}";
+		end;
+	end;
+
+##
+## External build.....
+##
+	if ( {gExternalOption} )
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		ECHO "# Fire off Metrowerks build (log later)..." ·· "{{gBuildLogFile}}";
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		cd "{WTV:}";
+		cp -p -d -y "{WTV:}Interfaces:SystemVersion.h.External" "{WTV:}Interfaces:SystemVersion.h" ·· "{{gBuildLogFile}}";
+		setfile -m "11/19/95 11:05:00 AM" -c "11/19/95 11:05:00 AM" "{WTV:}Interfaces:SystemVersion.h" ·· "{{gBuildLogFile}}";
+		cp -p -d -y "{WTV:}Interfaces:BuildControl.h.External" "{WTV:}Interfaces:BuildControl.h" ·· "{{gBuildLogFile}}";
+		setfile -m "11/19/95 11:05:00 AM" -c "11/19/95 11:05:00 AM" "{WTV:}Interfaces:BuildControl.h" ·· "{{gBuildLogFile}}";
+		setfile -m . "{WTV:}System:SystemVersion.c" ·· "{{gBuildLogFile}}";
+		if ( {gCleanOption} )
+			Set mwbOptions " -clean ";
+		else
+			Set mwbOptions "";
+		end;
+		if ( {gSimulatorBuildOption} )
+			MetrowerksBuild {mwbOptions} WebTV¹PPCNoDebug ·· "{{gBuildLogFile}}"; 
+		else
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Skipping Metrowerks build due to command line option!!!" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+		end
+	
+		if ( {gBoxROMBuildOption} )
+			Set build_directives "OFFICIAL_BUILD=1  EXTERNAL_BUILD=1"
+			if ( {gCleanOption} )
+				ECHO "#" ·· "{{gBuildLogFile}}";
+				ECHO "# Doing a make clean..." ·· "{{gBuildLogFile}}";
+				ECHO "#" ·· "{{gBuildLogFile}}";
+				rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; gmake {build_directives} cleanall;" ·· "{{gBuildLogFile}}";
+			end;
+			rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; cp -p ./Interfaces/SystemVersion.h.External ./Interfaces/SystemVersion.h;" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# External unirom ROM buld..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			rcmd -u {UnixUser} -p "{password}" -h 'homeless.artemis.com' -c "cd WebTV; gmake {build_directives} unirom;" ·· "{{gBuildLogFile}}";
+			
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Copying ROM images back from UNIX..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			rm -y "{WTV:}".o:debug-external:;
+			NewFolder "{WTV:}".o:debug-external:
+			cp {gCopyOptions} "ed:WebTV:objects:app-external:result:approm.o" "{WTV:}".o:debug-external:approm  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:app-external:result:approm.code.o" "{WTV:}".o:debug-external:approm.code.o  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:boot-external:result:bootrom.o" "{WTV:}".o:debug-external:bootrom  ·· "{{gBuildLogFile}}";
+			cp {gCopyOptions} "ed:WebTV:objects:unirom-external:result:unirom.o" "{WTV:}".o:debug-external:unirom  ·· "{{gBuildLogFile}}";
+		else
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Skipping ROM build due to command line option!!!" ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+		end
+		
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		ECHO "# Waiting for the metrowerks builds to finish" ·· "{{gBuildLogFile}}";
+		ECHO "#" ·· "{{gBuildLogFile}}";
+		if ( {gSimulatorBuildOption} )
+			Loop
+				break if ( `Exists "{gMWBuildErrorFile2}"` )
+				wait -nosound for 00:00:15;
+			end
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Metrowerks error log ({gMWBuildErrorFile1})..." ·· "{{gBuildLogFile}}";
+			ECHO "# start:" ·· "{{gBuildLogFile}}";
+			cat "{gMWBuildErrorFile2}" ·· "{{gBuildLogFile}}";
+			ECHO "# end." ·· "{{gBuildLogFile}}";
+			mv -y "{gMWBuildErrorFile2}" "{gLogPileDirectory}nodeb.log.`date -n`.external";
+		end
+
+		# save off the builds
+			begin;
+				ECHO "#"
+				ECHO "# Saving off ROM images..."
+				ECHO "#"
+			
+				set destination "{WTV:}External Builds:"
+				if ( {gCleanOption} )
+					Delete -i -p -y  "{destination}"
+					NewFolder "{destination}"
+				end;
+				if ( {gSimulatorBuildOption} )
+					Delete -y "{destination}Simulator:"
+					NewFolder "{destination}Simulator:"
+					cp {gCopyOptions} "{WTV:}"WebTV-Warrior-NoDebug  "{destination}Simulator:"
+					cp {gCopyOptions} "{WTV:}ROM Store"  "{destination}Simulator:"
+				end;
+				
+				if ( {gBoxROMBuildOption} )
+					Delete -y "{destination}ROM:"
+					NewFolder "{destination}ROM:"
+					cp {gCopyOptions} "{WTV:}".o:debug-external:approm  "{destination}ROM:"
+					cp {gCopyOptions} "{WTV:}".o:debug-external:approm.code.o  "{destination}ROM:"
+					cp {gCopyOptions} "{WTV:}".o:debug-external:bootrom  "{destination}ROM:"
+					cp {gCopyOptions} "{WTV:}".o:debug-external:unirom  "{destination}ROM:"
+					cp {gCopyOptions} "{WTV:}"Tools:GooberTerm:GooberTerm  "{destination}ROM:"
+				end;
+	
+			end ·· "{{gBuildLogFile}}";
+			
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			ECHO "# Adding vers 1 resources to external builds..." ·· "{{gBuildLogFile}}";
+			ECHO "#" ·· "{{gBuildLogFile}}";
+			Begin;
+			echo "#include ¶"SysTypes.r¶"";
+				echo "";
+				echo "resource 'vers' (1, purgeable) ¶{";
+				echo "	0x1,";
+				echo "	0x00,";
+				echo "	alpha,";
+				echo "	0x{gBuildNumber},";
+				echo "	verUS,";
+				echo "	¶"1.0 {gSoftwarePhase} external (build {gBuildNumber})¶",";
+				echo "	¶"1.0 {gSoftwarePhase} external (build {gBuildNumber}), Copyright ©1995-96 Artemis Research, Inc.¶"";
+				echo "¶};";
+			end > "{{WTV:}}Tools:DailyBuild:Vers1.r"
+			
+			for eachfile in `files -r -f -o -s "{destination}"`
+				Rez -a -i "{RIncludes}" "{{WTV:}}Tools:DailyBuild:Vers1.r" -o "{eachfile}" ·· "{{gBuildLogFile}}";
+			end;
+		
+	
+	end ## external build
+
+
+
+
+ECHO "#" ·· "{{gBuildLogFile}}";
+ECHO "# Generating NameRevisions file ({gLogPileDirectory}vers.{gBuildNumber}.`date -n`.log)..." ·· "{{gBuildLogFile}}";
+ECHO "# start:" ·· "{{gBuildLogFile}}";
+cd "{WTV:}";
+Project "WebTVº"
+set namer_proj `Project`; export namer_proj
+echo "Set exit 0;" > "{gLogPileDirectory}vers.{gBuildNumber}.`date -n`.log"
+NamerOx -r -n "Build_{gBuildNumber}" · "{gLogPileDirectory}vers.{gBuildNumber}.`date -n`.log"
+
+ECHO "#" ·· "{{gBuildLogFile}}";
+ECHO "# {gScriptName} CompleteÉ `Date -s`" ·· "{{gBuildLogFile}}";
+ECHO "#" ·· "{{gBuildLogFile}}";
+SET EndTime `Date -n`; 
+SET TotalTime `Evaluate {EndTime} - {StartTime}`; 
+SET Temp `Evaluate {TotalTime} Ö 60`;
+SET Seconds `Evaluate {TotalTime} MOD 60`; 
+SET Hours `Evaluate {Temp} Ö 60`; 
+SET Minutes `Evaluate {Temp} MOD 60`;
+IF ("{Seconds}" < 10); SET Seconds "0{Seconds}"; END; 
+IF ("{Minutes}" < 10); SET Minutes "0{Minutes}"; END; 
+IF ("{Hours}" < 10); SET Hours "0{Hours}"; END;
+ECHO "# The Total build time was {Hours}:{Minutes}:{Seconds}.¶n#¶n#" ·· "{{gBuildLogFile}}";
+ECHO "" ·· "{{gBuildLogFile}}";
+ECHO "" ·· "{{gBuildLogFile}}";
+
+close -y "{{gBuildLogFile}}";
+# Tell AppleScript to to tell Eudora to send out the message....
+#"{{WTV:}}Tools:DailyBuild:Send Mail" "{{WTV:}}Tools:DailyBuild:MailingList" "{{gBuildLogFile}}"
+

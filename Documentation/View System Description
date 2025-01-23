@@ -1,0 +1,40 @@
+This represents preliminary thinking by Phil and Bruce about
+a view system for WebTV that can be used in the near term with
+a simple frame buffer, and in the future can support more
+sophisticated compositing hardware.
+
+Layers?
+	BackGround - color/image
+	Text
+	Images
+	Menu
+	Status
+	
+Vertical Sorting
+
+
+Operations
+
+	HTMLToViewList
+	Reformat
+	
+	Draw(ViewList, SrcRect, DstRect);
+	Move(
+	
+	ScreenRect
+	
+	
+	Object
+		{
+		Object Type;
+		Rect Bounds;
+		?Scaling;
+		Transparency;
+		Next;
+		Child;
+		}
+
+		
+PageList
+PageDescription
+

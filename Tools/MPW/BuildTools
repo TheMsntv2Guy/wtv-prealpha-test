@@ -1,0 +1,9 @@
+Set Echo 0
+
+Set oldDirectory "`Directory`"
+Directory "{{WTV:}}"Tools:MPW:Source:
+
+Make -f Makefile > "{{WTV.o:}}"MakeCommands
+FastDoIt "{{WTV.o:}}MakeCommands"
+
+Directory "{{oldDirectory}}"

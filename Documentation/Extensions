@@ -1,0 +1,14 @@
+New Tags
+
+New Attributes
+	TRANSPARENCY=<0-100> for <IMG>
+	EXECUTEURL for <INPUT>
+	CELLBORDER for <TABLE>
+	SELECTED for <A> and controls
+	XSPEED and YSPEED for <BODY>
+
+New MIME types
+
+New & escapes
+	&date:  Provides current date in similar form to Mac abbrevDate
+	        (e.g. ÒMon, Nov 13, 1995Ó).

@@ -1,0 +1,37 @@
+This is a description of the themes for the next four software releases,
+the last of which is the software release for the trial.
+
+October 31: Browser
+
+	- Full HTML support, including forms
+	- Simple error handling
+	- User navigation (favorite, recent, URL entry)
+	- New UI look
+	- Keyboard input
+	- Basic "programming" (simple startup page)
+	- >1 hr MTBF
+	- Ready for initial usability test
+
+November 31: Features
+
+	- Mail
+	- Kid mode
+	- News
+	- Chat
+	- Full-featured "programming" (in-depth startup pages)
+	- Real audio
+	- Prototype remote
+	- Ready for second usability test
+
+December 31: Product
+
+	- Registration
+	- Transactions
+	- Full error handling (e.g. phone line/power disruptions)
+	- Usage tracking
+	- Ready for final usability test
+
+January 31: Tuned
+
+	- No bugs
+	- Improved quality

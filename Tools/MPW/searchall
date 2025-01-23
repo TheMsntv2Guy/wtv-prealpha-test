@@ -1,0 +1,3 @@
+	# search all files in the project source directories
+
+search {{Parameters}} `files -s -f {WTV:}[¶.]*:?* {WTV:}socket:?*:?* {WTV:}www:?*:?*`

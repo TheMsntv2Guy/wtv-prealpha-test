@@ -1,0 +1,13 @@
+		CASE	ON
+
+NextStepA0		PROC EXPORT
+		IMPORT	NextStep
+
+		move.l	a0,-(sp)		; pass parameter block as only argument
+		jsr		NextStep		; go do the real work
+		addq	#4,sp			; remove argument
+		rts						; and done
+		
+		ENDPROC
+		END
+		

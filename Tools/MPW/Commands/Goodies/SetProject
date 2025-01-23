@@ -1,0 +1,19 @@
+#
+# SetProject		Andrew Shebanow		3/14/89
+#
+#	Script to set current project.
+#
+#	Usage: SetProject ProjName
+#
+
+Project "{ProjName}"
+
+# Extract the CheckOutDir and change directory to it
+Set ChkOutDir "`CheckOutDir`"
+( Evaluate "{ChkOutDir}" =~ /(¶')*CheckOutDir -project Å¶º(¶')* (¶')*(Å:)¨1(¶')*/ ) · Dev:Null
+Directory "{¨1}"
+
+# Execute project init script if present
+If "`Exists ProjInit`" != ""
+	Execute ProjInit ·· "{WorkSheet}"
+End

@@ -1,0 +1,22 @@
+Set echo 0
+
+If "{{1}}" =~ /-embedded/
+	Set buildTarget IDT
+	Set noMenus 1; Export noMenus
+	Execute BuildTargetChanged
+	Unexport noMenus
+	Shift
+End
+
+If x"{buildTarget}" != x && "{buildTarget}" != Mac
+	Set makeTarget "{WTV:}"WebTV-{buildTarget}-MPW
+Else
+	Set makeTarget ""		# do default
+End
+
+NewFolder "{{WTV.o:}}" ³ Dev:Null || set Status 0
+NewFolder "{{WTV.o:}}{buildTarget}:" ³ Dev:Null || set Status 0
+Directory "{{WTV:}}"
+
+Make {makeTarget} -f "{{WTV:}}"Makefile {{Parameters}} > "{{WTV.o:}}"MakeCommands
+FastDoIt "{{WTV.o:}}MakeCommands"
